@@ -81,6 +81,10 @@ function [ myRNN ] = initialize_rnn( pred_par, beh_par, p, M)
 
             myRNN.It = zeros(q, q+m+1);
             myRNN.Jt = zeros(q, q+m+1);
+
+        case 8 % RNN DNI
+
+            % To complete here
             
     end
 

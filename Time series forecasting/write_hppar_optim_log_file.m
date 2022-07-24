@@ -31,7 +31,7 @@ function write_hppar_optim_log_file( hppars, pred_par, path_par, optim, best_par
     fprintf(fid, 'Number of runs on the test set due to random weights initialization nb_runs_test = %d \n', hppars.nb_runs_eval_test);        
 
     switch(pred_par.pred_meth_idx)
-        case {2,4,5,7}
+        case {2,4,5,7,8}
             if pred_par.GRAD_CLIPPING % gradient clipping
                 fprintf(fid, 'Gradient clipping with threshold grd_tshld = %f \n', pred_par.grad_threshold);
             else
@@ -129,7 +129,7 @@ function write_hppar_optim_log_file( hppars, pred_par, path_par, optim, best_par
     end
     
     switch(pred_par.pred_meth_idx)
-        case {2,5,7} % RTRL or UORO or SnAp-1
+        case {2,5,7,8} % RTRL or UORO or SnAp-1 or DNI
             fprintf(fid, 'Average prediction time as a function of the SHL (line) and the number of neurons in the hidden layer (columns) in s \n');
         otherwise
             fprintf(fid, 'Average prediction time as a function of the SHL in s \n');

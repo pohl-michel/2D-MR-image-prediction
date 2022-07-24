@@ -19,7 +19,7 @@ function [Ypred, avg_pred_time, pred_loss_function] = train_and_predict(path_par
             fprintf('Performing prediction with multivariate linear regression \n');  
             [Ypred, avg_pred_time, pred_loss_function] = multivar_lin_pred(pred_par, X, Y);
             
-        case {2,5,7} %prediction with an RNN        
+        case {2,5,7,8} %prediction with an RNN        
 
             [p, M] = size(Y); %p is the RNN output dimension
             Ypred = zeros([size(Y), pred_par.nb_runs]);
@@ -38,6 +38,8 @@ function [Ypred, avg_pred_time, pred_loss_function] = train_and_predict(path_par
                         myRNN = rnn_UORO( myRNN, pred_par, beh_par, X, Y); 
                     case 7 % Sparse n-step approximation (SnAp1)
                         myRNN = rnn_SnAp1( myRNN, pred_par, beh_par, X, Y);
+                    case 8 % Decoupled neural interface (DNI)
+                        myRNN = rnn_DNI( myRNN, pred_par, beh_par, X, Y);
                 end
                 
                 Ypred(:,:,run_idx) =  myRNN.Ypred;

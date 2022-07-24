@@ -15,7 +15,7 @@ function [pred_par] = load_pred_par(path_par)
     pred_par = table2struct(readtable(path_par.pred_par_filename, opts));
     
     % Choice of the prediction method
-    pred_par.pred_meth_idx = 4;
+    pred_par.pred_meth_idx = 8;
     
     switch(pred_par.pred_meth_idx)
         case 1
@@ -58,6 +58,13 @@ function [pred_par] = load_pred_par(path_par)
             pred_par.tmax_training = 160;   
 		case 7
             pred_par.pred_meth_str = 'SnAp1_RNN';
+            pred_par.NORMALIZE_DATA = true;
+            pred_par.update_meth = 1; 
+            pred_par.GRAD_CLIPPING = true; 
+            pred_par.grad_threshold = 100.0;  
+			pred_par.Winit_std_dev = 0.02;
+        case 8
+            pred_par.pred_meth_str = 'DNI';
             pred_par.NORMALIZE_DATA = true;
             pred_par.update_meth = 1; 
             pred_par.GRAD_CLIPPING = true; 

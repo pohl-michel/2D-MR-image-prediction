@@ -59,6 +59,10 @@ function [ myRNN ] = reset_rnn(myRNN, pred_par, beh_par)
             myRNN.dtheta(:) = 0;
             myRNN.It(:) = 0;
             myRNN.Jt(:) = 0;
+
+        case 8 % RNN DNI
+
+            % To complete here
             
     end
     

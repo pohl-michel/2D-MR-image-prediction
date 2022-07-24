@@ -32,11 +32,14 @@ function fprintfpred_par( fid, pred_par, beh_par )
             case 6 %univariate linear prediction
                 fprintf(fid, 'Signal history length k = %d \n', pred_par.SHL);  
             case 7 %RNN with SnAp1 training
-                fprintfRNN_common( fid, pred_par, beh_par )                
-                
+                fprintfRNN_common( fid, pred_par, beh_par )  
+            case 8 %RNN with DNI training     
+                fprintfRNN_common( fid, pred_par, beh_par ) 
+                % To complete here if needed
         end
 
 end
+
 
 function fprintfRNN_common( fid, pred_par, beh_par )
 
@@ -53,6 +56,7 @@ function fprintfRNN_common( fid, pred_par, beh_par )
     end
 
 end
+
 
 function fprintfoptim_par( fid, pred_par )
 

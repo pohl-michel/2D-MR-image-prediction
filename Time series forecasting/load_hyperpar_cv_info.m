@@ -150,7 +150,12 @@ function [ hppars ] = load_hyperpar_cv_info( pred_par )
             hppars.other(3).name = 'rnn_state_space_dim'; 
             %hppars.other(3).val = [30, 60, 90, 120, 150, 180];    
             hppars.other(3).val = [10, 30, 50, 70, 90, 110];             
-            hppars.state_space_hyppar_idx = 3; % used for time calculation analysis              
+            hppars.state_space_hyppar_idx = 3; % used for time calculation analysis
+
+
+        case 8 % DNI
+
+            % To complete here
             
             
     end
