@@ -1,0 +1,19 @@
+function save2Dimseq(im_par, path_par, disp_par)
+% Saves jpg images of the image sequence in path_par.input_im_dir
+       
+    enhance_flag = true;  
+
+    for t=1:im_par.nb_im
+
+        % chargement de l'image à t
+        crop_flag = false; filter_flag = false;
+        sag_slice_t = load_crop_filter2D(t, crop_flag, filter_flag, 0.0, im_par, path_par.input_im_dir);
+        
+        % saving jpg images of the cross sections
+        crop_flag = false; 
+        im_filename_suffix = sprintf('%s image%d', path_par.input_im_dir_suffix, t);
+        save_crop_enhance_2Dim_jpg(sag_slice_t, im_filename_suffix, crop_flag, enhance_flag, disp_par, path_par, 0, 0, 0, 0, t);
+  
+    end
+    
+end

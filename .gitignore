@@ -1,11 +1,13 @@
-/PhD pred 2D MRI/Input images/
-/PhD pred 2D MRI/Temporarily saved figures/
-/PhD pred 2D MRI/Temporarily saved images/
-/PhD pred 2D MRI/Temporarily saved txt variables/
-/PhD pred 2D MRI/Temporarily saved txt files/
-/Time series forecasting/1. Input time series sequences
-/Time series forecasting/2. Prediction results (figures)
-/Time series forecasting/3. Prediction results (images)
-/Time series forecasting/4. RNN variables (temp)
-/Time series forecasting/5. Log txt files
-/Time series forecasting/disp_par.xlsx
+/Image_prediction/a. Input images/
+/Image_prediction/b. Temporarily saved figures/
+/Image_prediction/c. Temporarily saved images/
+/Image_prediction/d. Temporarily saved variables/
+/Image_prediction/e. Temporarily saved txt files/
+/Time_series_forecasting/a. Input time series sequences
+/Time_series_forecasting/b. Prediction results (figures)
+/Time_series_forecasting/c. Prediction results (images)
+/Time_series_forecasting/d. RNN variables (temp)
+/Time_series_forecasting/e. Log txt files
+/Time_series_forecasting/disp_par.xlsx
+*.bak
+*.asv
