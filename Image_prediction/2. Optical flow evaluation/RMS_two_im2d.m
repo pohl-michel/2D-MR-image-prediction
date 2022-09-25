@@ -1,6 +1,11 @@
 function [ rms_two_im3d ] = RMS_two_im2d( I, J, EVALUATE_IN_ROI, im_par)
 % Calculation of the RMS between the intensity levels of 2 images of the same size I & J
-% if EVALUATE_IN_ROI is true, then the RMS is calculated only in the region of interest.
+% if EVALUATE_IN_ROI is set to true, the RMS error is calculated using only the region of interest.
+% 
+% Author : Pohl Michel
+% Date : Sept 18th, 2022
+% Version : v1.0
+% License : 3-clause BSD License
 
     if EVALUATE_IN_ROI
         Wevl = im_par.y_M - im_par.y_m + 1;

@@ -4,6 +4,8 @@ function [optim, best_par, par_influence] = train_eval_predictor_mult_param(hppa
 % The influence of each hyper-parameter on the prediction result is evaluated.
 % Parallel processing is used to accelerate the speed of grid search.
 %
+% Rk: one can reduce the number of lines of code by looping over the keys of the different structures (e.g., best_par)
+%
 % Author : Pohl Michel
 % Date : August 27, 2022
 % Version : v1.1
@@ -40,7 +42,6 @@ function [optim, best_par, par_influence] = train_eval_predictor_mult_param(hppa
         optim(hrz_idx).nrmse_tab = zeros(size_other_hyppr_tab, 'single');
         optim(hrz_idx).pred_time_tab = zeros(size_other_hyppr_tab, 'single');           
     end
-    
     
     parfor hrz_idx = 1:hppars.nb_hrz_val
         

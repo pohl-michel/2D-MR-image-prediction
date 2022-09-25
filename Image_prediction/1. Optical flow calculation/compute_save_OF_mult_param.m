@@ -1,6 +1,11 @@
 function compute_save_OF_mult_param( OFeval_par, path_par, im_par)
-% Compute and save optical flow for several parameters as specified in the structure OFeval_par
+% Computes and saves optical flow for several parameters as specified in the structure OFeval_par
 % This function is used for evaluating the influence of the parameters on the accuracy of the computed optical flow.
+%
+% Author : Pohl Michel
+% Date : Feb. 16th, 2021
+% Version : v1.0
+% License : 3-clause BSD License
 
     length_sigma_LK_tab = length(OFeval_par.sigma_LK_tab);
     length_sigma_init_tab = length(OFeval_par.sigma_init_tab);

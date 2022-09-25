@@ -1,11 +1,13 @@
 % This script performs image prediction by predicting the projection of deformation vector fields onto a PCA space with various methods, including
 % RNNs dynamically trained using UORO, RTRL and SnAp-1. 
-% It can automatically select the optimal prediction hyper-parameters and number of PCA components using grid search, and analyze their influence on the prediction performance. 
+% It can automatically select the optimal prediction hyper-parameters and number of PCA components using grid search, 
+% and analyze their influence on prediction performance. 
 %
 % Author : Pohl Michel
 % Date : September 26th, 2021
 % Version : v1.0
 % License : 3-clause BSD License
+
 
 clear all
 close all
@@ -98,7 +100,7 @@ for im_seq_idx = 1:nb_seq
     end
 
     if beh_par.SAVE_OF_JPG
-        save_2DOF(beh_par, path_par, disp_par, OF_par, im_par);
+        save2DOFjpg(beh_par, path_par, disp_par, OF_par, im_par);
     end
     
     if beh_par.OPTIMIZE_NB_PCA_CP

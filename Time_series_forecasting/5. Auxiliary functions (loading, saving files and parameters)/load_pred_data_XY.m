@@ -59,7 +59,7 @@ function [ X, Y, Mu, Sg] = load_pred_data_XY( path_par, pred_par, beh_par)
     
     if pred_par.NORMALIZE_DATA
         % The TRAINING data is used to calculate the mean and standard deviation of each of the variables x1, x2, etc.
-        % These statistics are used to normalize the whole data
+        % These statistics are used to normalize the whole data - cf the 2 auxiliary functions below
         [ ~, Mu, Sg ] = standard_scores( org_data(:,1:pred_par.tmax_training));
         org_data = normalize_from_computed_stats( org_data, Mu, Sg);
     else
@@ -78,5 +78,51 @@ function [ X, Y, Mu, Sg] = load_pred_data_XY( path_par, pred_par, beh_par)
         X = gpuArray(X);
         Y = gpuArray(Y);
     end
+
+end
+
+
+function [ Z, Mu, Sg ] = standard_scores( X )
+% X is a data matrix of size (p,m) ie m individuals and p variables
+% standard_scores returns the standardized matrix Z = (z1, ..., zp) such that 
+% Mu(k) = E[zk] = 0 and Sg(k) = sqrt(V(zk)) = 1 for each k in 1,..., p.
+% 
+% Author : Pohl Michel
+% Date : August 12th, 2020
+% Version : v1.0
+% License : 3-clause BSD License
+
+    [~, m] = size(X);
+    
+    % mean computation
+    Mu = mean(X,2);
+    Y = X-Mu*ones(1,m, 'single');
+    
+    % standard deviations
+    Sg = sqrt(mean(Y.^2, 2));
+    
+    % matrix centering
+    Z = Y./(Sg*ones(1,m, 'single'));
+
+end
+
+
+function [ Z ] = normalize_from_computed_stats( X, Mu, Sg)
+% X is a data matrix of size (m,p) ie m individuals and p variables
+% "normalize_from_computed_stats" returns the standardized matrix Z = (z1, ..., zp) such that 
+% Mu(k) = E[zk] = 0 and Sg(k) = sqrt(V(zk)) = 1 for each k in 1,..., p.
+% 
+% Author : Pohl Michel
+% Date : August 12th, 2020
+% Version : v1.0
+% License : 3-clause BSD License
+
+    [~, m] = size(X);
+    
+    % mean computation
+    Y = X-Mu*ones(1,m);
+    
+    % matrix centering
+    Z = Y./(Sg*ones(1,m));
 
 end

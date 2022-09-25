@@ -1,6 +1,11 @@
 function [ warp_par_str ] = sprintf_warp_param( warp_par )
-%UNTITLED7 Summary of this function goes here
-%   Detailed explanation goes here
+% Returns a character string containing the parameters used for warping
+% 
+% Author : Pohl Michel
+% Date : August 31st, 2020
+% Version : v1.0
+% License : 3-clause BSD License
+
 
     switch(warp_par.kernel_idx)
         case 1 % gaussian kernel

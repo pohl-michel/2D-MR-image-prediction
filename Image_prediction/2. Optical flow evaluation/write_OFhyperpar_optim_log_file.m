@@ -1,7 +1,17 @@
-function write_rms_eval_log_file( beh_par, OFeval_par, path_par, im_par, rms_error, best_par )
-%UNTITLED6 Summary of this function goes here
-%   Detailed explanation goes here
+function write_OFhyperpar_optim_log_file( beh_par, OFeval_par, path_par, im_par, rms_error, best_par )
+% Creates a txt file containing information about optical flow hyperparameter optimization with grid search:
+%  - the set of hyper-parameters achieving the lowest RMS error for the current image sequence (path_par.input_im_dir_suffix)
+%  - the rms error for each hyper-parameter set in the grid for that image sequence
+% 
+% Possible improvements: loop over the keys of a structure containing each hyper-parameter
+%
+% Author : Pohl Michel
+% Date : Sept 18th, 2022
+% Version : v1.0
+% License : 3-clause BSD License
 
+
+    %% Printing parameters used during the calculation
     fid = fopen(path_par.OFeval_log_file_entire_fname,'wt');
 
     date = sprintf('%s %s', datestr(datetime, 'yyyy - mm - dd HH AM MM'), 'min');
@@ -55,6 +65,7 @@ function write_rms_eval_log_file( beh_par, OFeval_par, path_par, im_par, rms_err
     end
     fprintf(fid, '\n \n');
     
+    %% Printing the best parameters
     fprintf(fid, 'Lower root mean square error found : %g \n', best_par.rms_error);
     fprintf(fid, 'Corresponding parameters : \n');     
     fprintf(fid, 'sigma_init : %g \n', best_par.sg_init);
@@ -64,6 +75,7 @@ function write_rms_eval_log_file( beh_par, OFeval_par, path_par, im_par, rms_err
     fprintf(fid, 'sg_LK : %g \n', best_par.sigma_LK);    
     fprintf(fid, '\n \n');
    
+    %% Printing the RMS error for each set of hyper-parameters
     for nb_iter = OFeval_par.nb_min_iter:OFeval_par.nb_max_iter
         nb_iter_idx = nb_iter - OFeval_par.nb_min_iter +1;
         for sg_init_idx = 1:length_sigma_init_tab

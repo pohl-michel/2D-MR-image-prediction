@@ -1,4 +1,12 @@
 function [ disp_par ] = load_impred_display_parameters(path_par)
+% Load the parameters concerning image display,
+% which are initially stored in the file named path_par.disp_par_filename.
+%
+% Author : Pohl Michel
+% Date : Sept 18th, 2022
+% Version : v1.1
+% License : 3-clause BSD License
+
 
     disp_par_file = sprintf('%s\\%s', path_par.input_im_dir, path_par.disp_par_filename);
     opts = detectImportOptions(disp_par_file);

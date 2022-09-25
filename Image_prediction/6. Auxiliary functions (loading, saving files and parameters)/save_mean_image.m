@@ -1,11 +1,15 @@
 function save_mean_image(im_par, path_par, disp_par, pred_par)
-% Save the mean image of the test set
+% Saves the mean image of the test set
 %
+% Author : Pohl Michel
+% Date : Sept 18th, 2022
+% Version : v1.0
+% License : 3-clause BSD License
+
 
     enhance_flag = false;
     % to change if necessary
     
-
     T_eval = pred_par.tmax_pred - pred_par.t_eval_start +1;
     im_tensor = zeros(im_par.W, im_par.L, T_eval);
     

@@ -1,11 +1,18 @@
 function eval_OF_results = compute_2Dof( OF_par, im_par, path_par)
-% Compute optical flow between t = 1 et t_current
-% and saves the result in a mat file
-% The optical flow is saved rather than returned as an output because it takes up much memory.
+% Computes the optical flow (OF) between t = 1 and im_par.nb_im,
+% and saves the result in a mat file.
+% The optical flow is saved rather than returned as an output.
+% The OF average computation time is stored in eval_OF_results.OF_calc_time
+% 
+% Author : Pohl Michel
+% Date : Sept 18th, 2022
+% Version : v1.1
+% License : 3-clause BSD License
+
 
     fprintf('OPTICAL FLOW CALCULATION \n');
     fid = 1; % screen display
-    fprintfOFpar( fid, OF_par );
+    fprintfOFpar(fid, OF_par);
     
     % Calculation of the pyramidal representation of the images at t=1 and t=2    
     initial_filtering_flag = true;

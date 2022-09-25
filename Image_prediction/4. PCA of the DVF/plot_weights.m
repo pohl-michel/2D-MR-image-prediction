@@ -1,10 +1,11 @@
 function plot_weights( F, OF_par, path_par, disp_par)
-% Plots the weights associated with the kth principal DVF (or principal components
+% Plots the weights associated with the k-th first principal DVFs (or principal components)
 % 
 % Author : Pohl Michel
 % Date : August 12th, 2020
 % Version : v1.0
 % License : 3-clause BSD License
+
 
     [tmax, nb_cp] = size(F);
 

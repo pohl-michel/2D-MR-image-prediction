@@ -1,6 +1,15 @@
 function eval_im_pred_best_par(eval_results, best_pred_par_struct, best_pca_cp_tab, beh_par, disp_par, OF_par, im_par, path_par, br_model_par, warp_par)
-% Evaluate the accuracy of the image prediction of the test set
+% Evaluates the accuracy of image prediction of the test set
 % using the optimal hyperparameters selected beforehand by "select_nb_pca_cp"
+%
+% Possibility for improvement: the code can be optimized later to work with parfor (using cell arrays indexed by the horizon index)
+% Here, parfor not work well in this version because the function "write_im_pred_log_file" attempts to write txt files.
+%
+% Author : Pohl Michel
+% Date : Sept 18th, 2022
+% Version : v1.1
+% License : 3-clause BSD License
+
 
     pred_par = load_pred_par(path_par); %we need to know tmax_pred corresponding to the test set (in particular)
         % in the case of linear regression, the value of pred_par.tmax_training is already modified inside the function "load_pred_par"
@@ -21,8 +30,6 @@ function eval_im_pred_best_par(eval_results, best_pred_par_struct, best_pca_cp_t
     beh_par.EVAL_PCA_RECONSTRUCT = true;        
 
     for hrz_idx = 1:hppars.nb_hrz_val
-        % the code can be optimized later to work with parfor (using cell arrays indexed by the horizon index)
-        % here, parfor not work well in this version because the function "write_im_pred_log_file" attempts to write txt files.
 
         pred_par_h = pred_par;
         br_model_par_h = br_model_par;

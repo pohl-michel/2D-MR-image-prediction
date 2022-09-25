@@ -1,8 +1,14 @@
   function [ spatial_grad_I ] = spatial_grad_2D(I, OF_par)
 % Computation of the spatial gradient of a 2D image I
 % If the dimension of the tensor I is H*L, then the dimension of delta_I is (H,L,2)
-% if x = 1 or x = L or y = 1 or y = H or z = 1 or z = Zmax or t = 1 or t = T then
+% if x = 1 or x = L or y = 1 or y = H or z = 1 or z = Zmax or t = 1 or t = T, then
 % delta_I(y,x,t,k) = 0.
+%
+% Author : Pohl Michel
+% Date : Sept 18th, 2022
+% Version : v1.0
+% License : 3-clause BSD License
+
 
     [W, L] = size(I);
     spatial_grad_I = zeros(W, L, 2, 'single');
@@ -23,8 +29,7 @@
             spatial_grad_I = 0.5*spatial_grad_I;
         
         case 2
-           % Gradient de Schaar
-           % programmation pas très optimale mais pour le moment on s'en fiche
+           % Schaar gradient
            % https://en.wikipedia.org/wiki/Image_gradient
            % https://en.wikipedia.org/wiki/Sobel_operator
  
@@ -35,6 +40,5 @@
            spatial_grad_I(:,:,2) = conv2(I, K_2DSchaar_y, 'same');
         
 	end
-    
     
 end

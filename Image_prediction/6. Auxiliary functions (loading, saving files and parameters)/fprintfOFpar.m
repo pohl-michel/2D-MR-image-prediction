@@ -1,6 +1,11 @@
-function fprintfOFpar( fid, OF_par )
-%UNTITLED9 Summary of this function goes here
-%   Detailed explanation goes here
+function fprintfOFpar(fid, OF_par)
+% Prints on the console the parameters associated to the DVF calculation with the optical flow method
+%
+% Author : Pohl Michel
+% Date : July 16th, 2020
+% Version : v1.0
+% License : 3-clause BSD License
+
 
     % fid for file id
     % 1 -> screen

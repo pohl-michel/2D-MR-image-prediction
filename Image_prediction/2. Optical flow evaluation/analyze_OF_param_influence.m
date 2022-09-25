@@ -2,9 +2,9 @@ function analyze_OF_param_influence( rms_error_all_seq, OFeval_par, beh_par, pat
 % Returns information about the influence of each hyper-parameter set in the grid search on the DVF accuracy in a txt file.
 %
 % Possible steps to improve the code:
-% 1) use loops over keys corresponding to each parameter (sg_init, sg_subspl, etc.) to decrease the number of lines of code by 5 and improve readability and
+% 1) use loops over keys corresponding to each parameter (sg_init, sg_subspl, etc.) to decrease the number of lines of code and improve readability and
 % robustness.
-% 2) this function performs 2 actions (computing statistics and write results in log file) so ideally it should be divided into two functions.
+% 2) this function performs 2 actions (computing statistics and write results in log file), so it should ideally be broken down into two functions.
 %
 % Author : Pohl Michel
 % Date : Feb. 16th, 2021

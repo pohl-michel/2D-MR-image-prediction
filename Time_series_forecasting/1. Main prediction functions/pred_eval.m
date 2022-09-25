@@ -126,7 +126,7 @@ function [eval_results] = pred_eval(beh_par, path_par, pred_par, disp_par, Ypred
             SAVE_ONLY = false;     
             filename_suffix = sprintf('%s pred mean loss function %s', path_par.time_series_dir, sprintf_pred_param(pred_par));
             title_str = sprintf('Prediction mean loss function');
-            plot_pred_error( meanloss, disp_par, pred_par, path_par, filename_suffix, title_str, SAVE_ONLY )
+            plot_pred_error(meanloss, disp_par, pred_par, path_par, filename_suffix, title_str, SAVE_ONLY)
         end
     end
 

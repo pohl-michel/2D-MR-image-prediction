@@ -41,7 +41,7 @@ function fprintfpred_par( fid, pred_par, beh_par )
 end
 
 
-function fprintfRNN_common( fid, pred_par, beh_par )
+function fprintfRNN_common(fid, pred_par, beh_par)
 
     fprintf(fid, 'Signal history length k = %d \n', pred_par.SHL);
     fprintf(fid, 'Nb of neurons in the hidden layer q = %d \n', pred_par.rnn_state_space_dim);
@@ -58,7 +58,7 @@ function fprintfRNN_common( fid, pred_par, beh_par )
 end
 
 
-function fprintfoptim_par( fid, pred_par )
+function fprintfoptim_par(fid, pred_par)
 
     if pred_par.GRAD_CLIPPING % gradient clipping
         fprintf(fid, 'Gradient clipping with threshold grd_tshld = %f \n', pred_par.grad_threshold);

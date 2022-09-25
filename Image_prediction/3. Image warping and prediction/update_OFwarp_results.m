@@ -1,6 +1,15 @@
-function [ eval_results ] = update_OFwarp_results( of_type_idx, eval_results, im_correlation_array, mssim_array, nrmse_array, im_warp_calc_time_array, OFcalc_time_array, time_signal_pred_results)
-%UNTITLED25 Summary of this function goes here
-%   Detailed explanation goes here
+function [ eval_results ] = update_OFwarp_results(of_type_idx, eval_results, im_correlation_array, mssim_array, nrmse_array, im_warp_calc_time_array, ...
+                                                                                                                    OFcalc_time_array, time_signal_pred_results)
+% "update_OFwarp_results" computes mean statistics concerning the image reconstruction accuracy (of the test set or cross-validation set): 
+% image correlation, nrmse, ssim, and calculation time.
+% "update_OFwarp_results" is called at the end of "eval_of_warp_corr" after warping the image at t=1 by the concerned DVF.
+% The statistics are averaged over the number of images in the test set or cross-validation set, and also over the number of runs when predicting images
+%
+% Author : Pohl Michel
+% Date : Sept 23rd, 2022
+% Version : v1.1
+% License : 3-clause BSD License
+
 
     switch of_type_idx
         
@@ -33,8 +42,6 @@ function [ eval_results ] = update_OFwarp_results( of_type_idx, eval_results, im
             eval_results.im_warp_calc_time_avg = mean(im_warp_calc_time_array);
             eval_results.OFrec_calc_time_avg = mean(OFcalc_time_array); % OF reconstruction from PCA
             
-    end
-    
+    end    
     
 end
-

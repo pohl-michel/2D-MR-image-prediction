@@ -77,7 +77,7 @@ for im_seq_idx = 1:nb_seq
 
     [rms_error, best_par] = rms_of2D( beh_par, OFeval_par, path_par, im_par);
     path_par.OFeval_log_file_entire_fname = sprintf('%s\\%s %s', path_par.txt_file_dir, char(path_par.input_im_dir_suffix), path_par.OFoptim_log_filename);
-    write_rms_eval_log_file( beh_par, OFeval_par, path_par, im_par, rms_error, best_par );
+    write_OFhyperpar_optim_log_file( beh_par, OFeval_par, path_par, im_par, rms_error, best_par );
 
     rms_error_all_seq(:,:,:,:,:,im_seq_idx) = rms_error;
     best_par_all_seq{im_seq_idx} = best_par;

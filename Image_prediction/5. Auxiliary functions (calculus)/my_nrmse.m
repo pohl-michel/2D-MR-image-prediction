@@ -1,6 +1,11 @@
 function [my_nrmse_val] = my_nrmse(Ipred, Iorg, EVALUATE_IN_ROI, im_par)
-% nRMSE between the original image Iorg and the predicted image Ipred 
-%   Detailed explanation goes here
+% Computes the nRMSE between the original image Iorg and the predicted image Ipred 
+%
+% Author : Pohl Michel
+% Date : Sept 18th, 2022
+% Version : v1.0
+% License : 3-clause BSD License
+
 
     my_aux_func = @(x,y) sqrt(sum((x-y).^2));
 

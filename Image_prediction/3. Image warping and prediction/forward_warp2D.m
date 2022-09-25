@@ -1,10 +1,18 @@
 function [Iwarped, im_warp_calc_time] = forward_warp2D(I, u, warp_par)
-% forward_warp warps forward the 2D image I according to the displacement field u
+% forward_warp warps the 2D image I forward according to the displacement field u
 % using a kernel described in warp_par
 %
 % Reminder :
 % u(y,x,1) is the x-value of the optical flow and coordinates (x,y)
 % u(y,x,2) is the y-value of the optical flow and coordinates (x,y)
+% 
+% Possible improvement: write that in C and/or use GPU acceleration.
+%
+% Author : Pohl Michel
+% Date : Sept 19th, 2022
+% Version : v1.0
+% License : 3-clause BSD License
+
 
     [W, L] = size(I);
     [~,~,~,nb_runs] = size(u);
@@ -86,3 +94,25 @@ function [Iwarped, im_warp_calc_time] = forward_warp2D(I, u, warp_par)
 end
 
 
+function K = kernel_function2D(warp_par)
+% Returns a function handle corresponding to a kernel function, used in forward warping
+% filter_dim is the half size of the square filter
+% 
+% Author : Pohl Michel
+% Date : Sept 19th, 2022
+% Version : v1.0
+% License : 3-clause BSD License
+
+
+    switch(warp_par.kernel_idx)
+        
+        case 1 % gaussian filter
+            C = 1/(2*(warp_par.sg_fw_wrp^2)); % constant computed in advance to make the calculations faster
+            K = @(mu_y, mu_x) @(y,x) exp(-C*((x-mu_x).^2 + (y-mu_y).^2));  
+            
+        case 2 % average filter
+            K = @(mu_y, mu_x) @(y,x) ones(size(y,1), size(x,1), 'single'); 
+            % K = @(mu_y, mu_x) @(y,x) 1 does not work properly
+    end
+
+end

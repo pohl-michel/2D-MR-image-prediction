@@ -1,6 +1,13 @@
 function save_crop_thermal_2Dim_jpg_fig(im, im_filename_suffix, crop_flag, disp_par, path_par, x_m, x_M, y_m, y_M)
-%UNTITLED Summary of this function goes here
-%   Detailed explanation goes here
+% Saves the image im as a thermal image
+% The size of the bar on the side of the image can be specified in disp_par.thermaldiff_fontsize
+% If crop_flag is set to true, the image is cropped before saving.
+%
+% Author : Pohl Michel
+% Date : Sept 18th, 2022
+% Version : v1.0
+% License : 3-clause BSD License
+
 
     f = figure;
         

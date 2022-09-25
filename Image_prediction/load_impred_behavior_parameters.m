@@ -1,7 +1,14 @@
 function [ beh_par ] = load_impred_behavior_parameters()
-% laoding behavior parameters
-    % modifier la fonction au cours de l'écriture du programme (en m'inspirant du programme de master 3D)
-    % pour le moment c'est un copier collé de la version 2D
+% The structure beh_par contains important information about the behavior of the whole algorithm,
+% and its fields should be set manually.
+% 
+% To do: continue documentation for each field
+%
+% Author : Pohl Michel
+% Date : Sept 18th, 2022
+% Version : v1.0
+% License : 3-clause BSD License
+
 
 %% IMPORTANT PARAMETERS
 
@@ -25,7 +32,6 @@ beh_par.SAVE_PRED_RESULTS = true;
 beh_par.IM_PREDICTION = true;
 beh_par.SAVE_PRED_IM = true;
 beh_par.NO_PRED_AT_ALL = false; 
-    % just look at the content of the structure eval_results at the moment.
 
 beh_par.OPTIMIZE_NB_PCA_CP = false;
 
@@ -33,11 +39,11 @@ beh_par.GPU_COMPUTING = false;
     % use of the GPU when performing prediction
 
 beh_par.CROP_FOR_DISP_SAVE = false;
-    % if the optical flow is calculated with the entire chest images, and CROP_FOR_DISP_SAVE = true then the optical flow is displayed only around the
-    % tumor area, or the area specified by x_m, x_M, y_m, y_M, z_m, z_M. 
-    % for the sequence(s) with already cropped images this has no effect since the image parameters are set such x_m = 1, x_M = L, etc. (cf xls file)
-beh_par.EVALUATE_IN_ROI = false;
+    % if CROP_FOR_DISP_SAVE is set to true, then the calculations only involve the tumor area, i.e. the area specified by x_m, x_M, y_m, y_M. 
+    % for the sequences with already cropped images, this has no effect since the image parameters are set such that x_m = 1, x_M = L, etc. (cf xls file)
 
+beh_par.EVALUATE_IN_ROI = false;
+    % if EVALUATE_IN_ROI is set to true, the errors are calculated using only the pixels in the region of interest (ROI)
 
 
 %% OTHER PARAMETERS (do not modify)

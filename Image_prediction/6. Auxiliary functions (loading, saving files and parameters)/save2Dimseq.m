@@ -1,6 +1,12 @@
 function save2Dimseq(im_par, path_par, disp_par)
-% Saves jpg images of the image sequence in path_par.input_im_dir
-       
+% Saves jpg images from the image sequence in path_par.input_im_dir
+%
+% Author : Pohl Michel
+% Date : Sept 18th, 2022
+% Version : v1.0
+% License : 3-clause BSD License
+
+
     enhance_flag = true;  
 
     for t=1:im_par.nb_im

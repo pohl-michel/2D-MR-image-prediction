@@ -1,5 +1,11 @@
 function [ pyr_I ] = im_to_pyr2D( I, OF_par )
-% Function which takes a 3D initial image I and returns its pyramidal representation.
+% Function which takes a 2D initial image I and returns its pyramidal representation,
+% which is used subsequently in the calculation of the deformation field.
+%
+% Author : Pohl Michel
+% Date : July 16th, 2020
+% Version : v1.0
+% License : 3-clause BSD License
 
     pyr_I = cell(OF_par.nb_layers,1);
     pyr_I{1} = I;  
@@ -14,11 +20,11 @@ function [ pyr_I ] = im_to_pyr2D( I, OF_par )
             % 1) filtering with a gaussian function
             filtered_image = floor(imgaussfilt(pyr_I{lyr_idx}, OF_par.sigma_subspl));
                 % floor is necessary because otherwise filtered_image has real
-                % values and then enhance_brightness_contrast do not work well.
+                % values and then enhance_brightness_contrast does not work well.
 
             %2) subsampling 
             pyr_I{lyr_idx+1} = filtered_image(1:2:end,1:2:end); 
-                % pour éviter boucle dans pyr_I{lyr_idx+1}(y,x) = filtered_image(2*y-1,2*x-1);
+                % equivalent to loop over (x,y): pyr_I{lyr_idx+1}(y,x) = filtered_image(2*y-1,2*x-1);
 
         end
 
