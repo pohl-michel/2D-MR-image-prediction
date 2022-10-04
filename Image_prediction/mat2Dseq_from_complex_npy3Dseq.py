@@ -17,7 +17,7 @@ import glob
 
 # Program behavior
 INVERT_Z_AXIS = True        # Inverting the original image so that the head appears on top (very specific to the current sequence)
-REMOVE_FIRST_IMAGES = True  
+REMOVE_FIRST_IMAGES = False  
     # If set to true, the original images up to t_start (non-inlcuded) are not loaded and saved in the output sequence
     # This can be useful if there are artifacts (e.g., varying contrast) in the initial images of the sequence 
 
@@ -28,7 +28,7 @@ t_start = 126
 
 # Path variables
 input_3Dim_path = "Image_prediction/a. Input images/Original 3D images"
-imseq_name = "3. extreme_mri_DCE_dataset - Copy" # info: resampled_vol_shape = [227, 163, 370]
+imseq_name = "3. extreme_mri_DCE_dataset_copy" # info: resampled_vol_shape = [227, 163, 370]
 imseq_folder = f"{input_3Dim_path}/{imseq_name}"
 output_2Dim_path = "Image_prediction/a. Input images/2D images"
 jpg_im_folder = "jpg images"
