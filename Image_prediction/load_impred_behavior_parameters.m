@@ -13,8 +13,12 @@ function [ beh_par ] = load_impred_behavior_parameters()
 %% IMPORTANT PARAMETERS
 
 beh_par.SAVE_ROI_DISPLAY = false;
+    % For saving the initial image of the sequence with the region of interest in a red rectangle 
+
 beh_par.SAVE_MEAN_IMAGE = false;
+
 beh_par.SAVE_ORG_IM_SQ = false;
+    % For saving jpg images of the original image sequence that we try to predict
 
 beh_par.COMPUTE_OPTICAL_FLOW = false;
 beh_par.SAVE_OF_JPG = false;
