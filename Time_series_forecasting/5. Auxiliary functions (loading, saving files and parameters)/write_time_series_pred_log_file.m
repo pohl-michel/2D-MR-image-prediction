@@ -28,40 +28,40 @@ function write_time_series_pred_log_file(path_par, beh_par, pred_par, eval_resul
         fprintf(fid, 'Evaluation results \n');
         fprintf(fid, 'nb of prediction runs with numerical error (gradient explosion) : %d \n', eval_results.nb_xplosion);
 
-            switch pred_par.data_type
-                case 1 % position of objects
-                    fprintf(fid, 'mean prediction error : %f mm \n', eval_results.mean_mean_err);
-                    fprintf(fid, 'mean prediction error 95%% confidence half range : %f (mm) \n', eval_results.confidence_half_range_mean_err);            
-                    fprintf(fid, '(mean of the) rms error : %f mm \n', eval_results.mean_rms_err);
-                    fprintf(fid, 'rms prediction error 95%% confidence half range : %f (mm) \n', eval_results.confidence_half_range_rms_err);  
-                    fprintf(fid, '(mean of the) max prediction error : %f mm \n', eval_results.mean_max_err);
-                    fprintf(fid, 'max prediction error 95%% confidence half range : %f (mm) \n', eval_results.confidence_half_range_max_err);            
-                    fprintf(fid, '(mean of the) jitter : %f mm \n', eval_results.mean_jitter);
-                    fprintf(fid, 'jitter 95%% confidence half range : %f (mm) \n', eval_results.confidence_half_range_jitter);    
-                    fprintf(fid, '(mean of the) NRMSE : %f \n', eval_results.mean_nrmse);
-                    fprintf(fid, 'NRMSE 95%% confidence half range : %f \n', eval_results.confidence_half_range_nrmse);            
-                    fprintf(fid, 'Same info but column for copy-paste in excel file (mean - rms - max - jitter on test set with half confidence) : \n');  
-                    fprintf(fid, '%f \n', eval_results.mean_mean_err);
-                    fprintf(fid, '%f \n', eval_results.confidence_half_range_mean_err);            
-                    fprintf(fid, '%f \n', eval_results.mean_rms_err);
-                    fprintf(fid, '%f \n', eval_results.confidence_half_range_rms_err);            
-                    fprintf(fid, '%f \n', eval_results.mean_max_err); 
-                    fprintf(fid, '%f \n', eval_results.confidence_half_range_max_err);             
-                    fprintf(fid, '%f \n', eval_results.mean_jitter); 
-                    fprintf(fid, '%f \n', eval_results.confidence_half_range_jitter);  
-                    fprintf(fid, '%f \n', eval_results.mean_nrmse); 
-                    fprintf(fid, '%f \n', eval_results.confidence_half_range_nrmse);        
-                case 2 % future frame prediction
-                    fprintf(fid, '(mean of the) rms error : %f \n', eval_results.mean_rms_err);
-                    fprintf(fid, 'rms prediction error 95%% confidence half range : %f \n', eval_results.confidence_half_range_rms_err);  
-                    fprintf(fid, '(mean of the) NRMSE : %f \n', eval_results.mean_nrmse);
-                    fprintf(fid, 'NRMSE 95%% confidence half range : %f \n', eval_results.confidence_half_range_nrmse);            
-                    fprintf(fid, 'Same info but column for copy-paste in excel file (mean - nrmse on test set with half confidence) : \n');  
-                    fprintf(fid, '%f \n', eval_results.mean_rms_err);
-                    fprintf(fid, '%f \n', eval_results.confidence_half_range_rms_err);            
-                    fprintf(fid, '%f \n', eval_results.mean_nrmse); 
-                    fprintf(fid, '%f \n', eval_results.confidence_half_range_nrmse);                       
-            end
+        switch pred_par.data_type
+            case 1 % position of objects
+                fprintf(fid, 'mean prediction error : %f mm \n', eval_results.mean_mean_err);
+                fprintf(fid, 'mean prediction error 95%% confidence half range : %f (mm) \n', eval_results.confidence_half_range_mean_err);            
+                fprintf(fid, '(mean of the) rms error : %f mm \n', eval_results.mean_rms_err);
+                fprintf(fid, 'rms prediction error 95%% confidence half range : %f (mm) \n', eval_results.confidence_half_range_rms_err);  
+                fprintf(fid, '(mean of the) max prediction error : %f mm \n', eval_results.mean_max_err);
+                fprintf(fid, 'max prediction error 95%% confidence half range : %f (mm) \n', eval_results.confidence_half_range_max_err);            
+                fprintf(fid, '(mean of the) jitter : %f mm \n', eval_results.mean_jitter);
+                fprintf(fid, 'jitter 95%% confidence half range : %f (mm) \n', eval_results.confidence_half_range_jitter);    
+                fprintf(fid, '(mean of the) NRMSE : %f \n', eval_results.mean_nrmse);
+                fprintf(fid, 'NRMSE 95%% confidence half range : %f \n', eval_results.confidence_half_range_nrmse);            
+                fprintf(fid, 'Same info but column for copy-paste in excel file (mean - rms - max - jitter on test set with half confidence) : \n');  
+                fprintf(fid, '%f \n', eval_results.mean_mean_err);
+                fprintf(fid, '%f \n', eval_results.confidence_half_range_mean_err);            
+                fprintf(fid, '%f \n', eval_results.mean_rms_err);
+                fprintf(fid, '%f \n', eval_results.confidence_half_range_rms_err);            
+                fprintf(fid, '%f \n', eval_results.mean_max_err); 
+                fprintf(fid, '%f \n', eval_results.confidence_half_range_max_err);             
+                fprintf(fid, '%f \n', eval_results.mean_jitter); 
+                fprintf(fid, '%f \n', eval_results.confidence_half_range_jitter);  
+                fprintf(fid, '%f \n', eval_results.mean_nrmse); 
+                fprintf(fid, '%f \n', eval_results.confidence_half_range_nrmse);        
+            case 2 % future frame prediction
+                fprintf(fid, '(mean of the) rms error : %f \n', eval_results.mean_rms_err);
+                fprintf(fid, 'rms prediction error 95%% confidence half range : %f \n', eval_results.confidence_half_range_rms_err);  
+                fprintf(fid, '(mean of the) NRMSE : %f \n', eval_results.mean_nrmse);
+                fprintf(fid, 'NRMSE 95%% confidence half range : %f \n', eval_results.confidence_half_range_nrmse);            
+                fprintf(fid, 'Same info but column for copy-paste in excel file (mean - nrmse on test set with half confidence) : \n');  
+                fprintf(fid, '%f \n', eval_results.mean_rms_err);
+                fprintf(fid, '%f \n', eval_results.confidence_half_range_rms_err);            
+                fprintf(fid, '%f \n', eval_results.mean_nrmse); 
+                fprintf(fid, '%f \n', eval_results.confidence_half_range_nrmse);                       
+        end
 
     end 
 

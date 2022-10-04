@@ -15,7 +15,7 @@ beh_par.SAVE_PREDICTION_PLOT = true;
     % if set to true, the predicted positions of the objects as well as the error loss function will be saved.
     
 beh_par.SAVE_PRED_RESULTS = false;    
-    % if set to true, the graphs containing the predicted objects' positions will be saved.
+    % if set to true, a mat file containing the prediction results (predicted objects' positions, loss function, and prediction time) will be saved.
 
 beh_par.GPU_COMPUTING = false;
     % increases computation speed with RTRL
