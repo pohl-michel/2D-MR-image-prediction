@@ -15,69 +15,82 @@ function [pred_par] = load_pred_par(path_par)
     pred_par = table2struct(readtable(path_par.pred_par_filename, opts));
     
     % Choice of the prediction method
-    pred_par.pred_meth_idx = 5;
+    pred_par.pred_meth = 'DNI';
     
-    switch(pred_par.pred_meth_idx)
-        case 1
-            pred_par.pred_meth_str = 'multivar lin reg';
+    switch(pred_par.pred_meth)
+
+        case 'multivariate linear regression'
+
             pred_par.nb_runs = 1; % because it is not a stochastic method
             pred_par.NORMALIZE_DATA = false;
             pred_par.tmax_training = 160;
-        case 2
-            pred_par.pred_meth_str = 'RTRL_RNN';
+
+        case 'RTRL'
+
             pred_par.NORMALIZE_DATA = true;
-            pred_par.update_meth = 1; % gradient descent
+            pred_par.update_meth = 'stochastic gradient descent';
             pred_par.GRAD_CLIPPING = true;
             pred_par.grad_threshold = 100.0;    
             pred_par.Winit_std_dev = 0.02;
-        case 3
-            pred_par.pred_meth_str = 'no prediction';
+
+        case 'no prediction'
+
             pred_par.nb_runs = 1;
             pred_par.NORMALIZE_DATA = false;
             pred_par.SHL = 1; % The lastest acquired value is used instead of the predicted value
-        case 4
-            pred_par.pred_meth_str = 'LMS'; %multivariate least mean squares
+
+        case 'LMS' %multivariate least mean squares
+
             pred_par.nb_runs = 1; % not a stochastic method
             pred_par.NORMALIZE_DATA = true;    
-            pred_par.update_meth = 1;
+            pred_par.update_meth = 'stochastic gradient descent';
             pred_par.GRAD_CLIPPING = true;
             pred_par.grad_threshold = 2.0;
-        case 5
-            pred_par.pred_meth_str = 'UORO_RNN';
+
+        case 'UORO'
+
             pred_par.NORMALIZE_DATA = true;
             pred_par.eps_tgt_fwd_prp = 0.0000001;
             pred_par.eps_normalizers = 0.0000001;
-            pred_par.update_meth = 1;
+            pred_par.update_meth = 'stochastic gradient descent';
             pred_par.GRAD_CLIPPING = true;
 			pred_par.grad_threshold = 100.0;  
-			pred_par.Winit_std_dev = 0.02;			
-        case 6
-            pred_par.pred_meth_str = 'univariate linear regression';
+			pred_par.Winit_std_dev = 0.02;	
+
+        case 'univariate linear regression'
+
             pred_par.nb_runs = 1; % because it is not a stochastic method
             pred_par.NORMALIZE_DATA = false;
             pred_par.tmax_training = 160;   
-		case 7
-            pred_par.pred_meth_str = 'SnAp1_RNN';
+
+		case 'SnAp-1'
+
             pred_par.NORMALIZE_DATA = true;
-            pred_par.update_meth = 1; 
+            pred_par.update_meth = 'stochastic gradient descent'; 
             pred_par.GRAD_CLIPPING = true; 
             pred_par.grad_threshold = 100.0;  
 			pred_par.Winit_std_dev = 0.02;
-        case 8
-            pred_par.pred_meth_str = 'DNI';
+
+        case 'DNI'
+
             pred_par.NORMALIZE_DATA = true;
-            pred_par.update_meth = 1; 
+            pred_par.update_meth = 'stochastic gradient descent'; 
             pred_par.GRAD_CLIPPING = true; 
             pred_par.grad_threshold = 100.0;  
 			pred_par.Winit_std_dev = 0.02;
+
+            % parameters for finding the matrix A such that c = x_tilde*A where c is the credit assignment vector and x_tilde = [x, Ytrue(:,t).', 1]
+            pred_par.Aoptim_par.GRAD_CLIPPING = false;
+            pred_par.Aoptim_par.update_meth = 'stochastic gradient descent';
+            pred_par.Aoptim_par.learn_rate = 0.002;
+
     end
     
     if isfield(pred_par, 'update_meth')
         switch(pred_par.update_meth)
-            case 1
-                pred_par.update_meth_str = 'stochastic gradient descent';
-            case 2
-                pred_par.update_meth_str = 'ADAM (adaptive moment estimation)';
+            case 'stochastic gradient descent'
+                % do nothing
+            case 'ADAM'
                 pred_par.ADAM_beta1 = 0.9;
                 pred_par.ADAM_beta2 = 0.999;
                 pred_par.ADAM_eps = 10^-8;

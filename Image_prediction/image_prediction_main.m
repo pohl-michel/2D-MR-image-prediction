@@ -135,14 +135,14 @@ for im_seq_idx = 1:nb_seq
         end
     
         if beh_par.EVAL_INIT_OF_WARP 
-            of_type_idx = 1; % warping with the initial optical flow
-            eval_results = eval_of_warp_corr( of_type_idx, im_par, OF_par, path_par, warp_par, pred_par, br_model_par, disp_par, beh_par, eval_results, time_signal_pred_results);
+            dvf_type = 'initial DVF'; % warping with the initial optical flow
+            eval_results = eval_of_warp_corr(dvf_type, im_par, OF_par, path_par, warp_par, pred_par, br_model_par, disp_par, beh_par, eval_results, time_signal_pred_results);
         end
 
         if beh_par.NO_PRED_AT_ALL
             %pred_par.horizon = 7; % to modify as needed
-            of_type_idx = 3; % no warping - evaluation when no prediction is performed
-            eval_results = eval_of_warp_corr( of_type_idx, im_par, OF_par, path_par, warp_par, pred_par, br_model_par, disp_par, beh_par, eval_results, time_signal_pred_results);        
+            dvf_type = 'predicted DVF'; % no warping - evaluation when no prediction is performed
+            eval_results = eval_of_warp_corr(dvf_type, im_par, OF_par, path_par, warp_par, pred_par, br_model_par, disp_par, beh_par, eval_results, time_signal_pred_results);        
         end        
         
         if beh_par.PCA_OF_DVF
@@ -150,8 +150,8 @@ for im_seq_idx = 1:nb_seq
         end
 
         if beh_par.EVAL_PCA_RECONSTRUCT
-            of_type_idx = 2; % warping with the DVF reconstructed from PCA
-            eval_results = eval_of_warp_corr( of_type_idx, im_par, OF_par, path_par, warp_par, pred_par, br_model_par, disp_par, beh_par, eval_results, time_signal_pred_results);
+            dvf_type = 'DVF from PCA'; % warping with the DVF reconstructed from PCA
+            eval_results = eval_of_warp_corr(dvf_type, im_par, OF_par, path_par, warp_par, pred_par, br_model_par, disp_par, beh_par, eval_results, time_signal_pred_results);
         end            
         
         if beh_par.TRAIN_EVAL_PREDICTOR
@@ -161,10 +161,10 @@ for im_seq_idx = 1:nb_seq
         end        
 
         if beh_par.IM_PREDICTION
-            of_type_idx = 3; % warping with the predicted optical flow
+            dvf_type = 'predicted DVF'; % warping with the predicted optical flow
             warp_par.nb_runs_for_cc_eval = min(nb_runs_for_cc_eval, time_signal_pred_results.nb_correct_runs);
             time_signal_pred_results.nb_correct_runs = min(nb_runs_for_cc_eval, time_signal_pred_results.nb_correct_runs);              
-            eval_results = eval_of_warp_corr( of_type_idx, im_par, OF_par, path_par, warp_par, pred_par, br_model_par, disp_par, beh_par, eval_results, time_signal_pred_results);
+            eval_results = eval_of_warp_corr(dvf_type, im_par, OF_par, path_par, warp_par, pred_par, br_model_par, disp_par, beh_par, eval_results, time_signal_pred_results);
         end
 
         write_im_pred_log_file(path_par, beh_par, im_par, OF_par, hppars, pred_par, br_model_par, warp_par, eval_results);

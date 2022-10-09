@@ -26,8 +26,8 @@ function [ myRNN ] = reset_rnn(myRNN, pred_par, beh_par)
     
     %% reset the RNN variables relative to each training method
     
-    switch(pred_par.pred_meth_idx)
-        case 2 % RNN RTRL
+    switch(pred_par.pred_meth)
+        case 'RTRL'
 
             % state space dynamics 3D tensor  
             myRNN.LBDA(:) = 0;
@@ -45,7 +45,7 @@ function [ myRNN ] = reset_rnn(myRNN, pred_par, beh_par)
             % matrix U{:,:,j) ( "U_{j,n}" in Haykin's book)
             myRNN.U(:) = 0; 
             
-        case 5 % RNN UORO
+        case 'UORO'
             
             % Variables xtilde and theta_tilde such that 
             % dx/dtheta is approximated by xtilde*transpose(theta_tilde)
@@ -54,19 +54,21 @@ function [ myRNN ] = reset_rnn(myRNN, pred_par, beh_par)
             myRNN.dtheta(:) = 0; 
             myRNN.dtheta_g(:) = 0;
             
-        case 7 % RNN SnAp1
+        case 'SnAp-1'
             
             myRNN.dtheta(:) = 0;
             myRNN.It(:) = 0;
             myRNN.Jt(:) = 0;
 
-        case 8 % RNN DNI
+        case 'DNI'
 
-            % To complete here
+            myRNN.dtheta(:) = 0;
+            myRNN.x_tilde = [zeros(1, p+q), 1];
+            myRNN.A = normrnd(0, 1/sqrt(q), [p+q+1, q]);
             
     end
     
-    if (pred_par.update_meth == 2) % ADAM
+    if strcmp(pred_par.update_meth, 'ADAM')
         myRNN.grad_moments.m_t(:) = 0;
         myRNN.grad_moments.v_t(:) = 0;                 
     end      

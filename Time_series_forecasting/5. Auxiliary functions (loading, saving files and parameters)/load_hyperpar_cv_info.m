@@ -7,8 +7,8 @@ function [ hppars ] = load_hyperpar_cv_info( pred_par )
 % Version : v1.0
 % License : 3-clause BSD License 							
 
-    switch(pred_par.pred_meth_idx)
-        case 1 % multivariate linear regression
+    switch(pred_par.pred_meth)
+        case 'multivariate linear regression'
             
             hppars.nb_runs_cv = 1;            
             hppars.nb_runs_eval_test = 1;
@@ -27,7 +27,7 @@ function [ hppars ] = load_hyperpar_cv_info( pred_par )
             %                           31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50];
             hppars.SHL_hyppar_idx = 1; % used for time calculation analysis                
             
-        case 2 % RTRL_RNN
+        case 'RTRL'
           
             hppars.nb_runs_cv = 10;
             hppars.nb_runs_eval_test = 10;
@@ -58,7 +58,7 @@ function [ hppars ] = load_hyperpar_cv_info( pred_par )
             hppars.other(3).val = [10, 30, 50, 70, 90, 110];            
             hppars.state_space_hyppar_idx = 3; % used for time calculation analysis              
             
-        case 3 % no prediction
+        case 'no prediction'
 
             hppars.nb_runs_cv = 1;
             hppars.nb_runs_eval_test = 1;            
@@ -72,7 +72,7 @@ function [ hppars ] = load_hyperpar_cv_info( pred_par )
             hppars.other(1).val = [1]; % The lastest acquired value is used as the predicted value        
             hppars.SHL_hyppar_idx = 1; % used for time calculation analysis                
             
-        case 4 % multivariate linear mean squares (LMS)
+        case 'LMS'
             
             hppars.nb_runs_cv = 1;
             hppars.nb_runs_eval_test = 1;            
@@ -93,7 +93,7 @@ function [ hppars ] = load_hyperpar_cv_info( pred_par )
             %hppars.other(2).val = [0.00005, 0.0001, 0.0002, 0.0005, 0.001, 0.002, 0.005, 0.01];
             hppars.other(2).val = [0.02, 0.05, 0.1, 0.2];
             
-        case 5 % UORO
+        case 'UORO'
 
 %             %hppars.nb_runs_cv = 10;
 %             %hppars.nb_runs_eval_test = 50;
@@ -135,7 +135,7 @@ function [ hppars ] = load_hyperpar_cv_info( pred_par )
             
             
             
-        case 7 % SnAp1
+        case 'SnAp-1'
 
             %hppars.nb_runs_cv = 10;
             %hppars.nb_runs_eval_test = 50;
@@ -158,7 +158,7 @@ function [ hppars ] = load_hyperpar_cv_info( pred_par )
             hppars.state_space_hyppar_idx = 3; % used for time calculation analysis
 
 
-        case 8 % DNI
+        case 'DNI'
 
             % To complete here
             

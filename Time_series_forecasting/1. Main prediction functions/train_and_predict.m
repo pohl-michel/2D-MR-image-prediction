@@ -12,14 +12,14 @@ function [Ypred, avg_pred_time, pred_loss_function] = train_and_predict(path_par
     % loading the "past" data matrix X and the "future" data matrix Y.
     [ X, Y, Mu, Sg] = load_pred_data_XY( path_par, pred_par, beh_par);
 
-    switch(pred_par.pred_meth_idx)
+    switch(pred_par.pred_meth)
         
-        case 1 %linear regression
+        case 'multivariate linear regression' %linear regression
             
             fprintf('Performing prediction with multivariate linear regression \n');  
             [Ypred, avg_pred_time, pred_loss_function] = multivar_lin_pred(pred_par, X, Y);
             
-        case {2,5,7,8} %prediction with an RNN        
+        case {'RTRL', 'UORO', 'SnAp-1', 'DNI'} %prediction with an RNN        
 
             [p, M] = size(Y); %p is the RNN output dimension
             Ypred = zeros([size(Y), pred_par.nb_runs]);
@@ -31,14 +31,14 @@ function [Ypred, avg_pred_time, pred_loss_function] = train_and_predict(path_par
             for run_idx=1:pred_par.nb_runs
                 % we run the prediction algorithm with different initial weigths
                 
-                switch(pred_par.pred_meth_idx)
-                    case 2 %Real time recurrent learning (RTRL)      
+                switch(pred_par.pred_meth)
+                    case 'RTRL'
                         myRNN = rnn_RTRL( myRNN, pred_par, beh_par, X, Y); 
-                    case 5 %Unbiased Online Recurrent Optimization (UORO)
+                    case 'UORO'
                         myRNN = rnn_UORO( myRNN, pred_par, beh_par, X, Y); 
-                    case 7 % Sparse n-step approximation (SnAp1)
+                    case 'SnAp-1'
                         myRNN = rnn_SnAp1( myRNN, pred_par, beh_par, X, Y);
-                    case 8 % Decoupled neural interface (DNI)
+                    case 'DNI'
                         myRNN = rnn_DNI( myRNN, pred_par, beh_par, X, Y);
                 end
                 
@@ -50,16 +50,16 @@ function [Ypred, avg_pred_time, pred_loss_function] = train_and_predict(path_par
                 
             end
             
-         case 3 %no prediction
+        case 'no prediction'
              
             [Ypred, avg_pred_time, pred_loss_function] = no_prediction(pred_par, X, Y);
 
-        case 4 % least mean squares (LMS)
+        case 'LMS' % least mean squares (LMS)
             
             fprintf('Performing prediction with clipped multivariate linear mean squares (LMS) \n');
             [Ypred, avg_pred_time, pred_loss_function] = LMS_predict(pred_par, X, Y);
             
-        case 6 % univariate linear regression
+        case 'univariate linear regression' % univariate linear regression
 
             fprintf('Performing prediction with univariate linear regression \n');
             [Ypred, avg_pred_time, pred_loss_function] = univar_lin_predict(pred_par, X, Y);            

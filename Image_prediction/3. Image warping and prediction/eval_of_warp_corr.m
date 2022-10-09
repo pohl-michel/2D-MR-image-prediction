@@ -1,4 +1,4 @@
-function [ eval_results ] = eval_of_warp_corr( of_type_idx, im_par, OF_par, path_par, warp_par, pred_par, br_model_par, disp_par, beh_par, eval_results, time_signal_pred_results)
+function [ eval_results ] = eval_of_warp_corr(dvf_type, im_par, OF_par, path_par, warp_par, pred_par, br_model_par, disp_par, beh_par, eval_results, time_signal_pred_results)
 % This function performs several actions in the following order:
 %  - Computes/loads the DVF (initial DVF, DVF from PCA, or predicted DVF) u_t between t=1 and t for t in [t_eval_start, tmax_pred] using load_computeOF_for_warp
 %  - Computes I_warped, the image warped from I_init using u_t, and compares I_warped with the ground-truth image J at t 
@@ -25,7 +25,7 @@ function [ eval_results ] = eval_of_warp_corr( of_type_idx, im_par, OF_par, path
     im_warp_calc_time_array = zeros(pred_par.nb_predictions, 1);
     OFcalc_time_array = zeros(pred_par.nb_predictions, 1);
 
-    if (of_type_idx == 1)||(of_type_idx == 2)||beh_par.NO_PRED_AT_ALL % evaluation of warping with the initial OF or evaluation of warping after PCA (no prediction)
+    if ismember(dvf_type, {'initial DVF', 'DVF from PCA'}) || beh_par.NO_PRED_AT_ALL % evaluation of warping with the initial OF or evaluation of warping after PCA (no prediction)
         time_signal_pred_results.nb_correct_runs = 1;
     end
 
@@ -33,7 +33,7 @@ function [ eval_results ] = eval_of_warp_corr( of_type_idx, im_par, OF_par, path
     mssim_array = zeros(pred_par.nb_predictions, time_signal_pred_results.nb_correct_runs);   
     nrmse_array = zeros(pred_par.nb_predictions, time_signal_pred_results.nb_correct_runs);    
     
-    if (of_type_idx == 3)&&(beh_par.SAVE_WARPED_IM) % difference color image only if prediction
+    if strcmp(dvf_type, 'predicted DVF') && beh_par.SAVE_WARPED_IM % difference color image only if prediction
         diff_im_tensor = zeros(im_par.W, im_par.L, pred_par.nb_predictions);
         temp_runs_tensor = zeros(im_par.W, im_par.L, time_signal_pred_results.nb_correct_runs); % contains the images I(:,:,t) - Iwarped(:,:,t,run_idx) for t fixed
     end
@@ -45,7 +45,7 @@ function [ eval_results ] = eval_of_warp_corr( of_type_idx, im_par, OF_par, path
             I_warped = load_crop_filter2D(t-pred_par.horizon, crop_flag, filter_flag, 0.0, im_par, path_par.input_im_dir);      
             im_warp_calc_time_t = 0.0; %arbitrary
         else
-            [ u_t, OFcalc_time_t ] = load_computeOF_for_warp( of_type_idx, t, OF_par, path_par, im_par, br_model_par, pred_par, beh_par, warp_par);
+            [u_t, OFcalc_time_t] = load_computeOF_for_warp( dvf_type, t, OF_par, path_par, im_par, br_model_par, pred_par, beh_par, warp_par);
             OFcalc_time_array(t - pred_par.t_eval_start + 1) = OFcalc_time_t;
 
             fprintf('Forward warping the optical flow at t=%d \n', t);
@@ -67,20 +67,20 @@ function [ eval_results ] = eval_of_warp_corr( of_type_idx, im_par, OF_par, path
             mssim_array(t - pred_par.t_eval_start + 1, run_idx) = my_ssim(I_warped(:,:,run_idx), J, beh_par.EVALUATE_IN_ROI, im_par);
             nrmse_array(t - pred_par.t_eval_start + 1, run_idx) = my_nrmse(I_warped(:,:,run_idx), J, beh_par.EVALUATE_IN_ROI, im_par);
             
-            if (run_idx <= 1)&&(beh_par.SAVE_WARPED_IM)
+            if (run_idx <= 1) && beh_par.SAVE_WARPED_IM
                 
                 % Saving the warped image I_warped (at time t since this is in the for loop, and run index "run_idx_for_save")
-                warped_im_name = write_warp_2Dim_filename( of_type_idx, t, path_par, OF_par, warp_par, pred_par, br_model_par );
+                warped_im_name = write_warp_2Dim_filename(dvf_type, t, path_par, OF_par, warp_par, pred_par, br_model_par );
                 enhance_flag = true;
                 run_idx_for_save = 1;
                 save_crop_enhance_2Dim_jpg(I_warped(:,:,run_idx_for_save), warped_im_name, beh_par.CROP_FOR_DISP_SAVE, enhance_flag, ...
                     disp_par, path_par, im_par.x_m, im_par.x_M, im_par.y_m, im_par.y_M, t);
             
                 % Saving the image difference J-I_warped as a thermal color image (at time t since this is in the for loop, and run index "run_idx_for_save")
-                if (of_type_idx == 3) % difference color image only if prediction at the moment (temporarily)
+                if strcmp(dvf_type, 'predicted DVF') % difference color image only if prediction at the moment (temporarily)
                     pred_param_str = sprintf_pred_param(pred_par);
                     difference_im_name = sprintf('prediction error image %s t = %d %s %s %d cpts', path_par.input_im_dir_suffix, ...
-                        t, pred_par.pred_meth_str, pred_param_str, br_model_par.nb_pca_cp); 
+                        t, pred_par.pred_meth, pred_param_str, br_model_par.nb_pca_cp); 
                     save_crop_thermal_2Dim_jpg_fig(abs(J-I_warped(:,:,run_idx_for_save)), difference_im_name, crop_flag, disp_par, ...
                         path_par, im_par.x_m, im_par.x_M, im_par.y_m, im_par.y_M);
                 end
@@ -88,26 +88,26 @@ function [ eval_results ] = eval_of_warp_corr( of_type_idx, im_par, OF_par, path
             end
             
             % Computing the image difference J-I_warped at time t and run "run_idx"
-            if (of_type_idx == 3)&&(beh_par.SAVE_WARPED_IM) % difference color image only if prediction
+            if strcmp(dvf_type, 'predicted DVF') && beh_par.SAVE_WARPED_IM % difference color image only if prediction
                 temp_runs_tensor(:,:,run_idx) = abs(J-I_warped(:,:,run_idx));
             end
             
         end
         
         % Computing the image difference J-I_warped at time t over all the runs
-        if (of_type_idx == 3)&&(beh_par.SAVE_WARPED_IM) % difference color image only if prediction
+        if strcmp(dvf_type, 'predicted DVF') && beh_par.SAVE_WARPED_IM % difference color image only if prediction
             diff_im_tensor(:,:,t - pred_par.t_eval_start + 1) = mean(temp_runs_tensor,3);
         end
         
     end
     
-    eval_results = update_OFwarp_results( of_type_idx, eval_results, im_correlation_array, mssim_array, nrmse_array, im_warp_calc_time_array, ...
+    eval_results = update_OFwarp_results(dvf_type, eval_results, im_correlation_array, mssim_array, nrmse_array, im_warp_calc_time_array, ...
                                             OFcalc_time_array, time_signal_pred_results);
     
     % Computing the image difference J-I_warped over t and all the run indexes, and saves it as a thermal image
-    if (of_type_idx == 3)&&(beh_par.SAVE_WARPED_IM) % difference color image only if prediction
+    if strcmp(dvf_type, 'predicted DVF') && beh_par.SAVE_WARPED_IM % difference color image only if prediction
         pred_param_str = sprintf_pred_param(pred_par);
-        difference_im_name = sprintf('mean prediction error im test set %s %s %s %d cpts', path_par.input_im_dir_suffix, pred_par.pred_meth_str, pred_param_str, br_model_par.nb_pca_cp); 
+        difference_im_name = sprintf('mean prediction error im test set %s %s %s %d cpts', path_par.input_im_dir_suffix, pred_par.pred_meth, pred_param_str, br_model_par.nb_pca_cp); 
         mean_pred_error_test_im = mean(diff_im_tensor, 3);
         save_crop_thermal_2Dim_jpg_fig(mean_pred_error_test_im, difference_im_name, crop_flag, disp_par, path_par, im_par.x_m, im_par.x_M, im_par.y_m, im_par.y_M);
     end

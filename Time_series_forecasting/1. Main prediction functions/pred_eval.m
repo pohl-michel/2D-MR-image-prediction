@@ -120,7 +120,7 @@ function [eval_results] = pred_eval(beh_par, path_par, pred_par, disp_par, Ypred
     loss_function_tab(:, num_error_idx_vec) = [];
     
     % plot of the mean error function
-    if (pred_par.pred_meth_idx==2)||(pred_par.pred_meth_idx==5)||(pred_par.pred_meth_idx==7)||(pred_par.pred_meth_idx==8)      
+    if ismember(pred_par.pred_meth, {'RTRL', 'UORO', 'SnAp-1', 'DNI'})
         meanloss = mean(loss_function_tab, 2);
         if (beh_par.SAVE_PREDICTION_PLOT)
             SAVE_ONLY = false;     

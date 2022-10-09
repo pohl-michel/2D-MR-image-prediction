@@ -45,8 +45,8 @@ function [Iwarped, im_warp_calc_time] = forward_warp2D(I, u, warp_par)
 
                 if (x_m <= x_M)&&(y_m <= y_M)
 
-                    switch(warp_par.kernel_appl_meth) % kernel application method
-                        case 1 % matrix calculus
+                    switch warp_par.kernel_appl_meth % kernel application method
+                        case 'matrix computation'
 
                             mu_x = x_tip - Ex_tip + d;
                             mu_y = y_tip - Ey_tip + d;
@@ -65,7 +65,7 @@ function [Iwarped, im_warp_calc_time] = forward_warp2D(I, u, warp_par)
                             ksum(y_m:y_M, x_m:x_M) = ksum(y_m:y_M, x_m:x_M) + Kloc_mat;
                             Iwarped(y_m:y_M, x_m:x_M, run_idx) = Iwarped(y_m:y_M, x_m:x_M, run_idx) + I(y_org, x_org)*Kloc_mat;
 
-                        case 2 % pointwise calculation
+                        case 'pointwise computation'
 
                             Kloc = K(y_tip, x_tip); % loc means "local"
                             for x = x_m:x_M
@@ -104,13 +104,13 @@ function K = kernel_function2D(warp_par)
 % License : 3-clause BSD License
 
 
-    switch(warp_par.kernel_idx)
+    switch warp_par.kernel
         
-        case 1 % gaussian filter
+        case 'gaussian kernel'
             C = 1/(2*(warp_par.sg_fw_wrp^2)); % constant computed in advance to make the calculations faster
             K = @(mu_y, mu_x) @(y,x) exp(-C*((x-mu_x).^2 + (y-mu_y).^2));  
             
-        case 2 % average filter
+        case 'averaging kernel'
             K = @(mu_y, mu_x) @(y,x) ones(size(y,1), size(x,1), 'single'); 
             % K = @(mu_y, mu_x) @(y,x) 1 does not work properly
     end

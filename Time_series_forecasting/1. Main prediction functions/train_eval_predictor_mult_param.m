@@ -168,13 +168,12 @@ function [optim, best_par, par_influence] = train_eval_predictor_mult_param(hppa
     %% STUDY OF THE INFLUENCE OF EACH PARAMETERS
     
     % Average prediction time to make one prediction (Columns : number of neurons in the hidden layer / lines : SHL)
-    temp_avg_time = 0; 
-        % broadcasting here because the size of temp_avg_time depends on pred_par.pred_meth_idx
+    temp_avg_time = 0; % broadcasting as the size of temp_avg_time depends on pred_par.pred_meth
     for hrz_idx = 1:hppars.nb_hrz_val
         pred_time_tab = optim(hrz_idx).pred_time_tab;
         for hppar_idx = 1:hppars.nb_additional_params
-            switch(pred_par.pred_meth_idx)
-                case {2,5,7,8} % RNN-RTRL or RNN-UORO or RNN-SnAp1 or RNN-DNI
+            switch(pred_par.pred_meth)
+                case {'RTRL', 'UORO', 'SnAp-1', 'DNI'} % prediction with an RNN
                     if (hppar_idx ~= hppars.state_space_hyppar_idx)&&(hppar_idx ~= hppars.SHL_hyppar_idx)
                             % we want to study the influence of the number of hidden neurons and SHL so we do not compute the mean over these variables 
                         pred_time_tab = mean(pred_time_tab, hppar_idx); 

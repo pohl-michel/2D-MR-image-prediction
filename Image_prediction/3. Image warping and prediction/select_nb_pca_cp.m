@@ -67,13 +67,13 @@ function [eval_results, best_pred_par_struct, best_pca_cp_tab] = select_nb_pca_c
             [Ypred, avg_pred_time, ~] = train_and_predict(path_par, pred_par_h, beh_par);
             time_signal_pred_results = pred_eval(beh_par, path_par, pred_par_h, disp_par, Ypred, avg_pred_time);
 
-            of_type_idx = 3; % warping with the predicted optical flow on the cv set
+            dvf_type = 'predicted DVF'; % warping with the predicted optical flow on the cv set
             warp_par_h.nb_runs_for_cc_eval = min(nb_runs_for_cc_eval, time_signal_pred_results.nb_correct_runs);
             time_signal_pred_results.nb_correct_runs = warp_par_h.nb_runs_for_cc_eval;
 
             % Rk: I can consider changing this line if I want to use the error from the comparison between the predicted and original optical flow directly
             eval_results_pca_optim = struct();
-            eval_results_pca_optim = eval_of_warp_corr(of_type_idx, im_par, OF_par, path_par, warp_par_h, pred_par_h, br_model_par, disp_par, ...
+            eval_results_pca_optim = eval_of_warp_corr(dvf_type, im_par, OF_par, path_par, warp_par_h, pred_par_h, br_model_par, disp_par, ...
                                                                                         beh_par, eval_results_pca_optim, time_signal_pred_results);
 
             cross_cor_pca_optim_tab(hrz_idx, nb_pca_cp) = eval_results_pca_optim.mean_corr_im_pred;

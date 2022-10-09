@@ -44,8 +44,8 @@ function [ myRNN ] = initialize_rnn( pred_par, beh_par, p, M)
     
     %% Initialization of variables specific to the training method chosen
     
-    switch(pred_par.pred_meth_idx)
-        case 2 % RNN RTRL
+    switch(pred_par.pred_meth)
+        case 'RTRL'
             
             % state space dynamics 3D tensor  
             myRNN.LBDA = zeros(q, q + m + 1, q);
@@ -63,7 +63,7 @@ function [ myRNN ] = initialize_rnn( pred_par, beh_par, p, M)
             % matrix U{:,:,j) ( "U_{j,n}" in Haykin's book)
             myRNN.U = zeros(q, m+q+1, q);    
             
-        case 5 % RNN UORO
+        case 'UORO'
 
             % Variables xtilde and theta_tilde such that 
             % dx/dtheta is approximated by xtilde*theta_tilde
@@ -75,25 +75,31 @@ function [ myRNN ] = initialize_rnn( pred_par, beh_par, p, M)
             myRNN.dtheta = zeros(1, myRNN.nb_weights);
             myRNN.dtheta_g = zeros(1, myRNN.nb_weights);
             
-        case 7 % RNN SnAp1
+        case 'SnAp-1'
             
             myRNN.dtheta = zeros(1, myRNN.nb_weights);
 
             myRNN.It = zeros(q, q+m+1);
             myRNN.Jt = zeros(q, q+m+1);
 
-        case 8 % RNN DNI
+        case 'DNI'
 
-            % To complete here
+            myRNN.dtheta = zeros(1, myRNN.nb_weights);
+
+            % Ydata(:,t-1).' does not exist when t=0 so we have to initialize x_tilde
+            myRNN.x_tilde = [zeros(1, p+q), 1]; % because [1, p] = size(Ydata(:,t-1).') and [1, q] = size(myRNN.x.')
+            
+            % matrix A such that c = x_tilde*A where c is the credit assignment and x_tilde = [x, Ytrue(:,t).', 1]
+            myRNN.A = normrnd(0, 1/sqrt(q), [p+q+1, q]); % same as in Marschall's paper
             
     end
 
-    if (pred_par.update_meth == 2) % ADAM
-         switch(pred_par.pred_meth_idx)
-            case 2 % RNN RTRL
+    if strcmp(pred_par.update_meth, 'ADAM')
+         switch(pred_par.pred_meth)
+            case 'RTRL'
                 myRNN.grad_moments.m_t = zeros(m+p+q+1, q);
                 myRNN.grad_moments.v_t = zeros(m+p+q+1, q);
-            case {5, 7, 8} % RNN UORO, SnAp1, or DNI
+            case {'UORO', 'SnAp-1', 'DNI'} % RNN UORO, SnAp1, or DNI
                 myRNN.grad_moments.m_t = zeros(1, myRNN.nb_weights);
                 myRNN.grad_moments.v_t = zeros(1, myRNN.nb_weights);           
          end  
@@ -112,20 +118,20 @@ function [ myRNN ] = initialize_rnn( pred_par, beh_par, p, M)
         myRNN.Wc = gpuArray(myRNN.Wc);
         myRNN.x = gpuArray(myRNN.x);
         
-        switch(pred_par.pred_meth_idx)
-            case 2 % RNN RTRL
+        switch(pred_par.pred_meth)
+            case 'RTRL'
                 myRNN.LBDA = gpuArray(myRNN.LBDA);
                 myRNN.w = gpuArray(myRNN.w);
                 myRNN.w_gradient = gpuArray(myRNN.w_gradient);
                 myRNN.U = gpuArray(myRNN.U);
-            case 5 % RNN UORO
+            case 'UORO'
                 myRNN.xtilde = gpuArray(myRNN.xtilde);
                 myRNN.theta_tilde = gpuArray(myRNN.theta_tilde);
                 myRNN.dtheta = gpuArray(myRNN.dtheta);
                 myRNN.dtheta_g = gpuArray(myRNN.dtheta_g);
         end
         
-        if (pred_par.update_meth == 2) % ADAM
+        if strcmp(pred_par.update_meth, 'ADAM')
             myRNN.grad_moments.m_t = gpuArray(myRNN.grad_moments.m_t);
             myRNN.grad_moments.v_t = gpuArray(myRNN.grad_moments.v_t);                 
         end        

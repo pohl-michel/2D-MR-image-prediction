@@ -1,10 +1,10 @@
-function [ u_t, OFcalc_time_t ] = load_computeOF_for_warp( of_type_idx, t, OF_par, path_par, im_par, br_model_par, pred_par, beh_par, warp_par)
+function [ u_t, OFcalc_time_t ] = load_computeOF_for_warp(dvf_type, t, OF_par, path_par, im_par, br_model_par, pred_par, beh_par, warp_par)
 % Returns u_t, the two-dimensional optical flow at time t.
 % This function is called in "eval_of_warp_corr" to load u_t and warp the initial image with u_t.
 % u_t can be either:
-%   - the initial optical flow (case 1, with of_type_idx = 1) 
-%   - the optical flow reconstructed from PCA (case 2, with of_type_idx = 2)
-%   - the optical flow reconstructed from PCA with the predicted weights (case 3, with of_type_idx = 3)
+%   1) the initial optical flow
+%   2) the optical flow reconstructed from PCA
+%   3) the optical flow reconstructed from PCA with the predicted weights
 % In case 2 and 3, the PCA results (and the predicted weights in case 3) are loaded and reconstruction is performed in the current function.
 % The reconstruction time is stored in OFcalc_time_t.
 % In case 3, the u_t array has a fourth dimension corresponding to the run index, as prediction can be random and require multiple initializations,
@@ -24,15 +24,15 @@ function [ u_t, OFcalc_time_t ] = load_computeOF_for_warp( of_type_idx, t, OF_pa
 % License : 3-clause BSD License
 
 
-    switch of_type_idx
+    switch dvf_type
 
-        case 1 % initial optical flow
+        case 'initial DVF'
 
             OF_t_filename = write_2DOF_t_mat_filename(OF_par, path_par, t );
             load(OF_t_filename, 'u_t');
             OFcalc_time_t = 0.0; % non relevant here
    
-        case 2 % DVF from PCA
+        case 'DVF from PCA'
             
             % loading the PCA results
             PCA_results_filename = write_PCAresults_mat_filename( beh_par, OF_par, path_par );
@@ -41,7 +41,7 @@ function [ u_t, OFcalc_time_t ] = load_computeOF_for_warp( of_type_idx, t, OF_pa
             % reconstruction of the DVF using only the first nb_pca_cp-th principal components
             [OFcalc_time_t, u_t] = reconstruct_u_from(Xtrain_mean, F(t,1:br_model_par.nb_pca_cp), Wtrain(:,1:br_model_par.nb_pca_cp), im_par);
         
-        case 3 % DVF prediction
+        case 'predicted DVF'
             
             % loading the predicted weights of the principal components
             pred_results_filename = write_pred_result_variables_filename(path_par, pred_par);

@@ -1,4 +1,4 @@
-function [ OFeval_par ] = load_OFeval_parameters()
+function OFeval_par= load_OFeval_parameters()
 % Hyperparameters used when optimizing the deformation vector field by grid search
 %
 % Author : Pohl Michel
@@ -22,9 +22,9 @@ function [ OFeval_par ] = load_OFeval_parameters()
     
     switch(OFeval_par.grad_meth)
         case 1
-            OFeval_par.grad_meth_str = 'ctrl diff grdt';
+            OFeval_par.grad_meth_str = 'central difference gradient';
         case 2
-            OFeval_par.grad_meth_str = 'Schaar grdt';
+            OFeval_par.grad_meth_str = 'Schaar gradient';
     end    
         
     % Standard deviation of the Gaussian kernel used in the Lucas Kanade method

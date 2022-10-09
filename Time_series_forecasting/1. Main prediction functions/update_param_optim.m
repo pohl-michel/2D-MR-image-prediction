@@ -1,8 +1,9 @@
-function [new_theta] = update_param_optim(theta, dtheta, optim_par, grad_moments, t)
+function new_theta = update_param_optim(theta, dtheta, optim_par, varargin)
 % Optimization function
 % theta and dtheta need to have the same dimensions, this is the only requirement
 %
 % v2.0 : correction : use of the Frobenius norm instead of the spectral 2 norm
+% v2.1 : introduced variable argument length
 %
 % Author : Pohl Michel
 % Date : April 11th, 2021
@@ -20,11 +21,14 @@ function [new_theta] = update_param_optim(theta, dtheta, optim_par, grad_moments
     end
     
     switch(optim_par.update_meth)
-        case 1 % gradient descent
+        case 'stochastic gradient descent'
             new_theta = theta - eta*dtheta;
             
-        case 2 % ADAM (adaptive moment estimation)
+        case 'ADAM'
             
+            grad_moments = varargin{3};
+            t = varargin{4};
+
             beta1 = optim_par.ADAM_beta1;
             beta2 = optim_par.ADAM_beta2;
             
@@ -34,8 +38,7 @@ function [new_theta] = update_param_optim(theta, dtheta, optim_par, grad_moments
             m_t_bias_corrected = (grad_moments.m_t)/(1-beta1^t);
             v_t_bias_corrected = (grad_moments.v_t)/(1-beta2^t);
             
-            new_theta = theta - eta*m_t_bias_corrected./(optim_par.ADAM_eps + sqrt(v_t_bias_corrected));
-                % use of broadcasting
+            new_theta = theta - eta*m_t_bias_corrected./(optim_par.ADAM_eps + sqrt(v_t_bias_corrected)); % use of broadcasting
             
     end
 

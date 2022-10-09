@@ -1,4 +1,4 @@
-function [ eval_results ] = update_OFwarp_results(of_type_idx, eval_results, im_correlation_array, mssim_array, nrmse_array, im_warp_calc_time_array, ...
+function eval_results = update_OFwarp_results(dvf_type, eval_results, im_correlation_array, mssim_array, nrmse_array, im_warp_calc_time_array, ...
                                                                                                                     OFcalc_time_array, time_signal_pred_results)
 % "update_OFwarp_results" computes mean statistics concerning the image reconstruction accuracy (of the test set or cross-validation set): 
 % image correlation, nrmse, ssim, and calculation time.
@@ -11,20 +11,20 @@ function [ eval_results ] = update_OFwarp_results(of_type_idx, eval_results, im_
 % License : 3-clause BSD License
 
 
-    switch of_type_idx
+    switch dvf_type
         
-        case 1 % initial optical flow
+        case 'initial DVF'
             
             % average and half range correlation
             eval_results.mean_corr_initOF_warp = mean(im_correlation_array);
             eval_results.mean_nrmse_initOF_warp = mean(nrmse_array);
             eval_results.mean_ssim_initOF_warp = mean(mssim_array);
             
-        case 2 % optical flow from several points with regression
+        case 'DVF from PCA'
             
             eval_results.mean_corr_warp_from_PCA = mean(im_correlation_array);
             
-        case 3 % optical flow prediction
+        case 'predicted DVF'
             
             % average and half range correlation
             eval_results.mean_corr_im_pred = mean(mean(im_correlation_array));

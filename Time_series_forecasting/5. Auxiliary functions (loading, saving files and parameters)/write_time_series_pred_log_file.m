@@ -7,7 +7,7 @@ function write_time_series_pred_log_file(path_par, beh_par, pred_par, eval_resul
 % License : 3-clause BSD License
 
 
-    log_file_complete_filename = sprintf('%s\\%s %s %s', path_par.txt_file_dir, path_par.time_series_dir, pred_par.pred_meth_str, path_par.log_txt_filename);
+    log_file_complete_filename = sprintf('%s\\%s %s %s', path_par.txt_file_dir, path_par.time_series_dir, pred_par.pred_meth, path_par.log_txt_filename);
     fid = fopen(log_file_complete_filename,'wt');
         
     fprintf(fid, 'sequence name : %s \n', path_par.input_seq_dir);

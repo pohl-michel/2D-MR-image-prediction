@@ -13,10 +13,9 @@
     [W, L] = size(I);
     spatial_grad_I = zeros(W, L, 2, 'single');
     
-	switch(OF_par.grad_meth)
+	switch OF_par.grad_meth
     
-        case 1
-            % Central method difference
+        case 1 % Central difference method
     
             for x = 2:L-1
                spatial_grad_I(:,x,1) = I(:,x+1)-I(:,x-1);
@@ -28,8 +27,7 @@
 
             spatial_grad_I = 0.5*spatial_grad_I;
         
-        case 2
-           % Schaar gradient
+        case 2 % Schaar gradient
            % https://en.wikipedia.org/wiki/Image_gradient
            % https://en.wikipedia.org/wiki/Sobel_operator
  

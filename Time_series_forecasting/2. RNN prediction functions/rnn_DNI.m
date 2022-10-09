@@ -1,21 +1,20 @@
-function [myRNN] = rnn_DNI( myRNN, pred_par, beh_par, Xdata, Ydata)
+function myRNN = rnn_DNI(myRNN, pred_par, beh_par, Xdata, Ydata)
 
-   % est-ce que j'ai bien géré les biais +1 (le vecteur b en gros)
-   % il va également falloir relire tout ce code pour m'assurer que je n'ai pas fait d'erreur bête
+   % il va falloir relire tout ce code pour m'assurer que je n'ai pas fait d'erreur bête
    % voir comment éliminer les boucles (après avoir vérifié que tout marche bien)
+   
+   % revoir l'écriture de SnAp-1, UORO, et RTRL également... 
+   % notamment myRNN.Ypred(:,t) = myRNN.Wc*myRNN.x;  au lieu de myRNN.Ypred(:,t) = myRNN.Wc*new_x
+   % il y avait un problème avec myRNN.dtheta(:,idx_min_Wc:nb_weights) qui vaut reshape(-e*(new_x.'), [1, p*q]) et pas reshape(-e*(myRNN.x.'), [1, p*q])
 
-
-   %A compléter notamment:
-   %    - la fonction initialize_rnn
-   %    - la fonction reset_rnn
-   %    - le milieu de cette fonction.
+   % Compléter toutes les fonctions autour du rnn (e.g. logging - là où il y a écrit case 8) et faire un premier run. 
    
 
     [~, M] = size(Xdata);
     m = myRNN.input_space_dim;
     q = myRNN.state_space_dim;
     p = myRNN.output_space_dim;
-    nb_weights = myRNN.nb_weights; %(size of the theta vector)    
+    nb_weights = myRNN.nb_weights; % size of the theta vector  
 
     size_Wa = q*q;
     size_Wb = q*(m+1);
@@ -30,44 +29,40 @@ function [myRNN] = rnn_DNI( myRNN, pred_par, beh_par, Xdata, Ydata)
         % Forward propagation (prediction) and calculation of the instantaneous prediction error        
         u = Xdata(:,t); % input vector of size m+1
         [z, new_x] = RNN_state_fwd_prop(myRNN, u, myRNN.x);
-            % we need z to compute myRNN.dtheta_g
-        myRNN.Ypred(:,t) = myRNN.Wc*myRNN.x; 
-            % here we do not use new_x. myRNN.x is updated at the end of the loop
+        myRNN.Ypred(:,t) = myRNN.Wc*new_x; 
         e = Ydata(:,t) - myRNN.Ypred(:,t);
               
-        % gradient with respect to the output parameters
+        % loss gradient with respect to the output weights Wc
         myRNN.dtheta(:,idx_min_Wc:nb_weights) = reshape(-e*(myRNN.x.'), [1, p*q]); 
-            % also when optimizing the code, I can inject directly into the gtilde formula
-       
 
-        %% To complete here  
-        % Rq: revoir pourquoi je n'ai pas fait l'update de myRNN.x dans SnAp-1 et au-dessus...
-
-        % computation of Dn (dynamic matrix)
+        % Dynamic matrix - myRNN.Wa is used instead of Diag(myRNN.Wa) in contrast to SnAp-1
         phi_prime_z = myRNN.phi_prime(z);
-        Dn = phi_prime_z.*myRNN.Wa;
-            % In contrast to SnAp-1, we have myRNN.Wa instead of Diag(myRNN.Wa)
+        D = phi_prime_z.*myRNN.Wa;
 
         % gradient of the loss with respect to the states
         dx = -(e.')*myRNN.Wc; 
 
-        % vector x_tilde such that the credit assignment vector c = x_tilde*A
-        x_tilde = [myRNN.x.', Ydata(:,t-1).', 1]; % initialisation... et mise à jour - ne pas recalculer!!!
-        x_tilde_next = [new_x, Ydata(:,t).', 1];
+        % vector x_tilde such that c = x_tilde*A where c is the "credit assignment" vector
+        x_tilde_next = [new_x.', Ydata(:,t).', 1]; % Rk: x_tilde is initialized in "iniitalize_rnn.m"
 
-        % function whose squared norm we want to minimize
-        fA = x_tilde*A - dx - (xnext_tilde*A)*Dn;
-        
+        % credit assignment vector temporary estimations (these are not true values as A is not estimated properly at this step)
+        c_temp = myRNN.x_tilde*myRNN.A;
+        c_next_temp = x_tilde_next*myRNN.A;
+
+        % function whose squared norm we want to minimize to find A such that c = x_tilde*A
+        fA = c_temp - dx - c_next_temp*D; % c_next is computed first to keep a computational complexity O(q^2)        
+
         % derivative of the squared norm of f with respect to A
-        dfA = (x_tilde.')*fA - (x_tilde_next.')*(fA*(Dn.'))
+        dnormfA = (myRNN.x_tilde.')*fA - (x_tilde_next.')*(fA*(D.')); % fA*(D.') is computed first to keep a computational complexity O(q^2)
 
-        % update of A 
-        % réécrire une nouvelle structure pred_par?...
-        new_A = update_param_optim(A, dfA, pred_par, myRNN.grad_moments, t);
+        % finding A which minimizes normfA
+        myRNN.A = update_param_optim(myRNN.A, dnormfA, pred_par.Aoptim_par);
 
-        % Calcul de In et update de dx
-        % A completer ici
+        % credit assignment vector (this time the "correct" value after optimization of A):
+        c = myRNN.x_tilde*myRNN.A;
 
+        % loss gradient with respect to W_a and W_b
+        myRNN.dtheta(:,1:(size_Wa + size_Wb)) = reshape(((c.').*phi_prime_z)*[myRNN.x.', u.'], [1, q*(q+m+1)]);
         
         % Weight updates
         theta_vec =[reshape(myRNN.Wa, [1, size_Wa]), reshape(myRNN.Wb, [1, size_Wb]), reshape(myRNN.Wc, [1, size_Wc])];
@@ -77,13 +72,12 @@ function [myRNN] = rnn_DNI( myRNN, pred_par, beh_par, Xdata, Ydata)
         myRNN.Wb = reshape(new_theta(:,(1 + size_Wa):(size_Wa + size_Wb)), [q, m+1]);
         myRNN.Wc = reshape(new_theta(:,idx_min_Wc:(size_Wa+size_Wb+size_Wc)), [p, q]);
 
-        % States update
+        % Update of the states, x_tilde, recording computation time and loss function value
         myRNN.x = new_x;
-        
-        myRNN.pred_time_array(t) = toc;
-        
-        myRNN.pred_loss_function(t) = 0.5*(e.')*e;
-            % error evaluation so it is performed after time performance evaluation
+        myRNN.x_tilde = x_tilde_next;
+
+        myRNN.pred_time_array(t) = toc; 
+        myRNN.pred_loss_function(t) = 0.5*(e.')*e; % error evaluation so it is performed after time performance evaluation
         
     end   
     

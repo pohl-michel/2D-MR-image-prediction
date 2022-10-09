@@ -1,4 +1,4 @@
-function [ OF_par ] = load_OF_param( path_par )
+function OF_par = load_OF_param(path_par)
 % Load the parameters concerning the optical flow calculation, 
 % which are initially stored in the file named path_par.OFpar_filename
 %
@@ -13,11 +13,11 @@ function [ OF_par ] = load_OF_param( path_par )
     opts.DataRange = '2:2'; % pour pouvoir écrire commentaires sur les variables en dessous ds fichier excel
     OF_par = table2struct(readtable(OF_calc_param_file,opts)); 
     
-    switch(OF_par.grad_meth)
+    switch OF_par.grad_meth
         case 1
-            OF_par.grad_meth_str = 'ctrl diff grdt';
+            OF_par.grad_meth_str = 'central difference gradient';
         case 2
-            OF_par.grad_meth_str = 'Schaar grdt';
+            OF_par.grad_meth_str = 'Schaar gradient';
     end
 
 end

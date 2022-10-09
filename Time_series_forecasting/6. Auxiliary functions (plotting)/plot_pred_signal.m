@@ -36,7 +36,7 @@ function plot_pred_signal( pred_data, org_data, pred_par, path_par, disp_par, SA
                 filename_suffix = sprintf('%s pred %s %d-th pt %s %d-th run', path_par.time_series_dir, dir_char, obj_idx, sprintf_pred_param(pred_par));
             case 2 % prediction of other signals (for instance weights of the PCA of the DVF)
                 my_ylabel = sprintf('Coefficient associated with the %d-th principal component', cp_idx);
-                filename_suffix = sprintf('%s %d-th weight prediction %s %s', path_par.input_im_dir_suffix, cp_idx, pred_par.pred_meth_str, sprintf_pred_param(pred_par));
+                filename_suffix = sprintf('%s %d-th weight prediction %s %s', path_par.input_im_dir_suffix, cp_idx, pred_par.pred_meth, sprintf_pred_param(pred_par));
         end
         
         org_signal = org_data(cp_idx, :);
