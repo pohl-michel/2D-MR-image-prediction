@@ -15,7 +15,7 @@ function write_time_series_pred_log_file(path_par, beh_par, pred_par, eval_resul
 
     % I] Recording the calculation parameters        
 
-    fprintfpred_par( fid, pred_par, beh_par );
+    fprintfpred_par(fid, pred_par, beh_par);
     fprintf(fid, '\n');
 
     % II] Recording the evaluation results

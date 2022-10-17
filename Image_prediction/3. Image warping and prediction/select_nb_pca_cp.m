@@ -45,7 +45,7 @@ function [eval_results, best_pred_par_struct, best_pca_cp_tab] = select_nb_pca_c
 
         %% 1) We optimize the hyper-parameters for all values of h using the PCA weights of the cross-validation set
         % [I return optim for debugging purposes]
-        [optim, best_par, ~] = train_eval_predictor_mult_param(hppars, pred_par, path_par, disp_par, beh_par);
+        [optim, best_par] = train_eval_predictor_mult_param(hppars, pred_par, path_par, disp_par, beh_par);
 
         best_pred_par_struct(nb_pca_cp) = best_par;
 

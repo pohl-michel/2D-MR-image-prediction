@@ -1,10 +1,9 @@
-function [optim, best_par, par_influence] = train_eval_predictor_mult_param(hppars, pred_par, path_par, disp_par, beh_par)
+function [optim, best_par] = train_eval_predictor_mult_param(hppars, pred_par, path_par, disp_par, beh_par)
 % Performs the training and evaluation of the prediction method selected in load_pred_par
 % using grid search with the hyperparameter grid selected in load_hyperpar_cv.
-% The influence of each hyper-parameter on the prediction result is evaluated.
 % Parallel processing is used to accelerate the speed of grid search.
 %
-% Rk: one can reduce the number of lines of code by looping over the keys of the different structures (e.g., best_par)
+% Rk: one could reduce the number of lines of code by looping over the keys of the different structures (e.g., best_par)
 %
 % Author : Pohl Michel
 % Date : August 27, 2022
@@ -165,48 +164,5 @@ function [optim, best_par, par_influence] = train_eval_predictor_mult_param(hppa
         
     end
 
-    %% STUDY OF THE INFLUENCE OF EACH PARAMETERS
-    
-    % Average prediction time to make one prediction (Columns : number of neurons in the hidden layer / lines : SHL)
-    temp_avg_time = 0; % broadcasting as the size of temp_avg_time depends on pred_par.pred_meth
-    for hrz_idx = 1:hppars.nb_hrz_val
-        pred_time_tab = optim(hrz_idx).pred_time_tab;
-        for hppar_idx = 1:hppars.nb_additional_params
-            switch(pred_par.pred_meth)
-                case {'RTRL', 'UORO', 'SnAp-1', 'DNI'} % prediction with an RNN
-                    if (hppar_idx ~= hppars.state_space_hyppar_idx)&&(hppar_idx ~= hppars.SHL_hyppar_idx)
-                            % we want to study the influence of the number of hidden neurons and SHL so we do not compute the mean over these variables 
-                        pred_time_tab = mean(pred_time_tab, hppar_idx); 
-                    end
-                otherwise
-                    if (hppar_idx ~= hppars.SHL_hyppar_idx)
-                            % we want to study the influence of the SHL so we do not compute the mean over it
-                        pred_time_tab = mean(pred_time_tab, hppar_idx);
-                    end
-            end 
-        end
-        temp_avg_time = temp_avg_time + pred_time_tab;
-    end
-    temp_avg_time = temp_avg_time/hppars.nb_hrz_val; % mean calculation
-    par_influence.pred_time_avg = squeeze(temp_avg_time);
-
-    if (hppars.nb_additional_params >=1) % we eliminate the case without prediction
-        par_influence.min_nRMSE = cell(hppars.nb_additional_params, hppars.nb_hrz_val);
-        if (hppars.nb_additional_params ==1) % typically linear regression
-           for hrz_idx = 1:hppars.nb_hrz_val
-               par_influence.min_nRMSE{1, hrz_idx} = optim(hrz_idx).nrmse_tab;
-                    % minimum of the nRMSE over the cross validation set
-           end
-        else
-            for hppar_idx = 1:hppars.nb_additional_params
-               for hrz_idx = 1:hppars.nb_hrz_val
-                   vecdim = 1:hppars.nb_additional_params;
-                   vecdim(hppar_idx) = [];
-                   par_influence.min_nRMSE{hppar_idx, hrz_idx} = min(optim(hrz_idx).nrmse_tab, [], vecdim);
-                        % minimum of the nRMSE over the cross validation set
-               end
-            end
-        end
-    end
-
 end
+

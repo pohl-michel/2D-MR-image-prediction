@@ -26,20 +26,20 @@ function [Ypred, avg_pred_time, pred_loss_function] = train_and_predict(path_par
             avg_pred_time = zeros(pred_par.nb_runs, 1);
             pred_loss_function = zeros(M, pred_par.nb_runs);
             
-            myRNN = initialize_rnn( pred_par, beh_par, p, M);
+            [pred_par, myRNN] = initialize_rnn(pred_par, beh_par, p, M);
             
             for run_idx=1:pred_par.nb_runs
                 % we run the prediction algorithm with different initial weigths
                 
                 switch(pred_par.pred_meth)
                     case 'RTRL'
-                        myRNN = rnn_RTRL( myRNN, pred_par, beh_par, X, Y); 
+                        myRNN = rnn_RTRL(myRNN, pred_par, beh_par, X, Y); 
                     case 'UORO'
-                        myRNN = rnn_UORO( myRNN, pred_par, beh_par, X, Y); 
+                        myRNN = rnn_UORO(myRNN, pred_par, beh_par, X, Y); 
                     case 'SnAp-1'
-                        myRNN = rnn_SnAp1( myRNN, pred_par, beh_par, X, Y);
+                        myRNN = rnn_SnAp1(myRNN, pred_par, beh_par, X, Y);
                     case 'DNI'
-                        myRNN = rnn_DNI( myRNN, pred_par, beh_par, X, Y);
+                        myRNN = rnn_DNI(myRNN, pred_par, beh_par, X, Y);
                 end
                 
                 Ypred(:,:,run_idx) =  myRNN.Ypred;

@@ -1,4 +1,4 @@
-function [ myRNN ] = initialize_rnn( pred_par, beh_par, p, M)
+function [pred_par, myRNN] = initialize_rnn(pred_par, beh_par, p, M)
 % Initialization of the variables controlling the internal dynamics of the RNN :
 %   - the synaptic weights  
 %   - the system states x
@@ -87,10 +87,15 @@ function [ myRNN ] = initialize_rnn( pred_par, beh_par, p, M)
             myRNN.dtheta = zeros(1, myRNN.nb_weights);
 
             % Ydata(:,t-1).' does not exist when t=0 so we have to initialize x_tilde
-            myRNN.x_tilde = [zeros(1, p+q), 1]; % because [1, p] = size(Ydata(:,t-1).') and [1, q] = size(myRNN.x.')
+            myRNN.x_tilde = [zeros(1, p+q), 1]; % because [1, p] = size(Ydata(:, t-1).') and [1, q] = size(myRNN.x.')
             
-            % matrix A such that c = x_tilde*A where c is the credit assignment and x_tilde = [x, Ytrue(:,t).', 1]
+            % matrix A such that c = x_tilde*A where c is the credit assignment and x_tilde = [x, Ytrue(:, t).', 1]
             myRNN.A = normrnd(0, 1/sqrt(q), [p+q+1, q]); % same as in Marschall's paper
+
+            % I use the following trick to be able to do grid search over pred_par.learn_rate_A instead of directly defining pred_par.optim_par_A in load_pred_par.m
+            pred_par.optim_par_A.learn_rate = pred_par.learn_rate_A;
+            pred_par.optim_par_A.GRAD_CLIPPING = pred_par.GRAD_CLIPPING_A;
+            pred_par.optim_par_A.update_meth = pred_par.update_meth_A;
             
     end
 

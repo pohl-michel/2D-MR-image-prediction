@@ -36,15 +36,15 @@ function [ path_par ] = load_sigpred_path_parameters()
     
     % time series data directories
     path_par.time_series_dir_tab = [
-         string('Ext markers seq 1');
-%         string('Ext markers seq 2');
-%         string('Ext markers seq 3');
-%         string('Ext markers seq 4');
-%         string('Ext markers seq 5');
-%         string('Ext markers seq 6');
-%         string('Ext markers seq 7');
-%         string('Ext markers seq 8');   
-%         string('Ext markers seq 9');  
+%        string('Ext markers seq 1');
+         string('Ext markers seq 2');
+         string('Ext markers seq 3');
+         string('Ext markers seq 4');
+         string('Ext markers seq 5');
+         string('Ext markers seq 6');
+         string('Ext markers seq 7');
+         string('Ext markers seq 8');   
+         string('Ext markers seq 9');  
 %         string('Ext markers seq 1 30 Hz');
 %         string('Ext markers seq 2 30 Hz');
 %         string('Ext markers seq 3 30 Hz');

@@ -1,4 +1,4 @@
-% Prediction of multi-dimensional time-series data using different methods: RNNs trained with UORO, RTRL, and SnAp-1,LMS and linear regression.
+% Prediction of multi-dimensional time-series data using different methods: RNNs trained with UORO, RTRL, and SnAp-1, DNI, LMS and linear regression.
 % The data provided consists of the 3D position of external markers on the chest used during the radiotherapy treatment to accurately deliver radiation.
 %
 % In this function, the hyperparameters relative to each prediction method are optimized using grid search
@@ -8,7 +8,7 @@
 %
 % Author : Pohl Michel
 % Date : September 27th, 2021
-% Version : v1.0
+% Version : v1.1
 % License : 3-clause BSD License
 
 
@@ -57,7 +57,8 @@ for seq_idx = 1:nb_seq
     
     %% PROGRAM
 
-    [optim, best_par, par_influence] = train_eval_predictor_mult_param(hppars, pred_par, path_par, disp_par, beh_par);
+    [optim, best_par] = train_eval_predictor_mult_param(hppars, pred_par, path_par, disp_par, beh_par);
+    par_influence = evaluate_par_influence_grid(hppars, pred_par, optim);
     write_hppar_optim_log_file(hppars, pred_par, path_par, optim, best_par, par_influence, beh_par);
     
 end

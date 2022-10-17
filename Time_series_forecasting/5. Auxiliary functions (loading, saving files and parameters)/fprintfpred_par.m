@@ -20,23 +20,26 @@ function fprintfpred_par( fid, pred_par, beh_par )
             case 'multivariate linear regression'
                 fprintf(fid, 'Signal history length k = %d \n', pred_par.SHL);                
             case 'RTRL'
-                fprintfRNN_common( fid, pred_par, beh_par )
+                fprintfRNN_common(fid, pred_par, beh_par)
             case 'LMS'
                 fprintf(fid, 'Signal history length / filter order k = %d \n', pred_par.SHL);  
                 fprintf(fid, 'Learning rate / step size eta = %g \n', pred_par.learn_rate);
-                fprintfoptim_par( fid, pred_par )              
+                fprintfoptim_par(fid, pred_par)              
             case 'UORO'
-                fprintfRNN_common( fid, pred_par, beh_par )             
+                fprintfRNN_common(fid, pred_par, beh_par)             
                 fprintf(fid, 'Step epsilon used for tangent forward propagation eps_tgt_fwd = %g \n', pred_par.eps_tgt_fwd_prp);
                 fprintf(fid, 'Parameter epsilon used when computing the normalizers rho1 and rho2 : eps_nlzer = %d \n', pred_par.eps_normalizers);  
             case 'univariate linear regression'
                 fprintf(fid, 'Signal history length k = %d \n', pred_par.SHL);  
             case 'SnAp-1'
-                fprintfRNN_common( fid, pred_par, beh_par )  
+                fprintfRNN_common(fid, pred_par, beh_par)  
             case 'DNI'
-                fprintfRNN_common( fid, pred_par, beh_par )
+                fprintfRNN_common(fid, pred_par, beh_par)
                 fprintf(fid, 'Optimization method to find A such that c = x_tilde*A where c is the credit assignment \n');
-                fprintfoptim_par(fid, pred_par.Aoptim_par)
+                pred_par.optim_par_A.learn_rate = pred_par.learn_rate_A;
+                pred_par.optim_par_A.GRAD_CLIPPING = pred_par.GRAD_CLIPPING_A;
+                pred_par.optim_par_A.update_meth = pred_par.update_meth_A;
+                fprintfoptim_par(fid, pred_par.optim_par_A)
         end
 
 end

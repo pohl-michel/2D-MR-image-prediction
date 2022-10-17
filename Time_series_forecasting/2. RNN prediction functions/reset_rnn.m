@@ -63,7 +63,8 @@ function [ myRNN ] = reset_rnn(myRNN, pred_par, beh_par)
         case 'DNI'
 
             myRNN.dtheta(:) = 0;
-            myRNN.x_tilde = [zeros(1, p+q), 1];
+            myRNN.x_tilde(:) = 0;
+            myRNN.x_tilde(end) = 1; 
             myRNN.A = normrnd(0, 1/sqrt(q), [p+q+1, q]);
             
     end
