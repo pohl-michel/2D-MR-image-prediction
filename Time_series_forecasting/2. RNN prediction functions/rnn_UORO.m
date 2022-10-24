@@ -15,7 +15,7 @@ function [myRNN] = rnn_UORO( myRNN, pred_par, beh_par, Xdata, Ydata)
 % Version : v1.0
 % License : 3-clause BSD License							
 
-   [~, M] = size(Xdata);
+    [~, M] = size(Xdata);
     m = myRNN.input_space_dim;
     q = myRNN.state_space_dim;
     p = myRNN.output_space_dim;
@@ -35,14 +35,14 @@ function [myRNN] = rnn_UORO( myRNN, pred_par, beh_par, Xdata, Ydata)
         u = Xdata(:,t); % input vector of size m+1
         [z, new_x] = RNN_state_fwd_prop(myRNN, u, myRNN.x);
             % we need z to compute myRNN.dtheta_g
-        myRNN.Ypred(:,t) = myRNN.Wc*myRNN.x; 
-            % here we do not use new_x. myRNN.x is updated at the end of the loop
+        myRNN.Ypred(:, t) = myRNN.Wc*new_x;
+            % myRNN.x is updated at the end of the loop
         e = Ydata(:,t) - myRNN.Ypred(:,t);
 
         dx = -transpose(e)*myRNN.Wc; 
 
-        myRNN.dtheta(:,idx_min_Wc:nb_weights) = reshape(-e*(myRNN.x.'), [1, p*q]); 
-            % also when optimizing the code, I can inject directly into the gtilde formula
+        myRNN.dtheta(:, idx_min_Wc:nb_weights) = reshape(-e*(new_x.'), [1, p*q]); 
+            % To optimize the code, I can also inject that expression directly into the gtilde formula
         
         % gradient estimate computation
         gtilde = (dx*myRNN.xtilde)*myRNN.theta_tilde + myRNN.dtheta;

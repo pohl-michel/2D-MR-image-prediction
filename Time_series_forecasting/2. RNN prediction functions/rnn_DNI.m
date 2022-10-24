@@ -1,7 +1,19 @@
 function myRNN = rnn_DNI(myRNN, pred_par, beh_par, X, Ytrue)
-
-   % il va falloir relire tout ce code pour m'assurer que je n'ai pas fait d'erreur bête
-   % voir comment éliminer les boucles (après avoir vérifié que tout marche bien)
+% rnn_DNI performs the training of a recurrent neural network (RNN) trained with decoupled neural interfaces (DNI) and gradient clipping.
+% Input variables :
+%   - myRNN : RNN structure previously initialized by the function "initialize_rnn"
+%   - pred_par is the structure containing the parameters used for prediction
+%   - Xdata is the matrix of the "past data" and Ydata the matrix of the "future" data given by the function "load_pred_data_XY".
+% Output variables :
+%   - myRNN is the updated RNN structure containing in particular :
+%       - the predicted time series "myRNN.Ypred"
+%       - the values of the loss function "myRNN.pred_loss_function"
+%       - the array containing the time for making each prediction "myRNN.pred_time_array"
+%
+% Author : Pohl Michel
+% Date : October 24th, 2022
+% Version : v1.0
+% License : 3-clause BSD License
    
    % revoir l'écriture de SnAp-1, UORO, et RTRL également... 
    % notamment myRNN.Ypred(:,t) = myRNN.Wc*myRNN.x;  au lieu de myRNN.Ypred(:,t) = myRNN.Wc*new_x
@@ -31,7 +43,7 @@ function myRNN = rnn_DNI(myRNN, pred_par, beh_par, X, Ytrue)
         e = Ytrue(:, t) - myRNN.Ypred(:, t);
               
         % loss gradient with respect to the output weights Wc
-        myRNN.dtheta(:,idx_min_Wc:nb_weights) = reshape(-e*(new_x.'), [1, p*q]); 
+        myRNN.dtheta(:, idx_min_Wc:nb_weights) = reshape(-e*(new_x.'), [1, p*q]); 
 
         % Dynamic matrix - myRNN.Wa is used instead of Diag(myRNN.Wa) in contrast to SnAp-1
         phi_prime_z = myRNN.phi_prime(z);
