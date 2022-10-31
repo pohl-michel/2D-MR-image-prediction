@@ -11,8 +11,8 @@ function [myRNN] = rnn_UORO( myRNN, pred_par, beh_par, Xdata, Ydata)
 %       - the array containing the time for making each prediction "myRNN.pred_time_array"
 %
 % Author : Pohl Michel
-% Date : September 11th, 2021
-% Version : v1.0
+% Date : October 31st, 2022
+% Version : v1.1
 % License : 3-clause BSD License							
 
     [~, M] = size(Xdata);

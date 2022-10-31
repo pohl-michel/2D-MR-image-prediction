@@ -7,7 +7,7 @@ function [pred_par, myRNN] = initialize_rnn(pred_par, beh_par, p, M)
 % The variable p represents the dimension of the RNN output space.
 % The symnaptic weights are  randomly distributed according to a normal distribution of standard deviation sg = pred_par.Winit_std_dev. 
 %
-% Rk: GPU computing not implemented (yet) with SnAp-1
+% Rk: GPU computing not implemented (yet) with SnAp-1 and DNI
 %
 % Author : Pohl Michel
 % Date : September 27th, 2021

@@ -1,8 +1,19 @@
-function [myRNN] = rnn_SnAp1( myRNN, pred_par, beh_par, Xdata, Ydata)
-
-   % est-ce que j'ai bien géré les biais +1 (le vecteur b en gros)
-   % il va également falloir relire tout ce code pour m'assurer que je n'ai pas fait d'erreur bête
-   % voir comment éliminer les boucles (après avoir vérifié que tout marche bien)
+function [myRNN] = rnn_SnAp1(myRNN, pred_par, beh_par, Xdata, Ydata)
+% rnn_SnAp1 performs the training of a recurrent neural network (RNN) trained with SnAp-1 (in the case where the influence matrix is initialized to 0) and gradient clipping.
+% Input variables :
+%   - myRNN : RNN structure previously initialized by the function "initialize_rnn"
+%   - pred_par is the structure containing the parameters used for prediction
+%   - Xdata is the matrix of the "past data" and Ydata the matrix of the "future" data given by the function "load_pred_data_XY".
+% Output variables :
+%   - myRNN is the updated RNN structure containing in particular :
+%       - the predicted time series "myRNN.Ypred"
+%       - the values of the loss function "myRNN.pred_loss_function"
+%       - the array containing the time for making each prediction "myRNN.pred_time_array"
+%
+% Author : Pohl Michel
+% Date : October 31st, 2022
+% Version : v1.1
+% License : 3-clause BSD License	
 
     [~, M] = size(Xdata);
     m = myRNN.input_space_dim;
@@ -24,17 +35,16 @@ function [myRNN] = rnn_SnAp1( myRNN, pred_par, beh_par, Xdata, Ydata)
         u = Xdata(:,t); % input vector of size m+1
         [z, new_x] = RNN_state_fwd_prop(myRNN, u, myRNN.x);
             % we need z to compute myRNN.dtheta
-        myRNN.Ypred(:,t) = myRNN.Wc*myRNN.x; 
+        myRNN.Ypred(:,t) = myRNN.Wc*new_x; 
             % here we do not use new_x. myRNN.x is updated at the end of the loop
         e = Ydata(:,t) - myRNN.Ypred(:,t); 
 
-        
         % gradient with respect to the output parameters
-        myRNN.dtheta(:,idx_min_Wc:nb_weights) = reshape(-e*(myRNN.x.'), [1, p*q]); 
+        myRNN.dtheta(:, idx_min_Wc:nb_weights) = reshape(-e*(new_x.'), [1, p*q]); 
         
         
         % Recursive calculation of dx/dtheta (DeepMind article)
-            % or dh/dtheta with their notations (here x refers to the states)
+        % or dh/dtheta with their notations (here x refers to the states)
         
         % computation of Dt (dynamic matrix)
         phi_prime_z = myRNN.phi_prime(z);
@@ -50,11 +60,10 @@ function [myRNN] = rnn_SnAp1( myRNN, pred_par, beh_par, Xdata, Ydata)
         % update of the influence matrix and the gradient with respect to Wa and Wb
         myRNN.Jt = myRNN.It + Dt_diag.*myRNN.Jt;
         
-        % gradient of the loss with respect to the states
+        % gradient of the loss with respect to the states - je renomme ds (Tallec) en dx (Haykin)
         dx_transpose = -transpose(myRNN.Wc)*e; 
-            % je renomme ds (Tallec) en dx (Haykin)
 
-        myRNN.dtheta(:, 1:(size_Wa+size_Wb)) = reshape(dx_transpose.*myRNN.Jt, [1, size_Wa+size_Wb]);
+        myRNN.dtheta(:, 1:(size_Wa+size_Wb)) = reshape(dx_transpose.*myRNN.Jt, [1, size_Wa + size_Wb]);
         
         
         % Updates
@@ -71,8 +80,6 @@ function [myRNN] = rnn_SnAp1( myRNN, pred_par, beh_par, Xdata, Ydata)
         myRNN.x = new_x;
         
         myRNN.pred_time_array(t) = toc;
-        
-        myRNN.pred_loss_function(t) = 0.5*(e.')*e;
-            % error evaluation so it is performed after time performance evaluation
+        myRNN.pred_loss_function(t) = 0.5*(e.')*e;  % error evaluation so it is performed after time performance evaluation
         
     end  
