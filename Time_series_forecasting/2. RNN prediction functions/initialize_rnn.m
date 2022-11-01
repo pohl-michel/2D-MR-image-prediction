@@ -96,6 +96,13 @@ function [pred_par, myRNN] = initialize_rnn(pred_par, beh_par, p, M)
             pred_par.optim_par_A.learn_rate = pred_par.learn_rate_A;
             pred_par.optim_par_A.GRAD_CLIPPING = pred_par.GRAD_CLIPPING_A;
             pred_par.optim_par_A.update_meth = pred_par.update_meth_A;
+
+        case 'RTRL v2'
+
+            myRNN.dtheta = zeros(1, myRNN.nb_weights);
+
+            myRNN.It = zeros(q, q*(q+m+1));
+            myRNN.Jt = zeros(q, q*(q+m+1));        
             
     end
 
@@ -104,7 +111,7 @@ function [pred_par, myRNN] = initialize_rnn(pred_par, beh_par, p, M)
             case 'RTRL'
                 myRNN.grad_moments.m_t = zeros(m+p+q+1, q);
                 myRNN.grad_moments.v_t = zeros(m+p+q+1, q);
-            case {'UORO', 'SnAp-1', 'DNI'} % RNN UORO, SnAp1, or DNI
+            case {'UORO', 'SnAp-1', 'DNI', 'RTRL v2'} % RNN UORO, SnAp1, or DNI
                 myRNN.grad_moments.m_t = zeros(1, myRNN.nb_weights);
                 myRNN.grad_moments.v_t = zeros(1, myRNN.nb_weights);           
          end  

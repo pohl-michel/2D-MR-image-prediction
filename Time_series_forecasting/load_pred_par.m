@@ -15,7 +15,7 @@ function [pred_par] = load_pred_par(path_par)
     pred_par = table2struct(readtable(path_par.pred_par_filename, opts));
     
     % Choice of the prediction method
-    pred_par.pred_meth = 'DNI';
+    pred_par.pred_meth = 'RTRL v2';
     
     switch(pred_par.pred_meth)
 
@@ -32,6 +32,14 @@ function [pred_par] = load_pred_par(path_par)
             pred_par.GRAD_CLIPPING = true;
             pred_par.grad_threshold = 100.0;    
             pred_par.Winit_std_dev = 0.02;
+
+        case 'RTRL v2'
+
+            pred_par.NORMALIZE_DATA = true;
+            pred_par.update_meth = 'stochastic gradient descent'; 
+            pred_par.GRAD_CLIPPING = true; 
+            pred_par.grad_threshold = 100.0;  
+			pred_par.Winit_std_dev = 0.02;
 
         case 'no prediction'
 

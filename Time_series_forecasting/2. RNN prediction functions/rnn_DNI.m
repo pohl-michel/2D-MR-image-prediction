@@ -15,11 +15,6 @@ function myRNN = rnn_DNI(myRNN, pred_par, beh_par, X, Ytrue)
 % Version : v1.0
 % License : 3-clause BSD License
    
-   % revoir l'écriture de SnAp-1, UORO, et RTRL également... 
-   % notamment myRNN.Ypred(:,t) = myRNN.Wc*myRNN.x;  au lieu de myRNN.Ypred(:,t) = myRNN.Wc*new_x
-   % il y avait un problème avec myRNN.dtheta(:,idx_min_Wc:nb_weights) qui vaut reshape(-e*(new_x.'), [1, p*q]) et pas reshape(-e*(myRNN.x.'), [1, p*q])
-
-   
     [~, M] = size(X);
     m = myRNN.input_space_dim;
     q = myRNN.state_space_dim;

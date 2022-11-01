@@ -66,6 +66,12 @@ function [ myRNN ] = reset_rnn(myRNN, pred_par, beh_par)
             myRNN.x_tilde(:) = 0;
             myRNN.x_tilde(end) = 1; 
             myRNN.A = normrnd(0, 1/sqrt(q), [p+q+1, q]);
+
+        case 'RTRL v2'
+
+            myRNN.dtheta(:) = 0;
+            myRNN.It(:) = 0;
+            myRNN.Jt(:) = 0;            
             
     end
     

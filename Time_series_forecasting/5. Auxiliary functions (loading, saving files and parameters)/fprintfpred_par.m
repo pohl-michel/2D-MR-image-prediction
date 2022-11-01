@@ -19,7 +19,7 @@ function fprintfpred_par( fid, pred_par, beh_par )
         switch(pred_par.pred_meth)
             case 'multivariate linear regression'
                 fprintf(fid, 'Signal history length k = %d \n', pred_par.SHL);                
-            case 'RTRL'
+            case {'RTRL', 'SnAp-1', 'RTRL v2'}
                 fprintfRNN_common(fid, pred_par, beh_par)
             case 'LMS'
                 fprintf(fid, 'Signal history length / filter order k = %d \n', pred_par.SHL);  
@@ -30,9 +30,7 @@ function fprintfpred_par( fid, pred_par, beh_par )
                 fprintf(fid, 'Step epsilon used for tangent forward propagation eps_tgt_fwd = %g \n', pred_par.eps_tgt_fwd_prp);
                 fprintf(fid, 'Parameter epsilon used when computing the normalizers rho1 and rho2 : eps_nlzer = %d \n', pred_par.eps_normalizers);  
             case 'univariate linear regression'
-                fprintf(fid, 'Signal history length k = %d \n', pred_par.SHL);  
-            case 'SnAp-1'
-                fprintfRNN_common(fid, pred_par, beh_par)  
+                fprintf(fid, 'Signal history length k = %d \n', pred_par.SHL);   
             case 'DNI'
                 fprintfRNN_common(fid, pred_par, beh_par)
                 fprintf(fid, 'Optimization method to find A such that c = x_tilde*A where c is the credit assignment \n');

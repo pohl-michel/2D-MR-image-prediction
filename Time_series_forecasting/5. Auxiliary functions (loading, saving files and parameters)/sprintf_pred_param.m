@@ -16,7 +16,7 @@ function pred_param_str = sprintf_pred_param(pred_par)
         case {'multivariate linear regression', 'univariate linear regression'}
             pred_param_str = sprintf('k=%d h=%d tmax_train=%d %s', pred_par.SHL, pred_par.horizon, pred_par.tmax_training, nrm_data_str);
                 % tmax_training is recorded because linear regression is an offline method
-        case {'RTRL', 'UORO', 'SnAp-1', 'DNI'} %RNN
+        case {'RTRL', 'UORO', 'SnAp-1', 'DNI', 'RTRL v2'} %RNN
             pred_param_str = sprintf('k=%d q=%d eta=%g sg=%g grd_tshld=%g h=%d %s', pred_par.SHL, pred_par.rnn_state_space_dim, ...
                 pred_par.learn_rate, pred_par.Winit_std_dev, pred_par.grad_threshold, pred_par.horizon, nrm_data_str);
             % k = nb of time steps for performing one prediction

@@ -12,7 +12,7 @@ function par_influence = evaluate_par_influence_grid(hppars, pred_par, optim)
         pred_time_tab = optim(hrz_idx).pred_time_tab;
         for hppar_idx = 1:hppars.nb_additional_params
             switch(pred_par.pred_meth)
-                case {'RTRL', 'UORO', 'SnAp-1', 'DNI'} % prediction with an RNN
+                case {'RTRL', 'UORO', 'SnAp-1', 'DNI', 'RTRL v2'} % prediction with an RNN
                     if (hppar_idx ~= hppars.state_space_hyppar_idx)&&(hppar_idx ~= hppars.SHL_hyppar_idx)
                         % we want to study the influence of the number of hidden neurons and SHL so we do not compute the mean over these variables 
                         pred_time_tab = mean(pred_time_tab, hppar_idx); 

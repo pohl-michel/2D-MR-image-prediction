@@ -55,7 +55,12 @@ function [ hppars ] = load_hyperpar_cv_info( pred_par )
             hppars.other(3).name = 'rnn_state_space_dim';
             %hppars.other(3).val = [10, 20, 30, 40, 50, 60, 70, 80, 90];
             hppars.other(3).val = [10, 30, 50, 70, 90, 110];            
-            
+
+
+        case 'RTRL v2'
+
+            % to complete here
+
         case 'no prediction'
 
             hppars.nb_runs_cv = 1;

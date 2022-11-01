@@ -1,5 +1,6 @@
-function [ myRNN] = rnn_RTRL( myRNN, pred_par, beh_par, Xdata, Ydata)
+function [myRNN] = rnn_RTRL( myRNN, pred_par, beh_par, Xdata, Ydata)
 % rnn_RTRL performs the training and prediction of a recurrent neural network (RNN) trained with real-time recurrent learning (RTRL) and gradient clipping.
+% This formulation of RTRL comes from the book "S. S. Haykin, et al., Neural networks and learning machines, 2009".
 %
 % Input variables :
 %   - myRNN : RNN structure previously initialized by the function "initialize_rnn"
