@@ -28,6 +28,11 @@ function [myRNN] = rnn_RTRLv2(myRNN, pred_par, beh_par, Xdata, Ydata)
     size_Wc = p*q;
    
     idx_min_Wc = size_Wa + size_Wb + 1;    
+
+    if beh_par.GPU_COMPUTING
+        Jind = 1:(q*(q + m + 1));
+        Iind = mod(Jind - 1, q) + 1;
+    end
     
     for t=1:M
 
@@ -50,8 +55,15 @@ function [myRNN] = rnn_RTRLv2(myRNN, pred_par, beh_par, Xdata, Ydata)
         
         % computation of It = dFst/dtheta (immediate jacobian) - try to remove for loop
         It_compact = phi_prime_z*[(myRNN.x).', u.'];
-        for k = 1:(q+m+1)
-            myRNN.It(:, ((k-1)*q + 1):k*q) = diag(It_compact(:, k));
+        
+        if beh_par.GPU_COMPUTING
+            myRNN.It = full(sparse(Iind, Jind, It_compact));
+            % https://www.mathworks.com/matlabcentral/answers/1840693-sparse-matrix-from-the-columns-of-an-initial-square-matrix
+        else
+            % the method above without a for loop also work well here without GPU
+            for k = 1:(q+m+1)
+                myRNN.It(:, ((k-1)*q + 1):k*q) = diag(It_compact(:, k));
+            end
         end
         
         % update of the influence matrix Jt = dx/dtheta (with theta from the elements in [Wa, Wb] here)
@@ -69,7 +81,7 @@ function [myRNN] = rnn_RTRLv2(myRNN, pred_par, beh_par, Xdata, Ydata)
         new_theta = update_param_optim(theta_vec, myRNN.dtheta, pred_par, myRNN.grad_moments, t);
         myRNN.Wa = reshape(new_theta(:,1:size_Wa), [q, q]);
         myRNN.Wb = reshape(new_theta(:,(1 + size_Wa):(size_Wa + size_Wb)), [q, m+1]);
-        myRNN.Wc = reshape(new_theta(:,idx_min_Wc:(size_Wa+size_Wb+size_Wc)), [p, q]);
+        myRNN.Wc = reshape(new_theta(:,idx_min_Wc:nb_weights), [p, q]);
 
         % States update
         myRNN.x = new_x;
@@ -78,3 +90,11 @@ function [myRNN] = rnn_RTRLv2(myRNN, pred_par, beh_par, Xdata, Ydata)
         myRNN.pred_loss_function(t) = 0.5*(e.')*e;  % error evaluation so it is performed after time performance evaluation
         
     end  
+
+    if beh_par.GPU_COMPUTING
+        myRNN.Ypred = gather(myRNN.Ypred);
+        myRNN.pred_time_array = gather(myRNN.pred_time_array);
+        myRNN.pred_loss_function = gather(myRNN.pred_loss_function);
+    end  
+
+end

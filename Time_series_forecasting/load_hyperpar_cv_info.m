@@ -59,7 +59,23 @@ function [ hppars ] = load_hyperpar_cv_info( pred_par )
 
         case 'RTRL v2'
 
-            % to complete here
+            hppars.nb_runs_cv = 50;
+            hppars.nb_runs_eval_test = 300;    
+
+            hppars.horizon_tab = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21];      
+            %hppars.horizon_tab = [1, 2];      
+
+            hppars.other(1).name = 'SHL';
+            hppars.other(1).val = [12, 24, 36, 48, 60];
+            %hppars.other(1).val = [12, 24];
+
+            hppars.other(2).name = 'learn_rate';
+            hppars.other(2).val = [0.005, 0.01, 0.02];            
+            %hppars.other(2).val = [0.005, 0.01]; 
+
+            hppars.other(3).name = 'rnn_state_space_dim'; 
+            hppars.other(3).val = [10, 25, 40];   
+            %hppars.other(4).val = [30, 60]; 
 
         case 'no prediction'
 

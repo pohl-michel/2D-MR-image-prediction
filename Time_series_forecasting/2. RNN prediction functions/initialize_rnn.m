@@ -141,6 +141,10 @@ function [pred_par, myRNN] = initialize_rnn(pred_par, beh_par, p, M)
                 myRNN.theta_tilde = gpuArray(myRNN.theta_tilde);
                 myRNN.dtheta = gpuArray(myRNN.dtheta);
                 myRNN.dtheta_g = gpuArray(myRNN.dtheta_g);
+            case 'RTRL v2'
+                myRNN.dtheta = gpuArray(myRNN.dtheta);
+                myRNN.It = gpuArray(myRNN.It);
+                myRNN.Jt = gpuArray(myRNN.Jt);
         end
         
         if strcmp(pred_par.update_meth, 'ADAM')
