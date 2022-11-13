@@ -1,4 +1,4 @@
-% Prediction of multi-dimensional time-series data using different methods: RNNs trained with RTRL, UORO, and SnAp-1, LMS and linear regression.
+% Prediction of multi-dimensional time-series data using different methods: RNNs trained with RTRL, UORO, DNI, and SnAp-1, LMS and linear regression.
 %
 % Author : Pohl Michel
 % Date : September 27th, 2021

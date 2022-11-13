@@ -53,7 +53,7 @@ function [myRNN] = rnn_RTRLv2(myRNN, pred_par, beh_par, Xdata, Ydata)
         phi_prime_z = myRNN.phi_prime(z);
         Dt = phi_prime_z.*myRNN.Wa; 
         
-        % computation of It = dFst/dtheta (immediate jacobian) - try to remove for loop
+        % computation of It = dFst/dtheta (immediate jacobian)
         It_compact = phi_prime_z*[(myRNN.x).', u.'];
         
         if beh_par.GPU_COMPUTING

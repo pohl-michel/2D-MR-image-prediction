@@ -19,7 +19,7 @@ function fprintfpred_par( fid, pred_par, beh_par )
         switch(pred_par.pred_meth)
             case 'multivariate linear regression'
                 fprintf(fid, 'Signal history length k = %d \n', pred_par.SHL);                
-            case {'RTRL', 'SnAp-1', 'RTRL v2'}
+            case {'RTRL', 'SnAp-1', 'RTRL v2', 'fixed W'}
                 fprintfRNN_common(fid, pred_par, beh_par)
             case 'LMS'
                 fprintf(fid, 'Signal history length / filter order k = %d \n', pred_par.SHL);  

@@ -15,7 +15,7 @@ function [pred_par] = load_pred_par(path_par)
     pred_par = table2struct(readtable(path_par.pred_par_filename, opts));
     
     % Choice of the prediction method
-    pred_par.pred_meth = 'RTRL v2';
+    pred_par.pred_meth = 'fixed W';
     
     switch(pred_par.pred_meth)
 
@@ -88,9 +88,17 @@ function [pred_par] = load_pred_par(path_par)
 			pred_par.Winit_std_dev = 0.02;
             
             % parameters for finding the matrix A such that c = x_tilde*A where c is the credit assignment vector and x_tilde = [x, Ytrue(:,t).', 1]
-            pred_par.learn_rate_A = 0.002;
+            pred_par.learn_rate_A = 0.005;
             pred_par.GRAD_CLIPPING_A = false;
             pred_par.update_meth_A = 'stochastic gradient descent';
+
+        case 'fixed W'
+
+            pred_par.NORMALIZE_DATA = true;
+            pred_par.update_meth = 'stochastic gradient descent'; 
+            pred_par.GRAD_CLIPPING = true; 
+            pred_par.grad_threshold = 100.0; % 2022/11/14 not very sure here since Wa and Wb are fixed...  
+			pred_par.Winit_std_dev = 0.02;            
 
     end
     

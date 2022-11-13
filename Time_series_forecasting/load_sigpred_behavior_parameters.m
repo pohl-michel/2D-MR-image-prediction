@@ -18,7 +18,7 @@ beh_par.SAVE_PRED_RESULTS = false;
     % if set to true, a mat file containing the prediction results (predicted objects' positions, loss function, and prediction time) will be saved.
 
 beh_par.GPU_COMPUTING = false;
-    % increases computation speed with RTRL
+    % increases computation speed with RTRL (and RTRL v2)
     % NVidia GPU processor and Matlab's parallel computing toolbox is required
     % also implemented for UORO but not for SnAp-1 and DNI
 	
