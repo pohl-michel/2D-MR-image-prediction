@@ -1,9 +1,10 @@
-function [ rms_two_im3d ] = RMS_two_im2d( I, J, EVALUATE_IN_ROI, im_par)
-% Calculation of the RMS between the intensity levels of 2 images of the same size I & J
+function [ rms ] = my_rmse( I, J, EVALUATE_IN_ROI, im_par)
+% Computes the RMSE between two images I and J
 % if EVALUATE_IN_ROI is set to true, the RMS error is calculated using only the region of interest.
 % 
+% 
 % Author : Pohl Michel
-% Date : Sept 18th, 2022
+% Date : Nov. 15th, 2022
 % Version : v1.0
 % License : 3-clause BSD License
 
@@ -33,6 +34,6 @@ function [ rms_two_im3d ] = RMS_two_im2d( I, J, EVALUATE_IN_ROI, im_par)
         end
     end
 
-    rms_two_im3d = sqrt(sum(sum(((1/sqrt(Wevl*Levl))*pix_errors).^2)));
+    rms = sqrt(sum(sum(((1/sqrt(Wevl*Levl))*pix_errors).^2)));
 
 end

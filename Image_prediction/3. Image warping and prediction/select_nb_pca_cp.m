@@ -15,8 +15,8 @@ function [eval_results, best_pred_par_struct, best_pca_cp_tab] = select_nb_pca_c
 % - use a switch statement over a field of beh_par.
 %
 % Author : Pohl Michel
-% Date : Sept 23rd, 2022
-% Version : v1.1
+% Date : Nov. 15th, 2022
+% Version : v1.2
 % License : 3-clause BSD License
 
 
@@ -29,6 +29,8 @@ function [eval_results, best_pred_par_struct, best_pca_cp_tab] = select_nb_pca_c
     nb_pca_cp_max = br_model_par.nb_pca_cp;
     br_model_par.nb_pca_cp_max = nb_pca_cp_max;
     nb_runs_for_cc_eval = warp_par.nb_runs_for_cc_eval;
+
+    pca_perf_optim_tab = zeros(hppars.nb_hrz_val, nb_pca_cp_max);
 
     for nb_pca_cp=1:nb_pca_cp_max
 
@@ -58,8 +60,7 @@ function [eval_results, best_pred_par_struct, best_pca_cp_tab] = select_nb_pca_c
             pred_par_h = pred_par;
             warp_par_h = warp_par;
 
-            pred_par_h.horizon = hppars.horizon_tab(hrz_idx);
-            % We use the best parameters for performing prediction on the cv set
+            pred_par_h.horizon = hppars.horizon_tab(hrz_idx); % We use the best parameters for performing prediction on the cv set
             for hppar_idx = 1:hppars.nb_additional_params
                 pred_par_h.(hppars.other(hppar_idx).name) = best_par.other_hyppar_tab(hrz_idx, hppar_idx);
             end
@@ -73,18 +74,28 @@ function [eval_results, best_pred_par_struct, best_pca_cp_tab] = select_nb_pca_c
 
             % Rk: I can consider changing this line if I want to use the error from the comparison between the predicted and original optical flow directly
             eval_results_pca_optim = struct();
-            eval_results_pca_optim = eval_of_warp_corr(dvf_type, im_par, OF_par, path_par, warp_par_h, pred_par_h, br_model_par, disp_par, ...
-                                                                                        beh_par, eval_results_pca_optim, time_signal_pred_results);
 
-            cross_cor_pca_optim_tab(hrz_idx, nb_pca_cp) = eval_results_pca_optim.mean_corr_im_pred;
+            if beh_par.REGISTRATION_ERROR_CV
+                eval_results_pca_optim = compute_registration_error_cv_set(dvf_type, im_par, OF_par, path_par, warp_par_h, pred_par_h, br_model_par, ...
+                                                                                        beh_par, eval_results_pca_optim, time_signal_pred_results)
+                pca_perf_optim_tab(hrz_idx, nb_pca_cp) = eval_results_pca_optim.mean_of_nrmse;
+            else
+                eval_results_pca_optim = eval_of_warp_corr(dvf_type, im_par, OF_par, path_par, warp_par_h, pred_par_h, br_model_par, disp_par, ...
+                                                                                        beh_par, eval_results_pca_optim, time_signal_pred_results);
+                pca_perf_optim_tab(hrz_idx, nb_pca_cp) = eval_results_pca_optim.mean_corr_im_pred;
+            end
 
         end
 
     end
 
-    eval_results.cross_cor_pca_optim_tab = cross_cor_pca_optim_tab;
+    eval_results.cross_cor_pca_optim_tab = pca_perf_optim_tab;
     
     % We find the optimal number of PCA components
-    [~, best_pca_cp_tab] = max(cross_cor_pca_optim_tab, [], 2);
+    if beh_par.REGISTRATION_ERROR_CV
+        [~, best_pca_cp_tab] = min(pca_perf_optim_tab, [], 2); % minimum of the nrmse
+    else    
+        [~, best_pca_cp_tab] = max(pca_perf_optim_tab, [], 2); % minimum of the cross correlation
+    end
 
 end

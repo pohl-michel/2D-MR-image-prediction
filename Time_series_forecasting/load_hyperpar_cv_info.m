@@ -207,7 +207,7 @@ function [ hppars ] = load_hyperpar_cv_info( pred_par )
             hppars.other(2).val = [0.005, 0.01, 0.02];             
 
             hppars.other(3).name = 'rnn_state_space_dim'; 
-            hppars.other(3).val = [10, 25, 40];   
+            hppars.other(3).val = [30, 60, 90, 120, 150, 180];
             
 
     end

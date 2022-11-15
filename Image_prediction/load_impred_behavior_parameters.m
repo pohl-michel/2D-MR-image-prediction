@@ -28,8 +28,10 @@ beh_par.EVAL_INIT_OF_WARP = false;
 beh_par.SAVE_INIT_OF_WARP_JPG = false;
     % For saving the image at t=1 warped by the initial DVF/OF at time t for each time step t of the test set
 
-beh_par.OPTIMIZE_NB_PCA_CP = false;
+beh_par.OPTIMIZE_NB_PCA_CP = true;
     % For optimizing the number of PCA components for prediction using hyper-parameter grid search
+beh_par.REGISTRATION_ERROR_CV = true;
+    % For optimizing the number of PCA components based on the DVF registration NRMSE rather than cross-correlation between the initial image and the warped images 
 
 beh_par.PCA_OF_DVF = true;
     % For computing principal component analysis (PCA) from the DVF data
@@ -41,16 +43,16 @@ beh_par.EVAL_PCA_RECONSTRUCT = false;
 beh_par.SAVE_PCA_RECONSTR_JPG = false;
     % For saving the image at t=1 warped by the DVF/OF reconstructed from PCA at time t for each time step t of the test set
 
-beh_par.TRAIN_EVAL_PREDICTOR = true;
+beh_par.TRAIN_EVAL_PREDICTOR = false;
     % For training and evaluating the prediction/forecast of the PCA weights
-beh_par.SAVE_PRED_RESULTS = true;
+beh_par.SAVE_PRED_RESULTS = false;
     % For saving a mat file containing the prediction results (predicted PCA weights, loss function, and prediction time)
 
 beh_par.NO_PRED_AT_ALL = false; 
     % The original images are usedinstead of predicted images as a base case for performance evaluation
-beh_par.IM_PREDICTION = true; 
+beh_par.IM_PREDICTION = false; 
     % Performing image prediction
-beh_par.SAVE_PRED_IM = true; 
+beh_par.SAVE_PRED_IM = false; 
     % Saving the predicted images and the thermal difference images
 
 beh_par.GPU_COMPUTING = false; 

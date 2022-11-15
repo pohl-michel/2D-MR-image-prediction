@@ -15,7 +15,7 @@ function [pred_par] = load_pred_par(path_par)
     pred_par = table2struct(readtable(path_par.pred_par_filename, opts));
     
     % Choice of the prediction method
-    pred_par.pred_meth = 'fixed W';
+    pred_par.pred_meth = 'LMS';
     
     switch(pred_par.pred_meth)
 

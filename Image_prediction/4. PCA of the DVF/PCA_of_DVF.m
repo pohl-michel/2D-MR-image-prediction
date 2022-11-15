@@ -64,7 +64,7 @@ function [Wtrain, F, Xtrain_mean, eval_results] = PCA_of_DVF(beh_par, disp_par, 
 
     % Computation of the weights for all time t using the former principal components
     tic
-    % F = (1/n)*Xcentered*Wtrain; version that I used in Chapter 4 of my thesis, along with Y = (1/n)*double(X*(X')) in myPCA.m in the preivous code version.
+    % F = (1/n)*Xcentered*Wtrain; version that I used in Chapter 4 of my thesis, along with Y = (1/n)*double(X*(X')) in myPCA.m in the previous code version.
     F = Xcentered*Wtrain;
     eval_results.PCA_time_weights_calc_time = (1/im_par.nb_im)*toc;
    

@@ -63,7 +63,7 @@ function [ rms_error, best_par ] = rms_of2D( beh_par, OFeval_par, path_par, im_p
 
                                 % RMS error calculation between I and J at time t
                                 rms_t(lyr_idx, sigma_LK_tab_idx, nb_iter_idx, sg_init_idx, sigma_subspl_idx, t-1) = ...
-                                                    RMS_two_im2d( I, translate2DIm(J, u_t), beh_par.EVALUATE_IN_ROI, im_par); 
+                                                    my_rmse( I, translate2DIm(J, u_t), beh_par.EVALUATE_IN_ROI, im_par); 
 
                         end
                     end

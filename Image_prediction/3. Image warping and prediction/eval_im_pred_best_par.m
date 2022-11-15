@@ -61,7 +61,7 @@ function eval_im_pred_best_par(eval_results, best_pred_par_struct, best_pca_cp_t
         time_signal_pred_results.nb_correct_runs = warp_par_h.nb_runs_for_cc_eval;            
         eval_results_h = eval_of_warp_corr(dvf_type, im_par, OF_par, path_par_h, warp_par_h, pred_par_h, br_model_par_h, disp_par, beh_par, eval_results_h, time_signal_pred_results);
 
-        path_par_h.log_txt_filename = sprintf('%s %s hrz=%d.txt', log_txt_filename_suffix_temp, pred_par_h.pred_meth_str, pred_par_h.horizon);
+        path_par_h.log_txt_filename = sprintf('%s %s hrz=%d.txt', log_txt_filename_suffix_temp, pred_par.pred_meth, pred_par_h.horizon);
         write_im_pred_log_file(path_par_h, beh_par, im_par, OF_par, hppars, pred_par_h, br_model_par_h, warp_par_h, eval_results_h);
 
     end

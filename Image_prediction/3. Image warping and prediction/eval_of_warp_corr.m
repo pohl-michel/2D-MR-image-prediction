@@ -1,4 +1,4 @@
-function [ eval_results ] = eval_of_warp_corr(dvf_type, im_par, OF_par, path_par, warp_par, pred_par, br_model_par, disp_par, beh_par, eval_results, time_signal_pred_results)
+function eval_results = eval_of_warp_corr(dvf_type, im_par, OF_par, path_par, warp_par, pred_par, br_model_par, disp_par, beh_par, eval_results, time_signal_pred_results)
 % This function performs several actions in the following order:
 %  - Computes/loads the DVF (initial DVF, DVF from PCA, or predicted DVF) u_t between t=1 and t for t in [t_eval_start, tmax_pred] using load_computeOF_for_warp
 %  - Computes I_warped, the image warped from I_init using u_t, and compares I_warped with the ground-truth image J at t 
@@ -45,7 +45,7 @@ function [ eval_results ] = eval_of_warp_corr(dvf_type, im_par, OF_par, path_par
             I_warped = load_crop_filter2D(t-pred_par.horizon, crop_flag, filter_flag, 0.0, im_par, path_par.input_im_dir);      
             im_warp_calc_time_t = 0.0; %arbitrary
         else
-            [u_t, OFcalc_time_t] = load_computeOF_for_warp( dvf_type, t, OF_par, path_par, im_par, br_model_par, pred_par, beh_par, warp_par);
+            [u_t, OFcalc_time_t] = load_computeOF_for_warp(dvf_type, t, OF_par, path_par, im_par, br_model_par, pred_par, beh_par, warp_par);
             OFcalc_time_array(t - pred_par.t_eval_start + 1) = OFcalc_time_t;
 
             fprintf('Forward warping the optical flow at t=%d \n', t);
