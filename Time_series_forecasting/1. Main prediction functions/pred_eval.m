@@ -43,6 +43,13 @@ function [eval_results] = pred_eval(beh_par, path_par, pred_par, disp_par, Ypred
     pred_data = zeros(pred_par.nb_obj*pred_par.dim_per_obj, pred_par.tmax_pred); 
     loss_function_tab = zeros(pred_par.tmax_pred, pred_par.nb_runs);     
 
+    switch pred_par.pred_meth
+        case {'multivariate linear regression', 'univariate linear regression'} % offline learning
+            pred_par.t_first_prediction = pred_par.tmax_training + 1;
+        otherwise % online learning
+            pred_par.t_first_prediction = pred_par.SHL+pred_par.horizon;
+    end
+
     for run_idx=1:pred_par.nb_runs
 
         if (pred_par.nb_runs>1)&&(mod(run_idx,10) == 1)
@@ -50,8 +57,9 @@ function [eval_results] = pred_eval(beh_par, path_par, pred_par, disp_par, Ypred
         end
 
         delta = zeros(pred_par.nb_obj, pred_par.tmax_pred); % think about transposition later maybe
-        pred_data(:, (pred_par.SHL+pred_par.horizon):pred_par.tmax_pred) = Ypred(:,:,run_idx);
-            % pred_data(obj_idx + (crt_dim-1)*pred_par.dim_per_obj, t) is the predicted position of coordinate crt_dim of obj_idx at time t
+        
+        % pred_data(obj_idx + (crt_dim-1)*pred_par.dim_per_obj, t) is the predicted position of coordinate crt_dim of obj_idx at time t
+        pred_data(:, pred_par.t_first_prediction:pred_par.tmax_pred) = Ypred(:,:,run_idx);
 
         switch pred_par.data_type
             case 1 % prediction of the 3D position of markers 
@@ -68,7 +76,7 @@ function [eval_results] = pred_eval(beh_par, path_par, pred_par, disp_par, Ypred
 
         % loss function
         loss_function_tab(:, run_idx) = sum(delta.^2, 1);
-        loss_function_tab(1:pred_par.SHL+pred_par.horizon-1, :) = 0;
+        loss_function_tab(1:pred_par.t_first_prediction-1, :) = 0;
 
         delta_test = delta(:,pred_par.t_eval_start:pred_par.tmax_pred);
         eval_results.mean_err(run_idx) = (1/(pred_par.nb_obj*pred_par.nb_predictions))*sum(sum(delta_test));
@@ -86,11 +94,11 @@ function [eval_results] = pred_eval(beh_par, path_par, pred_par, disp_par, Ypred
             case 1 % prediction of the 3D position of markers 
                 pred_pts_pos = zeros(pred_par.nb_obj, pred_par.tmax_pred, 3);
                     % Note: here I use another array pred_pts_pos but I could also use the programming style when computing delta above
-                pred_pts_pos(:, (pred_par.SHL+pred_par.horizon):pred_par.tmax_pred, 1) = Ypred(1:pred_par.nb_obj,               :,run_idx);             %x coordinate
-                pred_pts_pos(:, (pred_par.SHL+pred_par.horizon):pred_par.tmax_pred, 2) = Ypred((pred_par.nb_obj+1):(2*pred_par.nb_obj),  :,run_idx);    %y coordinate 
-                pred_pts_pos(:, (pred_par.SHL+pred_par.horizon):pred_par.tmax_pred, 3) = Ypred((2*pred_par.nb_obj+1):(3*pred_par.nb_obj),:,run_idx);    %z coordinate
+                pred_pts_pos(:, pred_par.t_first_prediction:pred_par.tmax_pred, 1) = Ypred(1:pred_par.nb_obj,               :,run_idx);             %x coordinate
+                pred_pts_pos(:, pred_par.t_first_prediction:pred_par.tmax_pred, 2) = Ypred((pred_par.nb_obj+1):(2*pred_par.nb_obj),  :,run_idx);    %y coordinate 
+                pred_pts_pos(:, pred_par.t_first_prediction:pred_par.tmax_pred, 3) = Ypred((2*pred_par.nb_obj+1):(3*pred_par.nb_obj),:,run_idx);    %z coordinate
                 instant_jitter = sqrt(sum((pred_pts_pos(:, (pred_par.t_eval_start+1):pred_par.tmax_pred, :) ...
-                                            - pred_pts_pos(:, pred_par.t_eval_start:(pred_par.tmax_pred-1), :)).^2,3));
+                                            - pred_pts_pos(:, pred_par.t_eval_start:(pred_par.tmax_pred-1), :)).^2, 3));
             case 2 % prediction of other signals (for instance weights of the PCA of the DVF)
                 instant_jitter = pred_data(:,(pred_par.t_eval_start+1):pred_par.tmax_pred) ...
                                     - pred_data(:,pred_par.t_eval_start:(pred_par.tmax_pred-1));

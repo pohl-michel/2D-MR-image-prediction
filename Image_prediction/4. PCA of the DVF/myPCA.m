@@ -23,8 +23,8 @@ function [ W, F, LAMBDA_squared_elts ] = myPCA( X, m )
     [n,~] = size(X);
     
     % spectral decomposition of the matrix X*X^t
-    %Y = (1/n)*double(X*(X')); (version that I used in Chapter 4 of my thesis along with F = (1/n)*Xcentered*Wtrain in PCA_of_DVF.m)
-    Y = double(X*(X')); % normally
+    Y = (1/n)*double(X*(X')); % (version that I used in Chapter 4 of my thesis along with F = (1/n)*Xcentered*Wtrain in PCA_of_DVF.m)
+    % Y = double(X*(X')); % normally
     
     [V,D] = eigs((Y+Y')./2, m); % enforce that the matrix is numerically symmetric
     

@@ -39,14 +39,14 @@ path_par = load_impred_path_parameters();
 % Input image sequences
 input_im_dir_suffix_tab = [
     %string('write here the sequence name');
-     string('2. sq sl010 sag Xcs=125');
-%     string('3. sq sl010 sag Xcs=80');   
-%     string('4. sq sl014 sag Xcs=165');  
-%     string('5. sq sl014 sag Xcs=95');  
+    string('2. sq sl010 sag Xcs=125');
+    string('3. sq sl010 sag Xcs=80');   
+    string('4. sq sl014 sag Xcs=165');  
+    string('5. sq sl014 sag Xcs=95');  
     ];
 
-%br_model_par.nb_pca_cp_tab = [3, 3, 3, 3]; % length = nb of sequences to process
-br_model_par.nb_pca_cp_tab = [3];
+br_model_par.nb_pca_cp_tab = [4, 4, 4, 4]; % length = nb of sequences to process
+% br_model_par.nb_pca_cp_tab = [3];
 
 nb_seq = length(input_im_dir_suffix_tab);
 for im_seq_idx = 1:nb_seq

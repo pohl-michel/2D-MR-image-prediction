@@ -89,7 +89,11 @@ function write_im_pred_log_file(path_par, beh_par, im_par, OF_par, hppars, pred_
         end
         fprintf(fid, '\n');
         
-        fprintf(fid, 'Effect of the number of PCA components and horizon on the c.c. of the c.v. set: \n');
+        if beh_par.REGISTRATION_ERROR_CV
+            fprintf(fid, 'Effect of the number of PCA components and horizon on the registration error of the c.v. set: \n');
+        else    
+            fprintf(fid, 'Effect of the number of PCA components and horizon on the c.c. of the c.v. set: \n');
+        end
         fprintf(fid, '(Lines: horizon value / columns: nb of PCA components) \n');
         for hrz_idx = 1:hppars.nb_hrz_val
             for nb_pca_cp = 1:br_model_par.nb_pca_cp_max

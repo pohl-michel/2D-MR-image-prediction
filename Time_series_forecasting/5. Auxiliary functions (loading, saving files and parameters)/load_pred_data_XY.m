@@ -11,7 +11,7 @@ function [ X, Y, Mu, Sg] = load_pred_data_XY( path_par, pred_par, beh_par)
 %            [ z_2(t_1), ..., z_2(t_M+k+h-1)]
 % with k being the signal history length
 % h the prediction horizon
-% M the number of predictions
+% M the number of predictions (for online learning methods)
 % and M+k+h-1 = pred_par.tmax_pred.
 %
 % The data matrices X and Y would then be :

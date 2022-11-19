@@ -40,12 +40,12 @@ function plot_pred_signal( pred_data, org_data, pred_par, path_par, disp_par, SA
         end
         
         org_signal = org_data(cp_idx, :);
-        tpred_plot_start = 1 + pred_par.SHL + pred_par.horizon; % also possible: tpred_plot_start = 1 + pred_par.tmax_training;
-        pred_signal = pred_data(cp_idx, tpred_plot_start:pred_par.tmax_pred);
+        %tpred_plot_start = 1 + pred_par.SHL + pred_par.horizon; % also possible: tpred_plot_start = 1 + pred_par.tmax_training;
+        pred_signal = pred_data(cp_idx, pred_par.t_first_prediction:pred_par.tmax_pred);
     
         f = figure; % to save full screen: f = figure('units','normalized','outerposition',[0 0 1 1]); 
     
-        plot(tpred_plot_start:pred_par.tmax_pred, pred_signal, 'x', 'Color', 'k')
+        plot(pred_par.t_first_prediction:pred_par.tmax_pred, pred_signal, 'x', 'Color', 'k')
         hold on
         plot(1:pred_par.tmax_pred, org_signal, 'Color', 'k')
         

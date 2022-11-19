@@ -15,7 +15,7 @@ function [pred_par] = load_pred_par(path_par)
     pred_par = table2struct(readtable(path_par.pred_par_filename, opts));
     
     % Choice of the prediction method
-    pred_par.pred_meth = 'LMS';
+    pred_par.pred_meth = 'multivariate linear regression';
     
     switch(pred_par.pred_meth)
 
@@ -23,7 +23,8 @@ function [pred_par] = load_pred_par(path_par)
 
             pred_par.nb_runs = 1; % because it is not a stochastic method
             pred_par.NORMALIZE_DATA = false;
-            pred_par.tmax_training = 160;
+            %pred_par.tmax_training = 160; % MR data (ETH Zurich)
+            pred_par.tmax_training = 540; % markers 10 Hz (CPMB paper)
 
         case 'RTRL'
 
@@ -54,6 +55,7 @@ function [pred_par] = load_pred_par(path_par)
             pred_par.update_meth = 'stochastic gradient descent';
             pred_par.GRAD_CLIPPING = true;
             pred_par.grad_threshold = 2.0;
+            % pred_par.grad_threshold = 100.0;
 
         case 'UORO'
 
