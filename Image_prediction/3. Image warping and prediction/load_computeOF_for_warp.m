@@ -60,12 +60,13 @@ function [ u_t, OFcalc_time_t ] = load_computeOF_for_warp(dvf_type, t, OF_par, p
             % preparing arrays
             u_t = zeros(im_par.W, im_par.L, 2, nb_runs);
             OFcalc_time_tab = zeros(nb_runs, 1);
-            
-            for run_idx = 1:nb_runs
+            Wtrain = Wtrain(:, 1:br_model_par.nb_pca_cp); % we keep only the first nb_pca_cp-th principal components
+            Ypred_t = Ypred(1:br_model_par.nb_pca_cp, t_Yidx, :); % idem
 
-                % reconstruction of the DVF using only the first nb_pca_cp-th principal components
-                Fpred_t = transpose(Ypred(:, t_Yidx, run_idx));
-                [OFcalc_time_t_run_idx, u_t_run_idx] = reconstruct_u_from(Xtrain_mean, Fpred_t, Wtrain(:,1:br_model_par.nb_pca_cp), im_par);
+            for run_idx = 1:nb_runs
+ 
+                Fpred_t = transpose(Ypred_t(:, :, run_idx));
+                [OFcalc_time_t_run_idx, u_t_run_idx] = reconstruct_u_from(Xtrain_mean, Fpred_t, Wtrain, im_par); % DVF reconstruction
                 
                 OFcalc_time_tab(run_idx) = OFcalc_time_t_run_idx;  
                 u_t(:,:,:,run_idx) = u_t_run_idx;
