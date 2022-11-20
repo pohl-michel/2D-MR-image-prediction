@@ -1,4 +1,4 @@
-function [eval_results, best_pred_par_struct, best_pca_cp_tab] = select_nb_pca_cp(beh_par, disp_par, OF_par, im_par, path_par, br_model_par, eval_results, warp_par)
+function [eval_results, best_pred_par_struct, best_pca_cp_tab] = select_nb_pca_cp(beh_par, disp_par, OF_par, im_par, path_par, br_model_par, eval_results, warp_par, pred_meth)
 % This function selects the optimal number of PCA components by predicting images and computing the error between the predicted and ground-truth images 
 % on the cross-validation set for each combination of hyper-parameters and horizon value considered, as defined in the "load_hyperpar_cv_info" function.
 % The maximum number of principal components considered is br_model_par.nb_pca_cp.
@@ -15,13 +15,13 @@ function [eval_results, best_pred_par_struct, best_pca_cp_tab] = select_nb_pca_c
 % - use a switch statement over a field of beh_par.
 %
 % Author : Pohl Michel
-% Date : Nov. 15th, 2022
-% Version : v1.2
+% Date : Nov. 21st, 2022
+% Version : v1.3
 % License : 3-clause BSD License
 
 
     % Parameters concerning the prediction of the position of objects
-    pred_par = load_pred_par(path_par);
+    pred_par = load_pred_par(path_par, pred_meth);
     % Hyperparameters to optimize 
     hppars = load_hyperpar_cv_info(pred_par);
 
@@ -78,7 +78,7 @@ function [eval_results, best_pred_par_struct, best_pca_cp_tab] = select_nb_pca_c
 
             if beh_par.REGISTRATION_ERROR_CV
                 eval_results_pca_optim = compute_registration_error_cv_set(dvf_type, im_par, OF_par, path_par, warp_par_h, pred_par_h, br_model_par, ...
-                                                                                        beh_par, eval_results_pca_optim, time_signal_pred_results)
+                                                                                        beh_par, eval_results_pca_optim, time_signal_pred_results);
                 pca_perf_optim_tab(hrz_idx, nb_pca_cp) = eval_results_pca_optim.mean_of_nrmse;
             else
                 eval_results_pca_optim = eval_of_warp_corr(dvf_type, im_par, OF_par, path_par, warp_par_h, pred_par_h, br_model_par, disp_par, ...

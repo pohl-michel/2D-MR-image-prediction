@@ -1,10 +1,11 @@
-function [pred_par] = load_pred_par(path_par)
+function [pred_par] = load_pred_par(path_par, pred_meth)
 % Load the parameters concerning prediction,
 % which are initially stored in the file named path_par.pred_par_filename.
-%
+% RTRL -> version in Haykin's book / RTRL v2 -> "standard" version as described for instance in Tallec's paper about UORO
+% 
 % Author : Pohl Michel
 % Date : September 27th, 2021
-% Version : v1.0
+% Version : v1.1
 % License : 3-clause BSD License
 
     path_par.pred_par_filename = sprintf('%s\\%s', path_par.input_seq_dir, path_par.pred_par_filename_suffix);
@@ -14,8 +15,12 @@ function [pred_par] = load_pred_par(path_par)
     opts.DataRange = '2:2';
     pred_par = table2struct(readtable(path_par.pred_par_filename, opts));
     
-    % Choice of the prediction method
-    pred_par.pred_meth = 'multivariate linear regression';
+    switch nargin
+        case 1 % Choice of the prediction method by hand (most cases)
+            pred_par.pred_meth = 'multivariate linear regression';
+        case 2 % prediction method specified in image_prediction_main.m if beh_par.OPTIMIZE_NB_PCA_CP = true 
+            pred_par.pred_meth = pred_meth;
+    end
     
     switch(pred_par.pred_meth)
 

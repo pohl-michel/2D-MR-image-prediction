@@ -4,8 +4,8 @@
 % and analyze their influence on prediction performance. 
 %
 % Author : Pohl Michel
-% Date : September 26th, 2021
-% Version : v1.0
+% Date : Nov 21st, 2022
+% Version : v1.1
 % License : 3-clause BSD License
 
 
@@ -44,6 +44,9 @@ input_im_dir_suffix_tab = [
     %string('4. sq sl014 sag Xcs=165');  
     %string('5. sq sl014 sag Xcs=95');  
     ];
+
+% Prediction methods to test
+pred_meths = {'multivariate linear regression', 'LMS', 'UORO', 'SnAp-1', 'DNI', 'RTRL v2'};
 
 %br_model_par.nb_pca_cp_tab = [4, 4, 4, 4]; % length = nb of sequences to process
 br_model_par.nb_pca_cp_tab = [4];
@@ -106,8 +109,11 @@ for im_seq_idx = 1:nb_seq
         addpath(genpath('Time_series_forecasting'))   
         path_par = update_path_par_move_parent_dir(path_par);
 
-        [eval_results, best_pred_par_struct, best_pca_cp_tab] = select_nb_pca_cp(beh_par, disp_par, OF_par, im_par, path_par, br_model_par, eval_results, warp_par);   
-        eval_im_pred_best_par(eval_results, best_pred_par_struct, best_pca_cp_tab, beh_par, disp_par, OF_par, im_par, path_par, br_model_par, warp_par)
+        for pred_meth_idx = 1:length(pred_meths)
+            pred_meth = pred_meths{pred_meth_idx};
+            [eval_results, best_pred_par_struct, best_pca_cp_tab] = select_nb_pca_cp(beh_par, disp_par, OF_par, im_par, path_par, br_model_par, eval_results, warp_par, pred_meth);   
+            eval_im_pred_best_par(eval_results, best_pred_par_struct, best_pca_cp_tab, beh_par, disp_par, OF_par, im_par, path_par, br_model_par, warp_par, pred_meth)
+        end
 
         rmpath(genpath('Time_series_forecasting'))   
         cd(path_par.im_pred_dir)

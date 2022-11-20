@@ -1,4 +1,4 @@
-function eval_im_pred_best_par(eval_results, best_pred_par_struct, best_pca_cp_tab, beh_par, disp_par, OF_par, im_par, path_par, br_model_par, warp_par)
+function eval_im_pred_best_par(eval_results, best_pred_par_struct, best_pca_cp_tab, beh_par, disp_par, OF_par, im_par, path_par, br_model_par, warp_par, pred_meth)
 % Evaluates the accuracy of image prediction of the test set
 % using the optimal hyperparameters selected beforehand by "select_nb_pca_cp"
 %
@@ -6,15 +6,15 @@ function eval_im_pred_best_par(eval_results, best_pred_par_struct, best_pca_cp_t
 % If that happens, put write_im_pred_log_file inside its own for loop (after the parfor loop, not inside) and use cell arrays for its arguments 
 %
 % Author : Pohl Michel
-% Date : Sept 18th, 2022
-% Version : v2.0
+% Date : Nov 21st, 2022
+% Version : v2.1
 % License : 3-clause BSD License
 
 
     beh_par.SAVE_WARPED_IM = false; % because display takes time and this function needs to run fast 
     beh_par.SAVE_PREDICTION_PLOT = false; % idem
-    
-    pred_par = load_pred_par(path_par); %we need to know tmax_pred corresponding to the test set (in particular)
+
+    pred_par = load_pred_par(path_par, pred_meth); %we need to know tmax_pred corresponding to the test set and the prediction method (in particular)
         % in the case of linear regression, the value of pred_par.tmax_training is already modified inside the function "load_pred_par"
     pred_par.t_eval_start = 1 + pred_par.tmax_cv; % evaluation on the test set
     pred_par.nb_predictions = pred_par.tmax_pred - pred_par.t_eval_start + 1;
