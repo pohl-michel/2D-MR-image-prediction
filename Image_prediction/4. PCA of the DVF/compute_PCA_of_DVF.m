@@ -74,10 +74,11 @@ function [Wtrain, F, Xtrain_mean, eval_results] = compute_PCA_of_DVF(beh_par, di
     end   
 
     % Saving variables
-    PCA_results_filename = write_PCAresults_mat_filename( beh_par, OF_par, path_par );
+    PCA_results_filename = write_PCAresults_mat_filename( beh_par, OF_par, path_par, br_model_par );
     save(PCA_results_filename, 'Wtrain', 'F', 'Xtrain_mean');
-    
+
     org_data = F';
-    save(path_par.time_series_data_filename , 'org_data');
+    time_series_data_filename = write_PCAweights_mat_filename(OF_par, path_par, br_model_par);
+    save(time_series_data_filename , 'org_data');
     
 end

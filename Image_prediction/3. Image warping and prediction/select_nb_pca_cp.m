@@ -47,6 +47,7 @@ function [eval_results, best_pred_par_struct, best_pca_cp_tab] = select_nb_pca_c
 
         %% 1) We optimize the hyper-parameters for all values of h using the PCA weights of the cross-validation set
         % [I return optim for debugging purposes]
+        path_par.time_series_data_filename = write_PCAweights_mat_filename(OF_par, path_par, br_model_par);
         [optim, best_par] = train_eval_predictor_mult_param(hppars, pred_par, path_par, disp_par, beh_par);
 
         best_pred_par_struct(nb_pca_cp) = best_par;
@@ -65,7 +66,7 @@ function [eval_results, best_pred_par_struct, best_pca_cp_tab] = select_nb_pca_c
                 pred_par_h.(hppars.other(hppar_idx).name) = best_par.other_hyppar_tab(hrz_idx, hppar_idx);
             end
 
-            [Ypred, avg_pred_time, ~] = train_and_predict(path_par, pred_par_h, beh_par);
+            [Ypred, avg_pred_time, ~] = train_and_predict(path_par, pred_par_h, beh_par, br_model_par);
             time_signal_pred_results = pred_eval(beh_par, path_par, pred_par_h, disp_par, Ypred, avg_pred_time);
 
             dvf_type = 'predicted DVF'; % warping with the predicted optical flow on the cv set

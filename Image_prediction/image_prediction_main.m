@@ -46,7 +46,7 @@ input_im_dir_suffix_tab = [
     ];
 
 %br_model_par.nb_pca_cp_tab = [4, 4, 4, 4]; % length = nb of sequences to process
-br_model_par.nb_pca_cp_tab = [3];
+br_model_par.nb_pca_cp_tab = [4];
 
 nb_seq = length(input_im_dir_suffix_tab);
 for im_seq_idx = 1:nb_seq
@@ -72,10 +72,6 @@ for im_seq_idx = 1:nb_seq
     br_model_par.nb_pca_cp = br_model_par.nb_pca_cp_tab(im_seq_idx);
         % maximum number of PCA components taken into account if optimization of all hyper-parameters (beh_par.OPTIMIZE_NB_PCA_CP = true)
 
-    % PCA weights filename
-    OF_param_str = sprintf_OF_param(OF_par);
-    path_par.time_series_data_filename = sprintf('%s\\PCA weights %s %s %d cpts.mat', path_par.temp_var_dir, path_par.input_im_dir_suffix, OF_param_str, br_model_par.nb_pca_cp);       
-    
     path_par.time_series_dir = path_par.input_im_dir_suffix; % for the function 'train and predict' 
     
     %% ---------------------------------------------------------------------------------------------------------------------------------------------------
@@ -112,7 +108,7 @@ for im_seq_idx = 1:nb_seq
 
         [eval_results, best_pred_par_struct, best_pca_cp_tab] = select_nb_pca_cp(beh_par, disp_par, OF_par, im_par, path_par, br_model_par, eval_results, warp_par);   
         eval_im_pred_best_par(eval_results, best_pred_par_struct, best_pca_cp_tab, beh_par, disp_par, OF_par, im_par, path_par, br_model_par, warp_par)
-        
+
         rmpath(genpath('Time_series_forecasting'))   
         cd(path_par.im_pred_dir)
         path_par = update_path_par_return_child_dir(path_par);
@@ -155,6 +151,7 @@ for im_seq_idx = 1:nb_seq
         end            
         
         if beh_par.TRAIN_EVAL_PREDICTOR
+            path_par.time_series_data_filename = write_PCAweights_mat_filename(OF_par, path_par, br_model_par);
             [Ypred, avg_pred_time, pred_loss_function] = train_and_predict(path_par, pred_par, beh_par);
             time_signal_pred_results = pred_eval(beh_par, path_par, pred_par, disp_par, Ypred, avg_pred_time);
             write_time_series_pred_log_file(path_par, beh_par, pred_par, time_signal_pred_results);    

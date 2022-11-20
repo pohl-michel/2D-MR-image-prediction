@@ -35,7 +35,7 @@ function [ u_t, OFcalc_time_t ] = load_computeOF_for_warp(dvf_type, t, OF_par, p
         case 'DVF from PCA'
             
             % loading the PCA results
-            PCA_results_filename = write_PCAresults_mat_filename( beh_par, OF_par, path_par );
+            PCA_results_filename = write_PCAresults_mat_filename( beh_par, OF_par, path_par, br_model_par );
             load(PCA_results_filename, 'Wtrain', 'F', 'Xtrain_mean');   
             
             % reconstruction of the DVF using only the first nb_pca_cp-th principal components
@@ -45,11 +45,11 @@ function [ u_t, OFcalc_time_t ] = load_computeOF_for_warp(dvf_type, t, OF_par, p
         case 'predicted DVF'
             
             % loading the predicted weights of the principal components
-            pred_results_filename = write_pred_result_variables_filename(path_par, pred_par);
+            pred_results_filename = write_pred_result_variables_filename(path_par, pred_par, br_model_par);
             load(pred_results_filename, 'Ypred');
             
             % loading the other PCA results
-            PCA_results_filename = write_PCAresults_mat_filename( beh_par, OF_par, path_par );
+            PCA_results_filename = write_PCAresults_mat_filename( beh_par, OF_par, path_par, br_model_par );
             load(PCA_results_filename, 'Wtrain', 'Xtrain_mean');   
 
             % some useful parameters

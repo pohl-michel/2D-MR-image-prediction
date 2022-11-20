@@ -8,7 +8,6 @@ function [path_par] = update_path_par_move_parent_dir(path_par)
 % License : 3-clause BSD License
 
 
-    path_par.time_series_data_filename = sprintf('%s\\%s', path_par.im_pred_dir, path_par.time_series_data_filename);
     path_par.temp_fig_dir = sprintf('%s\\%s', path_par.im_pred_dir, path_par.temp_fig_dir);
     path_par.temp_im_dir = sprintf('%s\\%s', path_par.im_pred_dir, path_par.temp_im_dir);
     path_par.temp_var_dir = sprintf('%s\\%s', path_par.im_pred_dir, path_par.temp_var_dir);  
