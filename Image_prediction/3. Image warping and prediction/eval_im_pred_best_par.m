@@ -11,6 +11,9 @@ function eval_im_pred_best_par(eval_results, best_pred_par_struct, best_pca_cp_t
 % License : 3-clause BSD License
 
 
+    beh_par.SAVE_WARPED_IM = false; % because display takes time and this function needs to run fast 
+    beh_par.SAVE_PREDICTION_PLOT = false; % idem
+    
     pred_par = load_pred_par(path_par); %we need to know tmax_pred corresponding to the test set (in particular)
         % in the case of linear regression, the value of pred_par.tmax_training is already modified inside the function "load_pred_par"
     pred_par.t_eval_start = 1 + pred_par.tmax_cv; % evaluation on the test set
