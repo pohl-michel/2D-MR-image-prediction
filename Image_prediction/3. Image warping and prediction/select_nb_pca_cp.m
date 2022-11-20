@@ -37,8 +37,8 @@ function [eval_results, best_pred_par_struct, best_pca_cp_tab] = select_nb_pca_c
         br_model_par.nb_pca_cp = nb_pca_cp;
 
         % Computation of PCA 
-        % [I returned W & F for debugging purposes - the data is saved in the last lines of PCA_of_DVF and loaded later when needed]
-        [W, F, Xmean, ~] = PCA_of_DVF(beh_par, disp_par, OF_par, im_par, path_par, pred_par, br_model_par, eval_results);
+        % [I returned W & F for debugging purposes - the data is saved in the last lines of compute_PCA_of_DVF and loaded later when needed]
+        [W, F, Xmean, ~] = compute_PCA_of_DVF(beh_par, disp_par, OF_par, im_par, path_par, pred_par, br_model_par, eval_results);
 
         pred_par.t_eval_start = 1 + pred_par.tmax_training;
         pred_par.nb_predictions = pred_par.tmax_cv - pred_par.t_eval_start + 1;

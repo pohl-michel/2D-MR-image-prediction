@@ -46,7 +46,7 @@ function eval_im_pred_best_par(eval_results, best_pred_par_struct, best_pca_cp_t
         end                
 
         % Computation of PCA
-        [W, F, Xmean, eval_results_h] = PCA_of_DVF(beh_par, disp_par, OF_par, im_par, path_par_h, pred_par_h, br_model_par_h, eval_results_h); 
+        [W, F, Xmean, eval_results_h] = compute_PCA_of_DVF(beh_par, disp_par, OF_par, im_par, path_par_h, pred_par_h, br_model_par_h, eval_results_h); 
 
         dvf_type = 'DVF from PCA'; % warping with the signal reconstructed from PCA on the test set
         my_empty_struct = struct();

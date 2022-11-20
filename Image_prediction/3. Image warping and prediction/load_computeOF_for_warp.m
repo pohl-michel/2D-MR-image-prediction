@@ -39,7 +39,8 @@ function [ u_t, OFcalc_time_t ] = load_computeOF_for_warp(dvf_type, t, OF_par, p
             load(PCA_results_filename, 'Wtrain', 'F', 'Xtrain_mean');   
             
             % reconstruction of the DVF using only the first nb_pca_cp-th principal components
-            [OFcalc_time_t, u_t] = reconstruct_u_from(Xtrain_mean, F(t,1:br_model_par.nb_pca_cp), Wtrain(:,1:br_model_par.nb_pca_cp), im_par);
+            pca_obj = myPCA(br_model_par.nb_pca_cp, Wtrain(:,1:br_model_par.nb_pca_cp));
+            [OFcalc_time_t, u_t] = reconstruct_u_from(Xtrain_mean, F(t,1:br_model_par.nb_pca_cp), pca_obj, im_par);
         
         case 'predicted DVF'
             
@@ -60,13 +61,13 @@ function [ u_t, OFcalc_time_t ] = load_computeOF_for_warp(dvf_type, t, OF_par, p
             % preparing arrays
             u_t = zeros(im_par.W, im_par.L, 2, nb_runs);
             OFcalc_time_tab = zeros(nb_runs, 1);
-            Wtrain = Wtrain(:, 1:br_model_par.nb_pca_cp); % we keep only the first nb_pca_cp-th principal components
+            pca_obj = myPCA(br_model_par.nb_pca_cp, Wtrain(:,1:br_model_par.nb_pca_cp)); % we keep only the first nb_pca_cp-th principal components
             Ypred_t = Ypred(1:br_model_par.nb_pca_cp, t_Yidx, :); % idem
 
             for run_idx = 1:nb_runs
  
                 Fpred_t = transpose(Ypred_t(:, :, run_idx));
-                [OFcalc_time_t_run_idx, u_t_run_idx] = reconstruct_u_from(Xtrain_mean, Fpred_t, Wtrain, im_par); % DVF reconstruction
+                [OFcalc_time_t_run_idx, u_t_run_idx] = reconstruct_u_from(Xtrain_mean, Fpred_t, pca_obj, im_par); % DVF reconstruction
                 
                 OFcalc_time_tab(run_idx) = OFcalc_time_t_run_idx;  
                 u_t(:,:,:,run_idx) = u_t_run_idx;
@@ -80,12 +81,10 @@ function [ u_t, OFcalc_time_t ] = load_computeOF_for_warp(dvf_type, t, OF_par, p
 end
 
 
-function [OFcalc_time_t, u_t] = reconstruct_u_from(X, F, W, im_par)
+function [OFcalc_time_t, u_t] = reconstruct_u_from(X, F, pca_obj, im_par)
 
     % reconstruction of the DVF using only the first nb_pca_cp-th principal components
-    tic
-    U = X + F*transpose(W);
-    OFcalc_time_t = toc;
+    [U, OFcalc_time_t] = pca_obj.reconstruct_data(X, F);
     
     % reshaping the matrix U containing the optical flow information
     u_t = zeros(im_par.W, im_par.L, 2);

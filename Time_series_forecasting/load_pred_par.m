@@ -23,8 +23,8 @@ function [pred_par] = load_pred_par(path_par)
 
             pred_par.nb_runs = 1; % because it is not a stochastic method
             pred_par.NORMALIZE_DATA = false;
-            %pred_par.tmax_training = 160; % MR data (ETH Zurich)
-            pred_par.tmax_training = 540; % markers 10 Hz (CPMB paper)
+            pred_par.tmax_training = 160; % MR data (ETH Zurich)
+            %pred_par.tmax_training = 540; % markers 10 Hz (CPMB paper)
 
         case 'RTRL'
 

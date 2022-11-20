@@ -1,4 +1,4 @@
-function [Wtrain, F, Xtrain_mean, eval_results] = PCA_of_DVF(beh_par, disp_par, OF_par, im_par, path_par, pred_par, br_model_par, eval_results)
+function [Wtrain, F, Xtrain_mean, eval_results] = compute_PCA_of_DVF(beh_par, disp_par, OF_par, im_par, path_par, pred_par, br_model_par, eval_results)
 % Computes PCA from the deformation vector field (DVF) data using the function "myPCA".
 % Returns and saves (in path_par.temp_var_dir):
 % - Xtrain_mean: a line vector containing the mean of the DVF data matrix of the training set
@@ -16,7 +16,7 @@ function [Wtrain, F, Xtrain_mean, eval_results] = PCA_of_DVF(beh_par, disp_par, 
 % Using PCA, we find two matrices F and W such that the X = F*(W') [cf details in the documentation of myPCA.m]
 % Because (W')*W = eye(np_cpts), we also have F = X*W, property that we use in this function.
 % 
-% Rk 1: In my thesis I used Y = (1/n)*double(X*(X')) in myPCA.m and F = (1/n)*Xcentered*Wtrain in PCA_of_DVF.m, which is correct,
+% Rk 1: In my thesis I used Y = (1/n)*double(X*(X')) in myPCA.m and F = (1/n)*Xcentered*Wtrain in compute_PCA_of_DVF.m, which is correct,
 % but in v1.1 of this function, I use Y = double(X*(X')) in myPCA.m and F = Xcentered*Wtrain, which is standard and leads to W'*W = eye(nb_pca_cp),
 %
 % Rk 2: when performing prediction in load_pred_data_XY, the data matrix was standardized, not just centered,
@@ -29,7 +29,7 @@ function [Wtrain, F, Xtrain_mean, eval_results] = PCA_of_DVF(beh_par, disp_par, 
 %
 % Author : Pohl Michel
 % Date : September 24, 2022
-% Version : v1.1
+% Version : v1.2
 % License : 3-clause BSD License
 
 
@@ -52,7 +52,7 @@ function [Wtrain, F, Xtrain_mean, eval_results] = PCA_of_DVF(beh_par, disp_par, 
 	% Centering the data matrix of the training set Xtrain
     n = pred_par.tmax_training;
 	J = eye(n) - (1/n)*ones(n,1)*ones(1,n);
-	Xtrain = X(1:pred_par.tmax_training,:);
+	Xtrain = X(1:n, :);
     Xtrain_mean = mean(Xtrain); % line vector containing the mean of each column of Xtrain
 	Xtrain_centered = J*Xtrain;
 
@@ -60,13 +60,12 @@ function [Wtrain, F, Xtrain_mean, eval_results] = PCA_of_DVF(beh_par, disp_par, 
     Xcentered = X - ones(im_par.nb_im, 1)*Xtrain_mean;
     
     % Computation of the principal components using the centered training data
-    [ Wtrain, ~, ~ ] = myPCA(Xtrain_centered, br_model_par.nb_pca_cp);
+    pca_obj = myPCA(br_model_par.nb_pca_cp);
+    [ Wtrain, ~, ~, pca_obj ] = pca_obj.fit(Xtrain_centered);
 
     % Computation of the weights for all time t using the former principal components
-    tic
-    F = (1/n)*Xcentered*Wtrain; % version that I used in Chapter 4 of my thesis, along with Y = (1/n)*double(X*(X')) in myPCA.m in the previous code version.
-    % F = Xcentered*Wtrain;
-    eval_results.PCA_time_weights_calc_time = (1/im_par.nb_im)*toc;
+    [F, weights_calc_time] = pca_obj.compute_weights(Xcentered);
+    eval_results.PCA_time_weights_calc_time = weights_calc_time;
    
     % Plotting the principal components (the 2D principal deformation vectors)
     if beh_par.SAVE_PCA_CP_WEIGHTS_JPG    
