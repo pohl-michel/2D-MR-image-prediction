@@ -19,7 +19,7 @@ beh_par.SAVE_ORG_IM_SQ = false;
 beh_par.SAVE_MEAN_IMAGE = false;
     % For saveing the average image (over every time step) of the test set
 
-beh_par.COMPUTE_OPTICAL_FLOW = false;
+beh_par.COMPUTE_OPTICAL_FLOW = true;
     % For computing the optical flow (OF) / deformation vector field (DVF) at every time step and saving the results as mat files
 beh_par.SAVE_OF_JPG = false;
     % For saving DVF images

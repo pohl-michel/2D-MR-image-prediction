@@ -95,7 +95,7 @@ function [pred_par] = load_pred_par(path_par, pred_meth)
 			pred_par.Winit_std_dev = 0.02;
             
             % parameters for finding the matrix A such that c = x_tilde*A where c is the credit assignment vector and x_tilde = [x, Ytrue(:,t).', 1]
-            pred_par.learn_rate_A = 0.005;
+            pred_par.learn_rate_A = 0.002;
             pred_par.GRAD_CLIPPING_A = false;
             pred_par.update_meth_A = 'stochastic gradient descent';
 

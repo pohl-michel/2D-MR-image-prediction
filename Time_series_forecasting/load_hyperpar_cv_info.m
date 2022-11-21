@@ -16,16 +16,10 @@ function [ hppars ] = load_hyperpar_cv_info( pred_par )
             
             hppars.horizon_tab = [1, 2, 3, 4, 5, 6, 7];  
             %hppars.horizon_tab = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21];
-            %hppars.horizon_tab = [3, 6, 9, 12, 15, 18, 21, 24, 27, 30, 33, 36, 39, 42, 45, 48, 51, 54, 57, 60, 63];
             
             hppars.other(1).name = 'SHL';
             hppars.other(1).val = [6, 12, 18, 24, 30];  
-            %hppars.other(1).val = [4, 8, 12, 16, 20];  
             %hppars.other(1).val = [12, 24, 36, 48, 60];  
-            %hppars.other(1).val = [36, 72, 108, 144, 180]; 
-            %hppars.other(1).val = [10, 20, 30, 40, 50, 60, 70, 80, 90];             
-            %hppars.other(1).val = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, ...
-            %                           31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50];
             
         case 'RTRL'
           
@@ -38,15 +32,6 @@ function [ hppars ] = load_hyperpar_cv_info( pred_par )
             %hppars.other(1).val = [10, 25, 40, 55];     
             hppars.other(1).val = [6, 12, 18, 24, 30];             
             %hppars.other(1).val = [5, 10, 15, 20, 25, 30, 35, 40, 45, 50];   
-            
-%             hppars.other(2).name = 'grad_threshold';
-%             hppars.other(2).val = [2.0];
-%             
-%             hppars.other(3).name = 'Winit_std_dev';
-%             hppars.other(3).val = [0.01, 0.02, 0.05];
-%             
-%             hppars.other(4).name = 'learn_rate';
-%             hppars.other(4).val = [0.02, 0.05, 0.1, 0.2];
 
             hppars.other(2).name = 'learn_rate';
             %hppars.other(2).val = [0.02, 0.05, 0.1, 0.2];
@@ -59,23 +44,26 @@ function [ hppars ] = load_hyperpar_cv_info( pred_par )
 
         case 'RTRL v2'
 
-            hppars.nb_runs_cv = 50;
-            hppars.nb_runs_eval_test = 300;    
+            %hppars.nb_runs_cv = 50;
+            %hppars.nb_runs_eval_test = 250;    
+            hppars.nb_runs_cv = 10;
+            hppars.nb_runs_eval_test = 10;
 
-            hppars.horizon_tab = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21];      
-            %hppars.horizon_tab = [1, 2];      
+            hppars.horizon_tab = [1, 2, 3, 4, 5, 6, 7];  
+            %hppars.horizon_tab = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21];          
 
             hppars.other(1).name = 'SHL';
-            hppars.other(1).val = [12, 24, 36, 48, 60];
-            %hppars.other(1).val = [12, 24];
+            hppars.other(1).val = [6, 12, 18, 24, 30]; 
+            %hppars.other(1).val = [12, 24, 36, 48, 60];
 
             hppars.other(2).name = 'learn_rate';
             hppars.other(2).val = [0.005, 0.01, 0.02];            
             %hppars.other(2).val = [0.005, 0.01]; 
 
             hppars.other(3).name = 'rnn_state_space_dim'; 
-            hppars.other(3).val = [10, 25, 40];   
-            %hppars.other(4).val = [30, 60]; 
+            hppars.other(3).val = [10, 30, 50, 70, 90, 110];            
+            %hppars.other(3).val = [10, 25, 40];   
+            
 
         case 'no prediction'
 
@@ -96,25 +84,17 @@ function [ hppars ] = load_hyperpar_cv_info( pred_par )
             hppars.nb_runs_eval_test = 1;            
                
             %hppars.horizon_tab = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21];
-            %hppars.horizon_tab = [3, 6, 9, 12, 15, 18, 21, 24, 27, 30, 33, 36, 39, 42, 45, 48, 51, 54, 57, 60, 63];
             hppars.horizon_tab = [1, 2, 3, 4, 5, 6, 7];
             
             hppars.other(1).name = 'SHL';           
             hppars.other(1).val = [6, 12, 18, 24, 30]; 
-            %hppars.other(1).val = [4, 8, 12, 16, 20];  
             %hppars.other(1).val = [12, 24, 36, 48, 60];      
-            %hppars.other(1).val = [36, 72, 108, 144, 180];  
             
             hppars.other(2).name = 'learn_rate';
-            %hppars.other(2).val = [0.0001, 0.0002, 0.0005];
-            %hppars.other(2).val = [0.00005, 0.0001, 0.0002];
-            %hppars.other(2).val = [0.00005, 0.0001, 0.0002, 0.0005, 0.001, 0.002, 0.005, 0.01];
             hppars.other(2).val = [0.02, 0.05, 0.1, 0.2];
             
         case 'UORO'
 
-            % hppars.nb_runs_cv = 5;
-            % hppars.nb_runs_eval_test = 5;
             hppars.nb_runs_cv = 250;
             hppars.nb_runs_eval_test = 250;
             
@@ -127,38 +107,17 @@ function [ hppars ] = load_hyperpar_cv_info( pred_par )
             hppars.other(2).val = [0.005, 0.01, 0.02];
             
             hppars.other(3).name = 'rnn_state_space_dim'; 
-            hppars.other(3).val = [10, 30, 50, 70, 90, 110]; 
-            
-
-%             % test
-%             hppars.nb_runs_cv = 50;
-%             hppars.nb_runs_eval_test = 300;
-%             
-%             hppars.horizon_tab = [1, 5];
-% 
-%             hppars.other(1).name = 'SHL';
-%             hppars.other(1).val = [12, 24]; 
-%             
-%             hppars.other(2).name = 'learn_rate';
-%             hppars.other(2).val = [0.005, 0.01];
-%             
-%             hppars.other(3).name = 'rnn_state_space_dim'; 
-%             hppars.other(3).val = [30, 60];    
-            
-            
+            hppars.other(3).val = [10, 30, 50, 70, 90, 110];  
             
         case 'SnAp-1'
 
-            %hppars.nb_runs_cv = 10;
-            %hppars.nb_runs_eval_test = 50;
             hppars.nb_runs_cv = 250;
             hppars.nb_runs_eval_test = 250;            
             
             hppars.horizon_tab = [1, 2, 3, 4, 5, 6, 7];
 
             hppars.other(1).name = 'SHL';
-            hppars.other(1).val = [6, 12, 18, 24, 30];  
-            %hppars.other(1).val = [4, 8, 12, 16, 20];   
+            hppars.other(1).val = [6, 12, 18, 24, 30];    
             
             hppars.other(2).name = 'learn_rate';
             hppars.other(2).val = [0.005, 0.01, 0.02];
@@ -170,27 +129,28 @@ function [ hppars ] = load_hyperpar_cv_info( pred_par )
 
         case 'DNI'
 
-            hppars.nb_runs_cv = 50;
-            hppars.nb_runs_eval_test = 300;    
+            % hppars.nb_runs_cv = 50;
+            % hppars.nb_runs_eval_test = 300;    
+            hppars.nb_runs_cv = 250;
+            hppars.nb_runs_eval_test = 250;  
 
-            hppars.horizon_tab = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21];      
-            %hppars.horizon_tab = [1, 2];      
+            % hppars.horizon_tab = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21];      
+            hppars.horizon_tab = [1, 2, 3, 4, 5, 6, 7];    
 
             hppars.other(1).name = 'SHL';
-            hppars.other(1).val = [12, 24, 36, 48, 60];
-            %hppars.other(1).val = [12, 24];
+            %hppars.other(1).val = [12, 24, 36, 48, 60];
+            hppars.other(1).val = [6, 12, 18, 24, 30];
 
             hppars.other(2).name = 'learn_rate';
             hppars.other(2).val = [0.005, 0.01, 0.02];            
             %hppars.other(2).val = [0.005, 0.01]; 
 
-            hppars.other(3).name = 'learn_rate_A';
-            %hppars.other(3).val = [0.002, 0.005, 0.01];            
+            hppars.other(3).name = 'learn_rate_A';           
             hppars.other(3).val = [0.002];  
 
             hppars.other(4).name = 'rnn_state_space_dim'; 
-            hppars.other(4).val = [30, 60, 90, 120, 150, 180];   
-            %hppars.other(4).val = [30, 60]; 
+            hppars.other(4).val = [10, 30, 50, 70, 90, 110];            
+            % hppars.other(4).val = [30, 60, 90, 120, 150, 180];   
 
         case 'fixed W'
 

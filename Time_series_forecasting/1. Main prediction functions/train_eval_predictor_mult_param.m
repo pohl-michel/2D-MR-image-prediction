@@ -98,6 +98,7 @@ function [optim, best_par] = train_eval_predictor_mult_param(hppars, pred_par, p
 
     pred_par_cell = cell(hppars.nb_hrz_val, 1);
     	% eval_results_best_par is a cell which contains structures
+    pred_meth = pred_par.pred_meth; % necessary otherwise pred_par_cell{hrz_idx} in the parfor loop below may have a different pred_meth field (image prediction)
     
     for hrz_idx = 1:hppars.nb_hrz_val
         
@@ -121,7 +122,7 @@ function [optim, best_par] = train_eval_predictor_mult_param(hppars, pred_par, p
         end
 
         % evaluation on the test set with the optimal parameters
-        pred_par_cell{hrz_idx} = load_pred_par(path_par); %we find tmax_pred
+        pred_par_cell{hrz_idx} = load_pred_par(path_par, pred_meth); %we find tmax_pred
             % in the case of linear regression, the value of pred_par.tmax_training is already modified inside the function load_pred_par.m
         pred_par_cell{hrz_idx}.t_eval_start = 1 + pred_par_cell{hrz_idx}.tmax_cv; % because evaluation on the test set
         pred_par_cell{hrz_idx}.nb_predictions = pred_par_cell{hrz_idx}.tmax_pred - pred_par_cell{hrz_idx}.t_eval_start + 1;
