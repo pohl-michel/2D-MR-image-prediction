@@ -1,8 +1,14 @@
 import os
 import shutil
+import pydicom as dicom
+import pandas as pd
+import cv2 
 
 # we skip some images due to varying contrast
 NB_SKIPPED_IM = 13
+
+# For saving a folder with jpg images 
+SAVE_JPG = True
 
 org_base_dir = "/mnt/d/OneDrive/Research in Uesaka Lab/1.5. Image databases/2D MRI liver slices with navigator frames pt 2"
 org_data_rel_dirs = [
@@ -26,12 +32,15 @@ for rel_dir in org_data_rel_dirs:
     acquisition_identifier = rel_dir[:16]
     out_dir = out_base_dir + "/" + acquisition_identifier
     if os.path.exists(out_dir):
-        print(f"The directory {out_dir} already exists! Skipping this image sequence...")
+        print(f"The directory {out_dir} already exists! Skipping image sequence {rel_dir}...")
         continue
 
+    print(f"Processing image sequence {rel_dir}")
     os.makedirs(out_dir)
 
-    im_par_file_exists = False
+    if SAVE_JPG:
+        jpg_dir = out_dir + "/jpg_images"
+        os.makedirs(jpg_dir)
 
     for org_im_idx in range(NB_SKIPPED_IM, len(imgs)):
 
@@ -43,18 +52,33 @@ for rel_dir in org_data_rel_dirs:
 
         shutil.copyfile(org_im_path, out_im_path)
 
-        if not im_par_file_exists:
+        if SAVE_JPG: # reference: https://stackoverflow.com/questions/48185544/read-and-open-dicom-images-using-python 
+            ds = dicom.dcmread(org_im_path)
+            pixel_array_numpy = ds.pixel_array
 
-            # Creating the im_par.xlsx file
-            im_pars = {}
-            im_pars["nb_im"] = len(imgs) - NB_SKIPPED_IM
-            im_pars["imtype"] = str.split(org_im_path, ".")[-1]
-            
-            # to do here:
-            # - extract height and length and put that info into im_pars
-            # - convert dict into pandas dataframe and then the latter into an excel file (it should work)
+            out_jpg_im_name = "image" + str(out_im_idx) + ".jpg"
+            jpg_im_path = jpg_dir + "/" + out_jpg_im_name
+            cv2.imwrite(jpg_im_path, pixel_array_numpy)
 
-            im_par_file_exists = True
+    # Creating the im_par.xlsx file
+    # Rq: org_im_path now corresponds to the last image in the original directory (the previous for loop ended)
+    im_pars = {}
+    im_pars["nb_im"] = len(imgs) - NB_SKIPPED_IM
+    im_pars["imtype"] = str.split(org_im_path, ".")[-1]
+    
+    # Extracting height and length and putting that info into im_pars
+    ds = dicom.dcmread(org_im_path)
+    pixel_array_numpy = ds.pixel_array
+    H, L = pixel_array_numpy.shape
+    im_pars["H"] = H
+    im_pars["L"] = L
+
+    # converting im_pars dict into pandas dataframe and then the latter into an excel file
+    im_pars_df = pd.DataFrame([im_pars]) # reference: https://stackoverflow.com/questions/18837262/convert-python-dict-into-a-dataframe  
+        # Rk: I use [im_pars] and not im_pars.items() because I want the keys to be the columns
+    im_par_xlsx_path = out_dir + "/" + "im_seq_par.xlsx"
+    with pd.ExcelWriter(im_par_xlsx_path) as writer:  
+        im_pars_df.to_excel(writer, index=False) # index=False to not have a first column with zeros
 
     # To do also: create the directory with jpg images, it will be helpful when writing the paper
     # https://stackoverflow.com/questions/48185544/read-and-open-dicom-images-using-python
