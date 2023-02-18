@@ -68,7 +68,7 @@ function write_OFhyperpar_optim_log_file( beh_par, OFeval_par, path_par, im_par,
     %% Printing the best parameters
     fprintf(fid, 'Lower root mean square error found : %g \n', best_par.rms_error);
     fprintf(fid, 'Corresponding parameters : \n');     
-    fprintf(fid, 'sigma_init : %g \n', best_par.sg_init);
+    fprintf(fid, 'sigma_init : %g \n', best_par.sigma_init);
     fprintf(fid, 'nb_lyr : %d \n', best_par.nb_layers);
     fprintf(fid, 'nb_iter : %g \n', best_par.nb_iter);
     fprintf(fid, 'sg_subspl : %g \n', best_par.sigma_subspl); 

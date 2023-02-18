@@ -109,7 +109,7 @@ function [ rms_error, best_par ] = rms_of2D( beh_par, OFeval_par, path_par, im_p
     best_par.nb_layers = lyr_idx + OFeval_par.nb_layers_min -1;
     best_par.sigma_LK = OFeval_par.sigma_LK_tab(sigma_LK_tab_idx);
     best_par.nb_iter = nb_iter_idx + OFeval_par.nb_min_iter -1;
-    best_par.sg_init = OFeval_par.sigma_init_tab(sg_init_idx);
+    best_par.sigma_init = OFeval_par.sigma_init_tab(sg_init_idx);
     best_par.sigma_subspl = OFeval_par.sigma_subspl_tab(sigma_subspl_idx);
     
     
