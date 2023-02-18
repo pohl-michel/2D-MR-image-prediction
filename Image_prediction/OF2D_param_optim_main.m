@@ -31,7 +31,7 @@ path_par = load_impred_path_parameters();
 
 % Input image sequences
 path_par.input_im_dir_suffix_tab = [
-    string('2. sq sl010 sag Xcs=125');    
+    %string('2. sq sl010 sag Xcs=125');    
     %string('3. sq sl010 sag Xcs=80');   
     %string('4. sq sl014 sag Xcs=165');  
     %string('5. sq sl014 sag Xcs=95')
@@ -41,6 +41,14 @@ path_par.input_im_dir_suffix_tab = [
     %string('9. sq sl014 sag Xcs=110')
     %string('10. sq sl014 sag Xcs=125')
     %string('11. sq sl014 sag Xcs=150')
+    string('2020-11-10_KS81_Nav_Pur_1')
+    %string('2020-11-12_QN76_Nav_Pur_1')
+    %string('2020-11-17_CS31_Nav_Pur_2')
+    %string('2020-11-17_JY02_Nav_Pur_2')
+    %string('2020-11-23_ON65_Nav_Pur_2')
+    %string('2020-11-23_PS11_Nav_Pur_1')
+    %string('2020-11-25_II29_Nav_Pur_1')
+    %string('2020-11-26_NE38_Nav_Pur_1')
     ];
 
 % Hyper-parameter grid search :
@@ -69,7 +77,9 @@ for im_seq_idx = 1:nb_seq
 
     % Image parameters
     im_par = load_im_param(path_par);
-    im_par.nb_im = 90; % optimization using the first 90 images of the sequence (arbitrary)
+    im_par.nb_im = 170; 
+        % ETH Zürich: optimization using the first 90 images of the sequence (arbitrary)
+        % Magdeburg University: 170 images
 
     %% EVALUATION FOR EACH HYPER-PARAMETER SET IN THE GRID
     

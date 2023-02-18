@@ -5,7 +5,7 @@ import pandas as pd
 import cv2 
 
 # we skip some images due to varying contrast
-NB_SKIPPED_IM = 13
+NB_SKIPPED_IM = 15
 
 # For saving a folder with jpg images 
 SAVE_JPG = True

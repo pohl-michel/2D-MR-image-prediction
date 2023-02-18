@@ -15,8 +15,8 @@ function [ im ] = load_crop_filter2D(t, CROP, FILTER, sigma_init, im_par, input_
     %fprintf('loading 2D image at time t = %d ...\n', t);
     
     switch im_par.imtype
-        case "dcm"
-            im_filename = sprintf('%s\\image%d.dcm',input_im_dir, t);
+        case {"dcm", "IMA"}
+            im_filename = sprintf('%s\\image%d.%s',input_im_dir, t, im_par.imtype);
             im = single(squeeze(dicomread(im_filename)));
                 % squeeze is necessary because when Matlab opens an image with dicomread, the 3rd dimension is a singleton - Note (2022/09/18): to check again
         case "mat"
