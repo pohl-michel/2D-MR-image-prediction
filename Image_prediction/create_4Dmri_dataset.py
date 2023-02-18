@@ -71,8 +71,8 @@ for rel_dir in org_data_rel_dirs:
     # Extracting height and length and putting that info into im_pars
     ds = dicom.dcmread(org_im_path)
     pixel_array_numpy = ds.pixel_array
-    H, L = pixel_array_numpy.shape
-    im_pars["H"] = H
+    W, L = pixel_array_numpy.shape # W is the height of the 2D image
+    im_pars["W"] = W
     im_pars["L"] = L
 
     # converting im_pars dict into pandas dataframe and then the latter into an excel file
