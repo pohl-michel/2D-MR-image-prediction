@@ -29,13 +29,15 @@ for rel_dir in org_data_rel_dirs:
     org_data_full_path = org_base_dir + "/" + rel_dir
     imgs = sorted(os.listdir(org_data_full_path)) # sorted to have the images in the correct order
 
-    acquisition_identifier = rel_dir[:16]
-    out_dir = out_base_dir + "/" + acquisition_identifier
+    # Instead of using one directory inside another, each navigator sequence can have its own directory inside out_base_dir,
+    # so "join" and "split" are used
+    out_dir = out_base_dir + "/" + "_".join(rel_dir.split("/"))
+
     if os.path.exists(out_dir):
         print(f"The directory {out_dir} already exists! Skipping image sequence {rel_dir}...")
         continue
 
-    print(f"Processing image sequence {rel_dir}")
+    print(f"Processing image sequence {rel_dir} ...")
     os.makedirs(out_dir)
 
     if SAVE_JPG:
@@ -48,7 +50,7 @@ for rel_dir in org_data_rel_dirs:
 
         out_im_idx = org_im_idx - NB_SKIPPED_IM + 1
         out_im_name = "image" + str(out_im_idx) + ".IMA"
-        out_im_path = out_dir + out_im_name
+        out_im_path = out_dir + "/" + out_im_name
 
         shutil.copyfile(org_im_path, out_im_path)
 
