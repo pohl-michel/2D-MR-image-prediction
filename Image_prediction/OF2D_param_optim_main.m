@@ -93,7 +93,7 @@ for im_seq_idx = 1:nb_seq
     rms_error_all_seq(:,:,:,:,:,im_seq_idx) = rms_error;
     best_par_all_seq{im_seq_idx} = best_par;
 
-    % We re-compute the optical flow with the best parameters on the whole sequence:
+    %% We re-compute the optical flow with the best parameters on the whole sequence:
     im_par = load_im_param(path_par); % We reload the image parameters to recover the "original" number of images 
     fn = fieldnames(best_par);
     for k=1:numel(fn)
@@ -103,6 +103,17 @@ for im_seq_idx = 1:nb_seq
     OF_par.grad_meth = OFeval_par.grad_meth;
     OF_par.grad_meth_str = OFeval_par.grad_meth_str;
     compute_2Dof(OF_par, im_par, path_par);
+
+    % Recording the best OF parameters into an Excel file
+    OF_bestpar_xlsx = rmfield(best_par , 'rms_error');
+    OF_bestpar_xlsx.grad_meth = OFeval_par.grad_meth;
+    OF_bestpar_xlsx.epsilon_detG = OFeval_par.epsilon_detG;
+    OF_calc_param_file = sprintf('%s\\%s', path_par.input_im_dir, path_par.OFpar_filename);
+    
+    % We only record the best parameters if there is no OF_calc_par.xlsx file in the image sequence folder
+    if not(isfile(OF_calc_param_file))
+        writetable(struct2table(OF_bestpar_xlsx), OF_calc_param_file);
+    end
 
 end
 
