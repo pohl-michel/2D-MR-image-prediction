@@ -39,17 +39,26 @@ path_par = load_impred_path_parameters();
 % Input image sequences
 input_im_dir_suffix_tab = [
     %string('write here the sequence name');
-    string('2. sq sl010 sag Xcs=125');
-    string('3. sq sl010 sag Xcs=80');   
-    string('4. sq sl014 sag Xcs=165');  
-    string('5. sq sl014 sag Xcs=95');  
+    %string('2. sq sl010 sag Xcs=125');
+    %string('3. sq sl010 sag Xcs=80');   
+    %string('4. sq sl014 sag Xcs=165');  
+    %string('5. sq sl014 sag Xcs=95');  
+    string('2020-11-10_KS81_Nav_Pur_1');
+    string('2020-11-12_QN76_Nav_Pur_1');
+    string('2020-11-17_CS31_Nav_Pur_2');
+    string('2020-11-17_JY02_Nav_Pur_2');
+    string('2020-11-23_ON65_Nav_Pur_2');
+    string('2020-11-23_PS11_Nav_Pur_1');
+    string('2020-11-25_II29_Nav_Pur_1');
+    string('2020-11-26_NE38_Nav_Pur_1');
     ];
 
 % Prediction methods to test if beh_par.OPTIMIZE_NB_PCA_CP == true
 pred_meths = {'multivariate linear regression', 'LMS', 'UORO', 'SnAp-1', 'DNI', 'RTRL v2'};
 
-br_model_par.nb_pca_cp_tab = [4, 4, 4, 4]; % length = nb of sequences to process
+br_model_par.nb_pca_cp_tab = [4, 4, 4, 4, 4, 4, 4, 4]; % length = nb of sequences to process
 % br_model_par.nb_pca_cp_tab = [4];
+% br_model_par.nb_pca_cp_tab = [4, 4, 4, 4];
 
 nb_seq = length(input_im_dir_suffix_tab);
 for im_seq_idx = 1:nb_seq
@@ -129,7 +138,7 @@ for im_seq_idx = 1:nb_seq
         % Parameters concerning the prediction of the position of objects
         pred_par = load_pred_par(path_par);
         pred_par.t_eval_start = 1 + pred_par.tmax_cv; % car je veux faire l'eval sur l'ensemble de test
-        % à ce moment précis du développement du code, on ne s'intéresse pas à la validation croisée
+        %  ce moment précis du développement du code, on ne s'intéresse pas  la validation croisée
         pred_par.nb_predictions = im_par.nb_im - pred_par.t_eval_start + 1;    
 
         if beh_par.SAVE_MEAN_IMAGE

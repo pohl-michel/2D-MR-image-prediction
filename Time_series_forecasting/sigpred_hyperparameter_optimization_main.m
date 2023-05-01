@@ -42,6 +42,9 @@ path_par = load_sigpred_path_parameters();
 % Display parameters
 disp_par = load_sigpred_display_parameters(path_par);  
                
+% Prediction methods to test
+pred_meths = {'multivariate linear regression', 'LMS', 'UORO', 'SnAp-1', 'DNI', 'no prediction', 'fixed W', 'RTRL v2'};
+
 nb_seq = length(path_par.time_series_dir_tab);
 for seq_idx = 1:nb_seq
 
@@ -50,15 +53,19 @@ for seq_idx = 1:nb_seq
     path_par.input_seq_dir = sprintf('%s\\%s', path_par.parent_seq_dir, path_par.time_series_dir);
     path_par.time_series_data_filename = sprintf('%s\\%s', path_par.input_seq_dir, path_par.time_series_data_filename_suffix);    
 
-    % Parameters concerning the prediction of the position of objects
-    pred_par = load_pred_par(path_par);
-    % Hyperparameters to optimize 
-    hppars = load_hyperpar_cv_info( pred_par );
-    
-    %% PROGRAM
+    for pred_meth_idx = 1:length(pred_meths)
+        pred_meth = pred_meths{pred_meth_idx};
 
-    [optim, best_par] = train_eval_predictor_mult_param(hppars, pred_par, path_par, disp_par, beh_par);
-    par_influence = evaluate_par_influence_grid(hppars, pred_par, optim);
-    write_hppar_optim_log_file(hppars, pred_par, path_par, optim, best_par, par_influence, beh_par);
+        % Parameters concerning the prediction of the position of objects
+        pred_par = load_pred_par(path_par, pred_meth);
+        % Hyperparameters to optimize 
+        hppars = load_hyperpar_cv_info(pred_par);
+    
+        %% PROGRAM
+        [optim, best_par] = train_eval_predictor_mult_param(hppars, pred_par, path_par, disp_par, beh_par);
+        par_influence = evaluate_par_influence_grid(hppars, pred_par, optim);
+        write_hppar_optim_log_file(hppars, pred_par, path_par, optim, best_par, par_influence, beh_par);
+
+    end
     
 end

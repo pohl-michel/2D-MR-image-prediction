@@ -17,15 +17,15 @@ beh_par.SAVE_ROI_DISPLAY = false;
 beh_par.SAVE_ORG_IM_SQ = false;
     % For saving jpg images of the original image sequence that we try to predict
 beh_par.SAVE_MEAN_IMAGE = false;
-    % For saveing the average image (over every time step) of the test set
+    % For saving the average image (over every time step) of the test set
 
 beh_par.COMPUTE_OPTICAL_FLOW = true;
     % For computing the optical flow (OF) / deformation vector field (DVF) at every time step and saving the results as mat files
-beh_par.SAVE_OF_JPG = false;
+beh_par.SAVE_OF_JPG = true;
     % For saving DVF images
-beh_par.EVAL_INIT_OF_WARP = false;
+beh_par.EVAL_INIT_OF_WARP = true;
     % For computing statistics describing deformable image registration (DIR) accuracy of the test set
-beh_par.SAVE_INIT_OF_WARP_JPG = false;
+beh_par.SAVE_INIT_OF_WARP_JPG = true;
     % For saving the image at t=1 warped by the initial DVF/OF at time t for each time step t of the test set
 
 beh_par.OPTIMIZE_NB_PCA_CP = true;
