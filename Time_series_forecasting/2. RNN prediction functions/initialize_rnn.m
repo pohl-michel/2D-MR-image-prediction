@@ -1,4 +1,4 @@
-function [pred_par, myRNN] = initialize_rnn(pred_par, beh_par, p, M)
+function [pred_par, myRNN] = initialize_rnn(pred_par, p, M)
 % Initialization of the variables controlling the internal dynamics of the RNN :
 %   - the synaptic weights  
 %   - the system states x
@@ -119,7 +119,7 @@ function [pred_par, myRNN] = initialize_rnn(pred_par, beh_par, p, M)
         myRNN.grad_moments = struct();
     end    
     
-    if beh_par.GPU_COMPUTING
+    if pred_par.GPU_COMPUTING
         
         myRNN.Ypred = gpuArray(myRNN.Ypred);
         myRNN.pred_loss_function = gpuArray(myRNN.pred_loss_function);

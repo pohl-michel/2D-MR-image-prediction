@@ -1,4 +1,4 @@
-function [myRNN] = rnn_UORO( myRNN, pred_par, beh_par, Xdata, Ydata)
+function [myRNN] = rnn_UORO( myRNN, pred_par, Xdata, Ydata)
 % rnn_UORO performs the training of a recurrent neural network (RNN) trained with unbiased online recurrent optimization (UORO) and gradient clipping.
 % Input variables :
 %   - myRNN : RNN structure previously initialized by the function "initialize_rnn"
@@ -49,7 +49,7 @@ function [myRNN] = rnn_UORO( myRNN, pred_par, beh_par, Xdata, Ydata)
             % gtilde is a line vector of size nb_weights
         
         % vector column of random signs
-        if beh_par.GPU_COMPUTING
+        if pred_par.GPU_COMPUTING
             nu = 2*(rand(q,1, 'gpuArray')>.5) - 1;
         else
             nu = 2*(rand(q,1)>.5) - 1;
@@ -89,7 +89,7 @@ function [myRNN] = rnn_UORO( myRNN, pred_par, beh_par, Xdata, Ydata)
         
     end   
     
-    if beh_par.GPU_COMPUTING
+    if pred_par.GPU_COMPUTING
         myRNN.Ypred = gather(myRNN.Ypred);
         myRNN.pred_time_array = gather(myRNN.pred_time_array);
         myRNN.pred_loss_function = gather(myRNN.pred_loss_function);

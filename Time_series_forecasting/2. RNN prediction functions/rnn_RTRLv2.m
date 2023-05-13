@@ -1,4 +1,4 @@
-function [myRNN] = rnn_RTRLv2(myRNN, pred_par, beh_par, Xdata, Ydata)
+function [myRNN] = rnn_RTRLv2(myRNN, pred_par, Xdata, Ydata)
 % rnn_RTRL performs the training and prediction of a recurrent neural network (RNN) trained with real-time recurrent learning (RTRL) and gradient clipping.
 % This formulation of RTRL is the "standard" formulation coming directly from the two expressions of dL/dtheta and dx/dtheta (influence matrix).
 %
@@ -29,7 +29,7 @@ function [myRNN] = rnn_RTRLv2(myRNN, pred_par, beh_par, Xdata, Ydata)
    
     idx_min_Wc = size_Wa + size_Wb + 1;    
 
-    if beh_par.GPU_COMPUTING
+    if pred_par.GPU_COMPUTING
         Jind = 1:(q*(q + m + 1));
         Iind = mod(Jind - 1, q) + 1;
     end
@@ -56,7 +56,7 @@ function [myRNN] = rnn_RTRLv2(myRNN, pred_par, beh_par, Xdata, Ydata)
         % computation of It = dFst/dtheta (immediate jacobian)
         It_compact = phi_prime_z*[(myRNN.x).', u.'];
         
-        if beh_par.GPU_COMPUTING
+        if pred_par.GPU_COMPUTING
             myRNN.It = full(sparse(Iind, Jind, It_compact));
             % https://www.mathworks.com/matlabcentral/answers/1840693-sparse-matrix-from-the-columns-of-an-initial-square-matrix
         else
@@ -91,7 +91,7 @@ function [myRNN] = rnn_RTRLv2(myRNN, pred_par, beh_par, Xdata, Ydata)
         
     end  
 
-    if beh_par.GPU_COMPUTING
+    if pred_par.GPU_COMPUTING
         myRNN.Ypred = gather(myRNN.Ypred);
         myRNN.pred_time_array = gather(myRNN.pred_time_array);
         myRNN.pred_loss_function = gather(myRNN.pred_loss_function);

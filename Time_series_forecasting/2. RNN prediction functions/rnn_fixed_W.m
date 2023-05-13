@@ -1,4 +1,4 @@
-function [myRNN] = rnn_fixed_W(myRNN, pred_par, beh_par, Xdata, Ydata)
+function [myRNN] = rnn_fixed_W(myRNN, pred_par, Xdata, Ydata)
 % rnn_RTRL performs the training and prediction of a recurrent neural network (RNN) whose weights Wa and Wb are fixed (only Wc is learned online).
 % This is a degenerate case which helps provide a lower bound on the performance of RNN learning algorithms.
 %

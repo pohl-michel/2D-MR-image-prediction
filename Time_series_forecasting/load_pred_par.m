@@ -15,6 +15,12 @@ function [pred_par] = load_pred_par(path_par, pred_meth)
     opts.DataRange = '2:2';
     pred_par = table2struct(readtable(path_par.pred_par_filename, opts));
     
+    pred_par.GPU_COMPUTING = false;  
+        % false is the default value - set to true manually inside switch case statement below
+        % increases computation speed with RTRL (and RTRL v2)
+        % NVidia GPU processor and Matlab's parallel computing toolbox is required
+        % also implemented for UORO but not for SnAp-1 and DNI    
+
     switch nargin
         case 1 % Choice of the prediction method by hand (most cases)
             pred_par.pred_meth = 'multivariate linear regression';
@@ -38,6 +44,7 @@ function [pred_par] = load_pred_par(path_par, pred_meth)
             pred_par.GRAD_CLIPPING = true;
             pred_par.grad_threshold = 100.0;    
             pred_par.Winit_std_dev = 0.02;
+            pred_par.GPU_COMPUTING = true;
 
         case 'RTRL v2'
 
@@ -46,6 +53,7 @@ function [pred_par] = load_pred_par(path_par, pred_meth)
             pred_par.GRAD_CLIPPING = true; 
             pred_par.grad_threshold = 100.0;  
 			pred_par.Winit_std_dev = 0.02;
+            pred_par.GPU_COMPUTING = true;
 
         case 'no prediction'
 
@@ -60,7 +68,7 @@ function [pred_par] = load_pred_par(path_par, pred_meth)
             pred_par.update_meth = 'stochastic gradient descent';
             pred_par.GRAD_CLIPPING = true;
             pred_par.grad_threshold = 2.0;
-            % pred_par.grad_threshold = 100.0;
+            pred_par.grad_threshold = 100.0;
 
         case 'UORO'
 

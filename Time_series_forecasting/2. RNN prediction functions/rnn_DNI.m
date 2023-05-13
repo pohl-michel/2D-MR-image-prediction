@@ -1,4 +1,4 @@
-function myRNN = rnn_DNI(myRNN, pred_par, beh_par, X, Ytrue)
+function myRNN = rnn_DNI(myRNN, pred_par, X, Ytrue)
 % rnn_DNI performs the training of a recurrent neural network (RNN) trained with decoupled neural interfaces (DNI) and gradient clipping.
 % Input variables :
 %   - myRNN : RNN structure previously initialized by the function "initialize_rnn"
@@ -86,7 +86,7 @@ function myRNN = rnn_DNI(myRNN, pred_par, beh_par, X, Ytrue)
         
     end   
     
-    if beh_par.GPU_COMPUTING
+    if pred_par.GPU_COMPUTING
         myRNN.Ypred = gather(myRNN.Ypred);
         myRNN.pred_time_array = gather(myRNN.pred_time_array);
         myRNN.pred_loss_function = gather(myRNN.pred_loss_function);

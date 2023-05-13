@@ -1,4 +1,4 @@
-function [ myRNN ] = reset_rnn(myRNN, pred_par, beh_par)
+function [ myRNN ] = reset_rnn(myRNN, pred_par)
 % Re-initialize the RNN after the computation task for one run
 %
 % Author : Pohl Michel
@@ -80,7 +80,7 @@ function [ myRNN ] = reset_rnn(myRNN, pred_par, beh_par)
         myRNN.grad_moments.v_t(:) = 0;                 
     end      
     
-    if beh_par.GPU_COMPUTING
+    if pred_par.GPU_COMPUTING
         
         myRNN.Wa = gpuArray(myRNN.Wa); 
         myRNN.Wb = gpuArray(myRNN.Wb);

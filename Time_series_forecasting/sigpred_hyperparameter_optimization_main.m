@@ -33,9 +33,6 @@ addpath(genpath('6. Auxiliary functions (plotting)'))
 
 %% PARAMETERS
 
-% GPU computing or not
-beh_par.GPU_COMPUTING = false;
-
 % Directories 
 path_par = load_sigpred_path_parameters();
 
@@ -62,9 +59,10 @@ for seq_idx = 1:nb_seq
         hppars = load_hyperpar_cv_info(pred_par);
     
         %% PROGRAM
+        beh_par = struct();
         [optim, best_par] = train_eval_predictor_mult_param(hppars, pred_par, path_par, disp_par, beh_par);
         par_influence = evaluate_par_influence_grid(hppars, pred_par, optim);
-        write_hppar_optim_log_file(hppars, pred_par, path_par, optim, best_par, par_influence, beh_par);
+        write_hppar_optim_log_file(hppars, pred_par, path_par, optim, best_par, par_influence);
 
     end
     

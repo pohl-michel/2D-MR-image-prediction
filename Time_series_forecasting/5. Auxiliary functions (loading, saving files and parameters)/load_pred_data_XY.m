@@ -1,4 +1,4 @@
-function [ X, Y, Mu, Sg] = load_pred_data_XY( path_par, pred_par, beh_par)
+function [ X, Y, Mu, Sg] = load_pred_data_XY( path_par, pred_par)
 % Loading the past data matrix X and the future data matrix Y from the original data file.
 %
 % Example with the prediction of 2 signals of dimension 3
@@ -74,7 +74,7 @@ function [ X, Y, Mu, Sg] = load_pred_data_XY( path_par, pred_par, beh_par)
    
     Y = double(org_data(:, (k+h):(M+k+h-1)));
     
-    if beh_par.GPU_COMPUTING
+    if pred_par.GPU_COMPUTING
         X = gpuArray(X);
         Y = gpuArray(Y);
     end

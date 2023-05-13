@@ -13,7 +13,7 @@ function [Ypred, avg_pred_time, pred_loss_function] = train_and_predict(path_par
 
 
     % loading the "past" data matrix X and the "future" data matrix Y.
-    [ X, Y, Mu, Sg] = load_pred_data_XY( path_par, pred_par, beh_par);
+    [ X, Y, Mu, Sg] = load_pred_data_XY(path_par, pred_par);
 
     switch(pred_par.pred_meth)
         
@@ -29,31 +29,31 @@ function [Ypred, avg_pred_time, pred_loss_function] = train_and_predict(path_par
             avg_pred_time = zeros(pred_par.nb_runs, 1);
             pred_loss_function = zeros(M, pred_par.nb_runs);
             
-            [pred_par, myRNN] = initialize_rnn(pred_par, beh_par, p, M);
+            [pred_par, myRNN] = initialize_rnn(pred_par, p, M);
             
             for run_idx=1:pred_par.nb_runs
                 % we run the prediction algorithm with different initial weigths
                 
                 switch(pred_par.pred_meth)
                     case 'RTRL'
-                        myRNN = rnn_RTRL(myRNN, pred_par, beh_par, X, Y); 
+                        myRNN = rnn_RTRL(myRNN, pred_par, X, Y); 
                     case 'UORO'
-                        myRNN = rnn_UORO(myRNN, pred_par, beh_par, X, Y); 
+                        myRNN = rnn_UORO(myRNN, pred_par, X, Y); 
                     case 'SnAp-1'
-                        myRNN = rnn_SnAp1(myRNN, pred_par, beh_par, X, Y);
+                        myRNN = rnn_SnAp1(myRNN, pred_par, X, Y);
                     case 'DNI'
-                        myRNN = rnn_DNI(myRNN, pred_par, beh_par, X, Y);
+                        myRNN = rnn_DNI(myRNN, pred_par, X, Y);
                     case 'RTRL v2'
-                        myRNN = rnn_RTRLv2(myRNN, pred_par, beh_par, X, Y); 
+                        myRNN = rnn_RTRLv2(myRNN, pred_par, X, Y); 
                     case 'fixed W'
-                        myRNN = rnn_fixed_W(myRNN, pred_par, beh_par, X, Y);
+                        myRNN = rnn_fixed_W(myRNN, pred_par, X, Y);
                 end
                 
                 Ypred(:,:,run_idx) =  myRNN.Ypred;
                 avg_pred_time(run_idx) = mean(myRNN.pred_time_array);
                 pred_loss_function(:,run_idx) = myRNN.pred_loss_function;
             
-                myRNN = reset_rnn(myRNN, pred_par, beh_par);
+                myRNN = reset_rnn(myRNN, pred_par);
                 
             end
             

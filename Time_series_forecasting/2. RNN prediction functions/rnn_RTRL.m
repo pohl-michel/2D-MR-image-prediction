@@ -1,4 +1,4 @@
-function [myRNN] = rnn_RTRL( myRNN, pred_par, beh_par, Xdata, Ydata)
+function [myRNN] = rnn_RTRL( myRNN, pred_par, Xdata, Ydata)
 % rnn_RTRL performs the training and prediction of a recurrent neural network (RNN) trained with real-time recurrent learning (RTRL) and gradient clipping.
 % This formulation of RTRL comes from the book "S. S. Haykin, et al., Neural networks and learning machines, 2009".
 %
@@ -26,7 +26,7 @@ function [myRNN] = rnn_RTRL( myRNN, pred_par, beh_par, Xdata, Ydata)
     p = myRNN.output_space_dim;
 
     % initializing some auxiliary variables
-    if beh_par.GPU_COMPUTING
+    if pred_par.GPU_COMPUTING
         I = reshape(gpuArray.eye(q),q,1,q); % used for calculating U
     else
         I = reshape(eye(q),q,1,q);
@@ -45,7 +45,7 @@ function [myRNN] = rnn_RTRL( myRNN, pred_par, beh_par, Xdata, Ydata)
        
         % II] update of the synaptic weights w and Wc
         aux_mat = transpose(myRNN.Wc)*e;
-        if beh_par.GPU_COMPUTING
+        if pred_par.GPU_COMPUTING
             lmbda_transpose = pagefun(@transpose, myRNN.LBDA);
             myRNN.w_gradient = - squeeze(pagefun(@mtimes, lmbda_transpose, aux_mat));
         else
@@ -66,11 +66,11 @@ function [myRNN] = rnn_RTRL( myRNN, pred_par, beh_par, Xdata, Ydata)
         Phi_n_vec = myRNN.phi_prime(transpose(myRNN.w)*ksi_n);
         myRNN.U = I.*transpose(ksi_n); 
         
-        if beh_par.GPU_COMPUTING
+        if pred_par.GPU_COMPUTING
             myRNN.LBDA = Phi_n_vec.*(pagefun(@mtimes, myRNN.Wa, myRNN.LBDA)+myRNN.U);
         else
             for j=1:q
-                myRNN.LBDA(:,:,j) = Phi_n_vec.*(myRNN.Wa*myRNN.LBDA(:,:,j)+myRNN.U(:,:,j));
+                myRNN.LBDA(:,:,j) = Phi_n_vec.*(myRNN.Wa*myRNN.LBDA(:,:,j)+myRNN.U(:,:,j));s
             end
         end
         
@@ -88,7 +88,7 @@ function [myRNN] = rnn_RTRL( myRNN, pred_par, beh_par, Xdata, Ydata)
         
     end
     
-    if beh_par.GPU_COMPUTING
+    if pred_par.GPU_COMPUTING
         myRNN.Ypred = gather(myRNN.Ypred);
         myRNN.pred_time_array = gather(myRNN.pred_time_array);
         myRNN.pred_loss_function = gather(myRNN.pred_loss_function);

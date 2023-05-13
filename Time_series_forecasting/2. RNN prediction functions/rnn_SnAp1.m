@@ -1,4 +1,4 @@
-function [myRNN] = rnn_SnAp1(myRNN, pred_par, beh_par, Xdata, Ydata)
+function [myRNN] = rnn_SnAp1(myRNN, pred_par, Xdata, Ydata)
 % rnn_SnAp1 performs the training of a recurrent neural network (RNN) trained with SnAp-1 (in the case where the influence matrix is initialized to 0) and gradient clipping.
 % Input variables :
 %   - myRNN : RNN structure previously initialized by the function "initialize_rnn"

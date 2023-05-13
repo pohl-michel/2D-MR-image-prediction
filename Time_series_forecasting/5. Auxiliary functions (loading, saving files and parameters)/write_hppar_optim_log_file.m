@@ -1,4 +1,4 @@
-function write_hppar_optim_log_file( hppars, pred_par, path_par, optim, best_par, par_influence, beh_par)
+function write_hppar_optim_log_file( hppars, pred_par, path_par, optim, best_par, par_influence)
 % Writes the log file containing the results relative to selection of the best hyper-parameters using grid search
 % as well as the influence of each parameter on the prediction accuracy.
 %
@@ -145,7 +145,7 @@ function write_hppar_optim_log_file( hppars, pred_par, path_par, optim, best_par
 
     %% INFLUENCE OF EACH PARAMETERS
 
-    if beh_par.GPU_COMPUTING
+    if pred_par.GPU_COMPUTING
        fprintf(fid, 'Computations with the GPU \n');
     else
        fprintf(fid, 'Computations with the CPU \n');        

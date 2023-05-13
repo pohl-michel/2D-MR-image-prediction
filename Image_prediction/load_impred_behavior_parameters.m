@@ -55,8 +55,6 @@ beh_par.IM_PREDICTION = true;
 beh_par.SAVE_PRED_IM = true; 
     % Saving the predicted images and the thermal difference images
 
-beh_par.GPU_COMPUTING = false; 
-    % For using the GPU when performing prediction
 beh_par.CROP_FOR_DISP_SAVE = false;
     % For saving the deformation vector field images, predicted images, or error images only in the ROI, i.e. the area specified by x_m, x_M, y_m, y_M
 beh_par.EVALUATE_IN_ROI = false;
