@@ -74,6 +74,8 @@ function [optim, best_par] = train_eval_predictor_mult_param(hppars, pred_par, p
     
     %% SEARCH FOR THE BEST PARAMETERS
      
+    fprintf('Eval on test data');
+
     beh_par.SAVE_PREDICTION_PLOT = false;
         
     best_par.rms_cv_error_tab = zeros(hppars.nb_hrz_val, 1);
@@ -134,16 +136,21 @@ function [optim, best_par] = train_eval_predictor_mult_param(hppars, pred_par, p
         end
  
     end
-        
-    parfor hrz_idx = 1:hppars.nb_hrz_val   
- 
-        fprintf('\n \n');
-        fprintf('Eval on test data for h = %d \n', hppars.horizon_tab(hrz_idx))        
-        
-        [Ypred, avg_pred_time, ~] = train_and_predict(path_par, pred_par_cell{hrz_idx}, beh_par);
-        eval_results_best_par(hrz_idx) = pred_eval(beh_par, path_par, pred_par_cell{hrz_idx}, disp_par, Ypred, avg_pred_time);   
-            % eval_results_best_par is a structure array
     
+    if pred_par.PARALLEL_FOR_BEST_PAR_EVAL
+        parfor hrz_idx = 1:hppars.nb_hrz_val   
+            fprintf('\n \n');
+            fprintf('Eval on test data for h = %d \n', hppars.horizon_tab(hrz_idx))         
+            [Ypred, avg_pred_time, ~] = train_and_predict(path_par, pred_par_cell{hrz_idx}, beh_par);
+            eval_results_best_par(hrz_idx) = pred_eval(beh_par, path_par, pred_par_cell{hrz_idx}, disp_par, Ypred, avg_pred_time); % eval_results_best_par is a structure array  
+        end
+    else
+        for hrz_idx = 1:hppars.nb_hrz_val   
+            fprintf('\n \n');
+            fprintf('Eval on test data for h = %d \n', hppars.horizon_tab(hrz_idx))         
+            [Ypred, avg_pred_time, ~] = train_and_predict(path_par, pred_par_cell{hrz_idx}, beh_par);
+            eval_results_best_par(hrz_idx) = pred_eval(beh_par, path_par, pred_par_cell{hrz_idx}, disp_par, Ypred, avg_pred_time); % eval_results_best_par is a structure array  
+        end
     end
         
     for hrz_idx = 1:hppars.nb_hrz_val    
