@@ -66,7 +66,7 @@ nb_layers_test = OFeval_par.nb_layers_max - OFeval_par.nb_layers_min +1;
 nb_iter_test = OFeval_par.nb_max_iter - OFeval_par.nb_min_iter +1;
 
 % final array containing the desired rms scores :
-rms_error_all_seq = zeros(nb_layers_test, length_sigma_LK_tab, nb_iter_test, length_sigma_init_tab, length_sigma_subspl_tab, nb_seq, 'single');
+rms_error_all_seq = zeros(nb_layers_test, length_sigma_LK_tab, nb_iter_test, length_sigma_init_tab, length_sigma_subspl_tab, nb_seq);
 best_par_all_seq = cell(nb_seq, 1);
 
 for im_seq_idx = 1:nb_seq

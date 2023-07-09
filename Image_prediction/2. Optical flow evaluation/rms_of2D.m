@@ -26,12 +26,12 @@ function [ rms_error, best_par ] = rms_of2D( beh_par, OFeval_par, path_par, im_p
     nb_iter_test = OFeval_par.nb_max_iter - OFeval_par.nb_min_iter +1;    
     
     % final array containing the desired rms scores :
-    rms_error = zeros(nb_layers_test, length_sigma_LK_tab, nb_iter_test, length_sigma_init_tab, length_sigma_subspl_tab, 'single');
+    rms_error = zeros(nb_layers_test, length_sigma_LK_tab, nb_iter_test, length_sigma_init_tab, length_sigma_subspl_tab);
     % lines : number of layers
     % columns : sigma_LK
 
     % table of rms at time t
-    rms_t = zeros(nb_layers_test, length_sigma_LK_tab, nb_iter_test, length_sigma_init_tab, length_sigma_subspl_tab,im_par.nb_im -1, 'single');    
+    rms_t = zeros(nb_layers_test, length_sigma_LK_tab, nb_iter_test, length_sigma_init_tab, length_sigma_subspl_tab,im_par.nb_im -1);    
     
     % loading the image at t=1
     I = load_crop_filter2D(1, false, false, 0, im_par, path_par.input_im_dir);

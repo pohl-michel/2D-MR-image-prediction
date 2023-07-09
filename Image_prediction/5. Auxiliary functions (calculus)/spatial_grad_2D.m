@@ -11,7 +11,7 @@
 
 
     [W, L] = size(I);
-    spatial_grad_I = zeros(W, L, 2, 'single');
+    spatial_grad_I = zeros(W, L, 2);
     
 	switch OF_par.grad_meth
     

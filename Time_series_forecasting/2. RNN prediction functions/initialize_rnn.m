@@ -27,8 +27,8 @@ function [pred_par, myRNN] = initialize_rnn(pred_par, p, M)
     
     % evaluation variables initialization
     myRNN.Ypred = zeros(p, M);
-    myRNN.pred_loss_function = zeros(M, 1, 'single');
-    myRNN.pred_time_array = zeros(M, 1, 'single');  
+    myRNN.pred_loss_function = zeros(M, 1);
+    myRNN.pred_time_array = zeros(M, 1);  
     
     % weights initialization
     myRNN.Wa = normrnd(0, sg, [q, q]);

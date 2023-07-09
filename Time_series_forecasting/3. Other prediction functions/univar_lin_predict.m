@@ -13,7 +13,7 @@ function [Ypred, avg_pred_time, pred_loss_function] = univar_lin_predict(pred_pa
     nb_predictions = M-idx_max;
 
     pred_time_tab = zeros(nb_predictions,1);
-    Ypred = zeros(p, nb_predictions, 'single');
+    Ypred = zeros(p, nb_predictions);
 
     Xi = zeros(1+pred_par.SHL, M);
 

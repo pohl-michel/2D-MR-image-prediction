@@ -20,9 +20,9 @@ function [ u ] = OF_LK_2D( spatial_grad_I, deltaIJ, OF_par )
 
 
     [im_2nd_dim, im_1st_dim, ~] = size(spatial_grad_I);
-    u = zeros(im_2nd_dim, im_1st_dim, 2, 'single');
-    M = zeros(im_2nd_dim,im_1st_dim,2,2, 'single');
-    b = zeros(im_2nd_dim,im_1st_dim,2, 'single');
+    u = zeros(im_2nd_dim, im_1st_dim, 2);
+    M = zeros(im_2nd_dim,im_1st_dim,2,2);
+    b = zeros(im_2nd_dim,im_1st_dim,2);
 
     M(:,:,1,1) = imgaussfilt(spatial_grad_I(:,:,1).^2, OF_par.sigma_LK);                           % Ix_squared - then filtering
     M(:,:,1,2) = imgaussfilt(spatial_grad_I(:,:,1).*spatial_grad_I(:,:,2), OF_par.sigma_LK);       % Ix_Iy      - then filtering

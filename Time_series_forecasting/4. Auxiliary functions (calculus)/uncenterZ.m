@@ -11,7 +11,7 @@ function [ X ] = uncenterZ( Z, Mu, Sg )
 % License : 3-clause BSD License
 
 [~, m] = size(Z);
-X = Mu*ones(1,m,'single') + (Sg*ones(1,m,'single')).*Z;
+X = Mu*ones(1,m) + (Sg*ones(1,m)).*Z;
 
 
 end

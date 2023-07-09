@@ -24,7 +24,7 @@ function [ rms ] = my_rmse( I, J, EVALUATE_IN_ROI, im_par)
         y_eval_M = im_par.W; 
     end
 
-    pix_errors = zeros(Wevl, Levl, 'single');
+    pix_errors = zeros(Wevl, Levl);
 
     for x=x_eval_m:x_eval_M
         for y=y_eval_m:y_eval_M

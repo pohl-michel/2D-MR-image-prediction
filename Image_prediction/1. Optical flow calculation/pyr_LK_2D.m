@@ -9,7 +9,7 @@ function [ u_bottom ] = pyr_LK_2D( pyr_I, pyr_J, OF_par )
 
     u_temp = cell(OF_par.nb_layers,1);
     [top_w, top_l] = size(pyr_I{OF_par.nb_layers});
-    u_temp{OF_par.nb_layers} = zeros(top_w, top_l, 2, 'single');
+    u_temp{OF_par.nb_layers} = zeros(top_w, top_l, 2);
         % u_temp{lyr_idx}(y,x,1) contains the x coordinate of the original guess at layer lyr_idx and pixel (x,y)
         % u_temp{lyr_idx}(y,x,2) ------------ y -----------------------------------------------------------------
     aux = @(x) floor((x+1)/2); % auxiliary function for indexing

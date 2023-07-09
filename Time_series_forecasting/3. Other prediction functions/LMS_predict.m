@@ -12,10 +12,10 @@ function [Ypred, avg_pred_time, pred_loss_function] = LMS_predict(pred_par, X, Y
     
     % Variables initialization
     
-    Ypred = zeros(p, M, 'single');
-    pred_loss_function = zeros(M, 1, 'single');
-    pred_time_array = zeros(M, 1, 'single');
-    W = zeros(p, m+1, 'single');
+    Ypred = zeros(p, M);
+    pred_loss_function = zeros(M, 1);
+    pred_time_array = zeros(M, 1);
+    W = zeros(p, m+1);
     
     for t=1:M
 

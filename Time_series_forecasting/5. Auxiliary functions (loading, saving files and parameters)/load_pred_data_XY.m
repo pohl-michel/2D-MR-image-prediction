@@ -96,13 +96,13 @@ function [ Z, Mu, Sg ] = standard_scores( X )
     
     % mean computation
     Mu = mean(X,2);
-    Y = X-Mu*ones(1,m, 'single');
+    Y = X-Mu*ones(1,m);
     
     % standard deviations
     Sg = sqrt(mean(Y.^2, 2));
     
     % matrix centering
-    Z = Y./(Sg*ones(1,m, 'single'));
+    Z = Y./(Sg*ones(1,m));
 
 end
 

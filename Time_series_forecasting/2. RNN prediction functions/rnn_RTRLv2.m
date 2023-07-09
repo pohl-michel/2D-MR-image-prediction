@@ -59,6 +59,7 @@ function [myRNN] = rnn_RTRLv2(myRNN, pred_par, Xdata, Ydata)
         if pred_par.GPU_COMPUTING
             myRNN.It = full(sparse(Iind, Jind, It_compact));
             % https://www.mathworks.com/matlabcentral/answers/1840693-sparse-matrix-from-the-columns-of-an-initial-square-matrix
+            % use myRNN.It = full(sparse(Iind, Jind, double(It_compact))); if there the following error occurs: "double" to solve "Sparse gpuArrays supports only double precision data"
         else
             % the method above without a for loop also work well here without GPU
             for k = 1:(q+m+1)

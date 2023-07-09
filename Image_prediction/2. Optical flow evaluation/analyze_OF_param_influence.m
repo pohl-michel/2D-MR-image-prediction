@@ -19,29 +19,29 @@ function analyze_OF_param_influence( rms_error_all_seq, OFeval_par, beh_par, pat
     nb_layers_evaluated = OFeval_par.nb_layers_max - OFeval_par.nb_layers_min +1;
     nb_iter_evaluated = OFeval_par.nb_max_iter - OFeval_par.nb_min_iter +1;
 
-    sg_init_error_tab = zeros(length_sg_init_tab, nb_seq, 'single');
-    sg_subspl_error_tab = zeros(length_sg_subspl_tab, nb_seq, 'single');
-    sg_LK_error_tab = zeros(length_sg_LK_tab, nb_seq, 'single');    
-    nb_lyr_error_tab = zeros(nb_layers_evaluated, nb_seq, 'single');
-    nb_iter_error_tab = zeros(nb_iter_evaluated, nb_seq, 'single');
+    sg_init_error_tab = zeros(length_sg_init_tab, nb_seq);
+    sg_subspl_error_tab = zeros(length_sg_subspl_tab, nb_seq);
+    sg_LK_error_tab = zeros(length_sg_LK_tab, nb_seq);    
+    nb_lyr_error_tab = zeros(nb_layers_evaluated, nb_seq);
+    nb_iter_error_tab = zeros(nb_iter_evaluated, nb_seq);
     
-    sg_init_min_error_tab = zeros(length_sg_init_tab, nb_seq, 'single');
-    sg_subspl_min_error_tab = zeros(length_sg_subspl_tab, nb_seq, 'single');
-    sg_LK_min_error_tab = zeros(length_sg_LK_tab, nb_seq, 'single');    
-    nb_lyr_min_error_tab = zeros(nb_layers_evaluated, nb_seq, 'single');
-    nb_iter_min_error_tab = zeros(nb_iter_evaluated, nb_seq, 'single');
+    sg_init_min_error_tab = zeros(length_sg_init_tab, nb_seq);
+    sg_subspl_min_error_tab = zeros(length_sg_subspl_tab, nb_seq);
+    sg_LK_min_error_tab = zeros(length_sg_LK_tab, nb_seq);    
+    nb_lyr_min_error_tab = zeros(nb_layers_evaluated, nb_seq);
+    nb_iter_min_error_tab = zeros(nb_iter_evaluated, nb_seq);
     
-    sg_init_error_std_dev_tab = zeros(nb_seq, 1, 'single');
-    sg_subspl_error_std_dev_tab = zeros(nb_seq, 1, 'single');
-    sg_LK_error_std_dev_tab = zeros(nb_seq, 1, 'single');
-    nb_lyr_error_std_dev_tab = zeros(nb_seq, 1, 'single');
-    nb_iter_error_std_dev_tab = zeros(nb_seq, 1, 'single');
+    sg_init_error_std_dev_tab = zeros(nb_seq, 1);
+    sg_subspl_error_std_dev_tab = zeros(nb_seq, 1);
+    sg_LK_error_std_dev_tab = zeros(nb_seq, 1);
+    nb_lyr_error_std_dev_tab = zeros(nb_seq, 1);
+    nb_iter_error_std_dev_tab = zeros(nb_seq, 1);
     
-    sg_init_min_error_std_dev_tab = zeros(nb_seq, 1, 'single');
-    sg_subspl_min_error_std_dev_tab = zeros(nb_seq, 1, 'single');
-    sg_LK_min_error_std_dev_tab = zeros(nb_seq, 1, 'single');
-    nb_lyr_min_error_std_dev_tab = zeros(nb_seq, 1, 'single');
-    nb_iter_min_error_std_dev_tab = zeros(nb_seq, 1, 'single');
+    sg_init_min_error_std_dev_tab = zeros(nb_seq, 1);
+    sg_subspl_min_error_std_dev_tab = zeros(nb_seq, 1);
+    sg_LK_min_error_std_dev_tab = zeros(nb_seq, 1);
+    nb_lyr_min_error_std_dev_tab = zeros(nb_seq, 1);
+    nb_iter_min_error_std_dev_tab = zeros(nb_seq, 1);
     
     for im_seq_idx = 1:nb_seq
     

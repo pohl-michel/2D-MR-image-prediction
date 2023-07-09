@@ -9,7 +9,7 @@ function [ J ] = translate2DIm( I, u )
 
 
     [H, L] = size(I);
-    J = zeros(H, L, 'single');
+    J = zeros(H, L);
     for x=1:L
         for y =1:H
             J(y, x) = my_bil_interp(I, H, L, y+u(y,x,2),x+u(y,x,1));

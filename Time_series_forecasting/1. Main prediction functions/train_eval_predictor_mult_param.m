@@ -35,11 +35,11 @@ function [optim, best_par] = train_eval_predictor_mult_param(hppars, pred_par, p
     
     optim = struct();
     for hrz_idx = 1:hppars.nb_hrz_val
-        optim(hrz_idx).rms_error_tab = zeros(size_other_hyppr_tab, 'single');
-        optim(hrz_idx).rms_error_confidence_half_range_tab = zeros(size_other_hyppr_tab, 'single');
-        optim(hrz_idx).nb_xplosion_tab = zeros(size_other_hyppr_tab, 'single');
-        optim(hrz_idx).nrmse_tab = zeros(size_other_hyppr_tab, 'single');
-        optim(hrz_idx).pred_time_tab = zeros(size_other_hyppr_tab, 'single');           
+        optim(hrz_idx).rms_error_tab = zeros(size_other_hyppr_tab);
+        optim(hrz_idx).rms_error_confidence_half_range_tab = zeros(size_other_hyppr_tab);
+        optim(hrz_idx).nb_xplosion_tab = zeros(size_other_hyppr_tab);
+        optim(hrz_idx).nrmse_tab = zeros(size_other_hyppr_tab);
+        optim(hrz_idx).pred_time_tab = zeros(size_other_hyppr_tab);           
     end
     
     parfor hrz_idx = 1:hppars.nb_hrz_val
@@ -76,25 +76,25 @@ function [optim, best_par] = train_eval_predictor_mult_param(hppars, pred_par, p
      
     beh_par.SAVE_PREDICTION_PLOT = false;
         
-    best_par.rms_cv_error_tab = zeros(hppars.nb_hrz_val, 1, 'single');
-    best_par.nb_expl_cv_tab = zeros(hppars.nb_hrz_val, 1, 'single');
+    best_par.rms_cv_error_tab = zeros(hppars.nb_hrz_val, 1);
+    best_par.nb_expl_cv_tab = zeros(hppars.nb_hrz_val, 1);
     
-    best_par.other_hyppar_tab = zeros(hppars.nb_hrz_val, hppars.nb_additional_params, 'single');
+    best_par.other_hyppar_tab = zeros(hppars.nb_hrz_val, hppars.nb_additional_params);
     
-    best_par.rms_err_test_set_tab = zeros(hppars.nb_hrz_val, 1, 'single');
-    best_par.cf_half_range_rms_err_test_set_tab = zeros(hppars.nb_hrz_val, 1, 'single');
-    best_par.nrmse_test_set_tab = zeros(hppars.nb_hrz_val, 1, 'single');
-    best_par.cf_half_range_nrmse_test_set_tab = zeros(hppars.nb_hrz_val, 1, 'single');    
-    best_par.mean_pt_pos_pred_time_tab = zeros(hppars.nb_hrz_val, 1, 'single');
-    best_par.nb_xplosions_tab = zeros(hppars.nb_hrz_val, 1, 'single');
+    best_par.rms_err_test_set_tab = zeros(hppars.nb_hrz_val, 1);
+    best_par.cf_half_range_rms_err_test_set_tab = zeros(hppars.nb_hrz_val, 1);
+    best_par.nrmse_test_set_tab = zeros(hppars.nb_hrz_val, 1);
+    best_par.cf_half_range_nrmse_test_set_tab = zeros(hppars.nb_hrz_val, 1);    
+    best_par.mean_pt_pos_pred_time_tab = zeros(hppars.nb_hrz_val, 1);
+    best_par.nb_xplosions_tab = zeros(hppars.nb_hrz_val, 1);
 
     % Useful when predicting the position of objects:
-    best_par.mean_err_test_set_tab = zeros(hppars.nb_hrz_val, 1, 'single');
-    best_par.cf_half_range_mean_err_test_set_tab = zeros(hppars.nb_hrz_val, 1, 'single');    
-    best_par.max_err_test_set_tab = zeros(hppars.nb_hrz_val, 1, 'single');
-    best_par.cf_half_range_max_err_test_set_tab = zeros(hppars.nb_hrz_val, 1, 'single');
-    best_par.jitter_test_set_tab = zeros(hppars.nb_hrz_val, 1, 'single');
-    best_par.cf_half_range_jitter_test_set_tab = zeros(hppars.nb_hrz_val, 1, 'single');
+    best_par.mean_err_test_set_tab = zeros(hppars.nb_hrz_val, 1);
+    best_par.cf_half_range_mean_err_test_set_tab = zeros(hppars.nb_hrz_val, 1);    
+    best_par.max_err_test_set_tab = zeros(hppars.nb_hrz_val, 1);
+    best_par.cf_half_range_max_err_test_set_tab = zeros(hppars.nb_hrz_val, 1);
+    best_par.jitter_test_set_tab = zeros(hppars.nb_hrz_val, 1);
+    best_par.cf_half_range_jitter_test_set_tab = zeros(hppars.nb_hrz_val, 1);
 
     pred_par_cell = cell(hppars.nb_hrz_val, 1);
     	% eval_results_best_par is a cell which contains structures

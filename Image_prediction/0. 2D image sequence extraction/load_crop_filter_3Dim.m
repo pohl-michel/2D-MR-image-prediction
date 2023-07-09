@@ -1,7 +1,6 @@
 function [ im ] = load_crop_filter_3Dim(t, CROP, FILTER, sigma_init, im_par, input_im_dir)
 % Returns the image at time t of the image sequence.
 % The image is cropped and/or filtered if specified in the behavior parameters.
-% The returned image is of type 'single' (in order to minimize the memory used).
 %
 % Author : Pohl Michel
 % Date : September 26th, 2022
@@ -31,7 +30,7 @@ function [ im ] = load_crop_filter_3Dim(t, CROP, FILTER, sigma_init, im_par, inp
             im = floor(imgaussfilt3(im, sigma_init));
                 % 1) floor is necessary because otherwise filtered_image has real
                 % values and then enhance_brightness_contrast do not work well.  
-                % 2) the matrix type is still 'single after this operation'
+                % 2) the matrix type of 'im' is still 'single' after this operation if 'im' was single.
     end
 
 end

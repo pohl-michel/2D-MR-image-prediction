@@ -37,7 +37,7 @@ for sk = 1: n_files
     disp(['data size: ', num2str(time_index_max),' x ',  num2str(dim)]);
     
     if marker_idx == 1
-        data_all_markers = zeros(nb_markers*3, time_index_max-1, 'single');
+        data_all_markers = zeros(nb_markers*3, time_index_max-1);
     end
     
     % new data matrix transpose

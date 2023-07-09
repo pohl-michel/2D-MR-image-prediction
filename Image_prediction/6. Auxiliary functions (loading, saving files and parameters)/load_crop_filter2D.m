@@ -1,7 +1,6 @@
 function [ im ] = load_crop_filter2D(t, CROP, FILTER, sigma_init, im_par, input_im_dir)
 % Return the image at time t.
 % The image is cropped (resp. filtered) if CROP (resp. FILTER) is set to "true".
-% The returned image is of type 'single' (that helps minimize the memory used).
 %
 % Remark (2021/01/27): works only with 2D dicom images at the moment
 % Remark (2022/09/18): check again if I need to use the "squeeze" function
@@ -17,7 +16,7 @@ function [ im ] = load_crop_filter2D(t, CROP, FILTER, sigma_init, im_par, input_
     switch im_par.imtype
         case {"dcm", "IMA"}
             im_filename = sprintf('%s\\image%d.%s',input_im_dir, t, im_par.imtype);
-            im = single(squeeze(dicomread(im_filename)));
+            im = squeeze(dicomread(im_filename));
                 % squeeze is necessary because when Matlab opens an image with dicomread, the 3rd dimension is a singleton - Note (2022/09/18): to check again
         case "mat"
             im_filename = sprintf('%s\\image%d.mat',input_im_dir, t);
@@ -33,7 +32,7 @@ function [ im ] = load_crop_filter2D(t, CROP, FILTER, sigma_init, im_par, input_
         fprintf('low pass gaussian filtering of the image at time t = %d \n', t);
             im = floor(imgaussfilt(im, sigma_init));
                 % 1) floor is necessary because otherwise, the filtered image has real values and in turn, enhance_brightness_contrast does not work well.  
-                % 2) the variable type of "im" is still 'single' after this operation
+                % 2) the matrix type of 'im' is still 'single' after this operation if 'im' was single.
     end
 
 end

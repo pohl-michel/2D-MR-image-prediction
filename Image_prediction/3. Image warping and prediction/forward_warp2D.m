@@ -18,12 +18,12 @@ function [Iwarped, im_warp_calc_time] = forward_warp2D(I, u, warp_par)
     [~,~,~,nb_runs] = size(u);
     nb_runs = min(warp_par.nb_runs_for_cc_eval, nb_runs);
         % because sometimes we perform RMS eval on time signal and c.c. eval on image signal and c.c. eval takes much much time 
-    Iwarped = zeros(W, L, nb_runs, 'single');
-    ksum = zeros(W, L, 'single'); % auxiliary coefficient 
+    Iwarped = zeros(W, L, nb_runs);
+    ksum = zeros(W, L); % auxiliary coefficient 
     K = kernel_function2D(warp_par); 
     d = warp_par.filter_dim; % d : half size of the square filter
     [X,Y] = meshgrid(1:(2*d)); % preparing a small coordinate grid fot computing the kernel array used in the gaussian smoothering    
-    im_warp_calc_time_tab = zeros(nb_runs, 1, 'single');
+    im_warp_calc_time_tab = zeros(nb_runs, 1);
     
     for run_idx = 1:nb_runs
     % Selection of a pixel in the image I to be warped ("org" means "arrow origin")
@@ -111,7 +111,7 @@ function K = kernel_function2D(warp_par)
             K = @(mu_y, mu_x) @(y,x) exp(-C*((x-mu_x).^2 + (y-mu_y).^2));  
             
         case 'averaging kernel'
-            K = @(mu_y, mu_x) @(y,x) ones(size(y,1), size(x,1), 'single'); 
+            K = @(mu_y, mu_x) @(y,x) ones(size(y,1), size(x,1)); 
             % K = @(mu_y, mu_x) @(y,x) 1 does not work properly
     end
 
