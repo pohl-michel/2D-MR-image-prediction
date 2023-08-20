@@ -20,8 +20,8 @@ function [pred_par] = load_pred_par(path_par, pred_meth)
         % increases computation speed with RTRL (and RTRL v2)
         % NVidia GPU processor and Matlab's parallel computing toolbox is required
         % also implemented for UORO but not for SnAp-1 and DNI   
-    pred_par.PARALLEL_FOR_BEST_PAR_EVAL = true; 
-        % parallel computing can cause execution to stop with test data if not enough memory on the GPU (because test data arrays are bigger)
+    pred_par.PARALLEL_COMPUTING = true; 
+        % parallel computing can cause execution to stop with test data if not enough memory on the GPU and prevents debugging
         % another option would be to set the number of workers within the parfor loop: https://www.mathworks.com/help/parallel-computing/parfor.html  
 
     switch nargin
@@ -57,7 +57,7 @@ function [pred_par] = load_pred_par(path_par, pred_meth)
             pred_par.grad_threshold = 100.0;  
 			pred_par.Winit_std_dev = 0.02;
             pred_par.GPU_COMPUTING = true;
-            pred_par.PARALLEL_FOR_BEST_PAR_EVAL = false; 
+            pred_par.PARALLEL_COMPUTING = false; 
 
         case 'no prediction'
 
