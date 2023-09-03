@@ -80,7 +80,8 @@ function [Ypred, avg_pred_time, pred_loss_function] = train_and_predict(path_par
     end
     
     if beh_par.SAVE_PRED_RESULTS
-        pred_results_filename = write_pred_result_variables_filename(path_par, pred_par, br_model_par);
+        % pred_results_filename = write_pred_result_variables_filename(path_par, pred_par, br_model_par);
+        pred_results_filename = write_pred_result_variables_filename(path_par, pred_par); % temporary fix
         save(pred_results_filename, 'Ypred', 'avg_pred_time', 'pred_loss_function');
     end
 
