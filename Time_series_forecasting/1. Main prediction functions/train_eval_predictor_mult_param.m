@@ -152,7 +152,7 @@ function [optim, best_par] = train_eval_predictor_mult_param(hppars, pred_par, p
         best_par.rms_cv_error_tab(hrz_idx) = my_min(error_aux_tab);
         lin_idx_min = find(error_aux_tab == best_par.rms_cv_error_tab(hrz_idx));
         
-        idx_vec = my_ind2sub(size(error_aux_tab), lin_idx_min);
+        idx_vec = my_ind2sub(size(error_aux_tab), lin_idx_min(1));
         
         best_par.nb_expl_cv_tab(hrz_idx) = min_expl;
         for hppar_idx = 1:hppars.nb_additional_params
