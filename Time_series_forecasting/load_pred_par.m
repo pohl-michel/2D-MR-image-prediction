@@ -26,7 +26,7 @@ function [pred_par] = load_pred_par(path_par, pred_meth)
 
     switch nargin
         case 1 % Choice of the prediction method by hand (most cases)
-            pred_par.pred_meth = 'multivariate linear regression';
+            pred_par.pred_meth = 'SnAp-1';
         case 2 % prediction method specified in image_prediction_main.m if beh_par.OPTIMIZE_NB_PCA_CP = true 
             pred_par.pred_meth = pred_meth;
     end
@@ -37,8 +37,11 @@ function [pred_par] = load_pred_par(path_par, pred_meth)
 
             pred_par.nb_runs = 1; % because it is not a stochastic method
             pred_par.NORMALIZE_DATA = false;
-            pred_par.tmax_training = 160; % MR data (ETH Zurich)
-            %pred_par.tmax_training = 540; % markers 10 Hz (CPMB paper)
+            pred_par.tmax_training = 160; % MR data (ETH Zurich - CMIG paper)
+
+            % pred_par.tmax_training = 180; % markers 3.33 Hz (CPMB paper)
+            % pred_par.tmax_training = 540; % markers 10 Hz (CPMB paper)
+            % pred_par.tmax_training = 1620; % markers 30 Hz (CPMB paper)
 
         case 'RTRL'
 
@@ -71,7 +74,6 @@ function [pred_par] = load_pred_par(path_par, pred_meth)
             pred_par.NORMALIZE_DATA = true;    
             pred_par.update_meth = 'stochastic gradient descent';
             pred_par.GRAD_CLIPPING = true;
-            pred_par.grad_threshold = 2.0;
             pred_par.grad_threshold = 100.0;
 
         case 'UORO'
@@ -89,6 +91,10 @@ function [pred_par] = load_pred_par(path_par, pred_meth)
             pred_par.nb_runs = 1; % because it is not a stochastic method
             pred_par.NORMALIZE_DATA = false;
             pred_par.tmax_training = 160;   
+
+            % pred_par.tmax_training = 180; % markers 3.33 Hz (CPMB paper)
+            % pred_par.tmax_training = 540; % markers 10 Hz (CPMB paper)
+            % pred_par.tmax_training = 1620; % markers 30 Hz (CPMB paper)
 
 		case 'SnAp-1'
 

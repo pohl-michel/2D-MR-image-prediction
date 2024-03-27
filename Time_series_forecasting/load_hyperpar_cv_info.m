@@ -11,98 +11,162 @@ function [ hppars ] = load_hyperpar_cv_info( pred_par )
     switch(pred_par.pred_meth)
         case 'multivariate linear regression'
             
+            % Common parameters (always true)
             hppars.nb_runs_cv = 1;            
             hppars.nb_runs_eval_test = 1;
             
-            hppars.horizon_tab = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]; 
-            %hppars.horizon_tab = [1, 2, 3, 4, 5, 6, 7];  
-            %hppars.horizon_tab = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21];
+            % % Prediction of the position of external markers (CPMB paper)
+            %
+            % hppars.horizon_tab = [1, 2, 3, 4, 5, 6, 7];                                                               % 3.33 Hz sampling
+            % hppars.horizon_tab = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21];         % 10 Hz sampling
+            % hppars.horizon_tab = [3, 6, 9, 12, 15, 18, 21, 24, 27, 30, 33, 36, 39, 42, 45, 48, 51, 54, 57, 60, 63];   % 30 Hz sampling
+            %
+            % hppars.other(1).name = 'SHL';
+            % hppars.other(1).val = [4, 8, 12, 16, 20];       % 3.33 Hz sampling
+            % hppars.other(1).val = [12, 24, 36, 48, 60];     % 10 Hz sampling    
+            % hppars.other(1).val = [36, 72, 108, 144, 180];  % 30 Hz sampling
+
+            % Next-frame MR image prediction (CMIG paper)
+            hppars.horizon_tab = [1, 2, 3, 4, 5, 6, 7];  
             
             hppars.other(1).name = 'SHL';
             hppars.other(1).val = [6, 12, 18, 24, 30];  
-            %hppars.other(1).val = [12, 24, 36, 48, 60];  
             
-        case 'RTRL'
+        case 'RTRL' % Not used anymore - that was the method in my first CPMB and CMIG papers published in 2021 and 2022
           
+            % The parameters below can correspond to the prediction of the position of markers at 10 Hz (to provide an example).
             hppars.nb_runs_cv = 10;
             hppars.nb_runs_eval_test = 10;
             
             hppars.horizon_tab = [1, 2, 3, 4, 5, 6, 7];
 
-            hppars.other(1).name = 'SHL';
-            %hppars.other(1).val = [10, 25, 40, 55];     
-            hppars.other(1).val = [6, 12, 18, 24, 30];             
-            %hppars.other(1).val = [5, 10, 15, 20, 25, 30, 35, 40, 45, 50];   
+            hppars.other(1).name = 'SHL';  
+            hppars.other(1).val = [12, 24, 36, 48, 60];         
 
             hppars.other(2).name = 'learn_rate';
-            %hppars.other(2).val = [0.02, 0.05, 0.1, 0.2];
             hppars.other(2).val = [0.005, 0.01, 0.02];            
 
             hppars.other(3).name = 'rnn_state_space_dim';
-            %hppars.other(3).val = [10, 20, 30, 40, 50, 60, 70, 80, 90];
-            hppars.other(3).val = [10, 30, 50, 70, 90, 110];            
+            hppars.other(3).val = [10, 25, 40];           
 
 
         case 'RTRL v2'
 
-            %hppars.nb_runs_cv = 50;
-            %hppars.nb_runs_eval_test = 250;    
+            % Prediction of the position of external markers (CPMB paper)
+            % 
+            % hppars.nb_runs_cv = 50;
+            % hppars.nb_runs_eval_test = 300;
+            % 
+            % hppars.horizon_tab = [1, 2, 3, 4, 5, 6, 7];                                                               % 3.33 Hz sampling
+            % hppars.horizon_tab = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21];         % 10 Hz sampling
+            % hppars.horizon_tab = [3, 6, 9, 12, 15, 18, 21, 24, 27, 30, 33, 36, 39, 42, 45, 48, 51, 54, 57, 60, 63];   % 30 Hz sampling
+            % 
+            % hppars.other(1).name = 'SHL';
+            % hppars.other(1).val = [4, 8, 12, 16, 20];       % 3.33 Hz sampling
+            % hppars.other(1).val = [12, 24, 36, 48, 60];     % 10 Hz sampling    
+            % hppars.other(1).val = [36, 72, 108, 144, 180];  % 30 Hz sampling
+            % 
+            % hppars.other(2).name = 'learn_rate';
+            % hppars.other(2).val = [0.005, 0.01, 0.02];            
+            % 
+            % hppars.other(3).name = 'rnn_state_space_dim'; 
+            % hppars.other(3).val = [10, 25, 40];    
+
+
+            % Next-frame MR image prediction (CMIG paper)   
             hppars.nb_runs_cv = 10;
             hppars.nb_runs_eval_test = 10;
 
-            hppars.horizon_tab = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]; 
-            %hppars.horizon_tab = [1, 2, 3, 4, 5, 6, 7];  
-            %hppars.horizon_tab = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21];          
+            hppars.horizon_tab = [1, 2, 3, 4, 5, 6, 7];       
 
             hppars.other(1).name = 'SHL';
             hppars.other(1).val = [6, 12, 18, 24, 30]; 
-            %hppars.other(1).val = [12, 24, 36, 48, 60];
 
             hppars.other(2).name = 'learn_rate';
             hppars.other(2).val = [0.005, 0.01, 0.02];            
-            %hppars.other(2).val = [0.005, 0.01]; 
 
             hppars.other(3).name = 'rnn_state_space_dim'; 
             hppars.other(3).val = [10, 30, 50, 70, 90, 110];            
-            %hppars.other(3).val = [10, 25, 40];   
             
 
         case 'no prediction'
 
+            % Common parameters (always true)
             hppars.nb_runs_cv = 1;
             hppars.nb_runs_eval_test = 1;            
-            
-            %hppars.horizon_tab = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21];      
-            %hppars.horizon_tab = [1, 2, 3, 4, 5, 6, 7];  
-            hppars.horizon_tab = [3, 6, 9, 12, 15, 18, 21, 24, 27, 30, 33, 36, 39, 42, 45, 48, 51, 54, 57, 60, 63];
-            %hppars.horizon_tab = 21;
-            
+
             hppars.other(1).name = 'SHL';
-            hppars.other(1).val = [1]; % The lastest acquired value is used as the predicted value        
+            hppars.other(1).val = [1]; % The lastest acquired value is used as the predicted value      
+
+            % Prediction of the position of external markers (CPMB paper)
+            % hppars.horizon_tab = [1, 2, 3, 4, 5, 6, 7];                                                               % 3.33 Hz sampling
+            % hppars.horizon_tab = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21];         % 10 Hz sampling
+            % hppars.horizon_tab = [3, 6, 9, 12, 15, 18, 21, 24, 27, 30, 33, 36, 39, 42, 45, 48, 51, 54, 57, 60, 63];   % 30 Hz sampling
+   
+            % Next-frame MR image prediction (CMIG paper)
+            hppars.horizon_tab = [1, 2, 3, 4, 5, 6, 7];  
+  
             
         case 'LMS'
             
+            % Common parameters (always true)
             hppars.nb_runs_cv = 1;
             hppars.nb_runs_eval_test = 1;            
-               
-            hppars.horizon_tab = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]; 
-            %hppars.horizon_tab = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21];
-            %hppars.horizon_tab = [1, 2, 3, 4, 5, 6, 7];
+
+            % Prediction of the position of external markers (CPMB paper)
+            %
+            % hppars.horizon_tab = [1, 2, 3, 4, 5, 6, 7];                                                               % 3.33 Hz sampling
+            % hppars.horizon_tab = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21];         % 10 Hz sampling
+            % hppars.horizon_tab = [3, 6, 9, 12, 15, 18, 21, 24, 27, 30, 33, 36, 39, 42, 45, 48, 51, 54, 57, 60, 63];   % 30 Hz sampling
+            % 
+            % hppars.other(1).name = 'SHL';           
+            % hppars.other(1).val = [4, 8, 12, 16, 20];       % 3.33 Hz sampling
+            % hppars.other(1).val = [12, 24, 36, 48, 60];     % 10 Hz sampling    
+            % hppars.other(1).val = [36, 72, 108, 144, 180];  % 30 Hz sampling
+            % 
+            % hppars.other(2).name = 'learn_rate';
+            % hppars.other(2).val = [0.0002, 0.0005, 0.001];             % 3.33 Hz sampling
+            % hppars.other(2).val = [0.0001, 0.0002, 0.0005];            % 10 Hz sampling
+            % hppars.other(2).val = [0.00005, 0.0001, 0.0002];           % 30 Hz sampling
+
+
+            % Next-frame MR image prediction (CMIG paper)
+            hppars.horizon_tab = [1, 2, 3, 4, 5, 6, 7];
             
             hppars.other(1).name = 'SHL';           
-            hppars.other(1).val = [6, 12, 18, 24, 30]; 
-            %hppars.other(1).val = [12, 24, 36, 48, 60];      
+            hppars.other(1).val = [6, 12, 18, 24, 30];     
             
             hppars.other(2).name = 'learn_rate';
             hppars.other(2).val = [0.02, 0.05, 0.1, 0.2];
             
         case 'UORO'
 
+            % Prediction of the position of external markers (CPMB paper)
+            %
+            % hppars.nb_runs_cv = 50;
+            % hppars.nb_runs_eval_test = 300;
+            % 
+            % hppars.horizon_tab = [1, 2, 3, 4, 5, 6, 7];                                                               % 3.33 Hz sampling
+            % hppars.horizon_tab = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21];         % 10 Hz sampling
+            % hppars.horizon_tab = [3, 6, 9, 12, 15, 18, 21, 24, 27, 30, 33, 36, 39, 42, 45, 48, 51, 54, 57, 60, 63];   % 30 Hz sampling
+            % 
+            % hppars.other(1).name = 'SHL'; 
+            % hppars.other(1).val = [4, 8, 12, 16, 20];       % 3.33 Hz sampling
+            % hppars.other(1).val = [12, 24, 36, 48, 60];     % 10 Hz sampling    
+            % hppars.other(1).val = [36, 72, 108, 144, 180];  % 30 Hz sampling  
+            % 
+            % hppars.other(2).name = 'learn_rate';
+            % hppars.other(2).val = [0.005, 0.01, 0.02];
+            % 
+            % hppars.other(3).name = 'rnn_state_space_dim'; 
+            % hppars.other(3).val = [30, 60, 90, 120, 150, 180];
+
+
+            % Next-frame MR image prediction (CMIG paper)            
             hppars.nb_runs_cv = 250;
             hppars.nb_runs_eval_test = 250;
             
-            hppars.horizon_tab = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]; 
-            %hppars.horizon_tab = [1, 2, 3, 4, 5, 6, 7];
+            hppars.horizon_tab = [1, 2, 3, 4, 5, 6, 7];
 
             hppars.other(1).name = 'SHL'; 
             hppars.other(1).val = [6, 12, 18, 24, 30];  
@@ -115,11 +179,31 @@ function [ hppars ] = load_hyperpar_cv_info( pred_par )
             
         case 'SnAp-1'
 
+            % Prediction of the position of external markers (CPMB paper)
+            %
+            % hppars.nb_runs_cv = 50;
+            % hppars.nb_runs_eval_test = 300;         
+            % 
+            % hppars.horizon_tab = [1, 2, 3, 4, 5, 6, 7];                                                               % 3.33 Hz sampling
+            % hppars.horizon_tab = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21];         % 10 Hz sampling
+            % hppars.horizon_tab = [3, 6, 9, 12, 15, 18, 21, 24, 27, 30, 33, 36, 39, 42, 45, 48, 51, 54, 57, 60, 63];   % 30 Hz sampling
+            % 
+            % hppars.other(1).name = 'SHL';
+            % hppars.other(1).val = [4, 8, 12, 16, 20];       % 3.33 Hz sampling
+            % hppars.other(1).val = [12, 24, 36, 48, 60];     % 10 Hz sampling    
+            % hppars.other(1).val = [36, 72, 108, 144, 180];  % 30 Hz sampling  
+            % 
+            % hppars.other(2).name = 'learn_rate';
+            % hppars.other(2).val = [0.005, 0.01, 0.02];
+            % 
+            % hppars.other(3).name = 'rnn_state_space_dim'; 
+            % hppars.other(3).val = [30, 60, 90, 120, 150, 180];
+
+            % Next-frame MR image prediction (CMIG paper)            
             hppars.nb_runs_cv = 250;
             hppars.nb_runs_eval_test = 250;            
             
-            hppars.horizon_tab = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]; 
-            %hppars.horizon_tab = [1, 2, 3, 4, 5, 6, 7];
+            hppars.horizon_tab = [1, 2, 3, 4, 5, 6, 7];
 
             hppars.other(1).name = 'SHL';
             hppars.other(1).val = [6, 12, 18, 24, 30];    
@@ -127,52 +211,89 @@ function [ hppars ] = load_hyperpar_cv_info( pred_par )
             hppars.other(2).name = 'learn_rate';
             hppars.other(2).val = [0.005, 0.01, 0.02];
             
-            hppars.other(3).name = 'rnn_state_space_dim'; 
-            %hppars.other(3).val = [30, 60, 90, 120, 150, 180];    
+            hppars.other(3).name = 'rnn_state_space_dim';  
             hppars.other(3).val = [10, 30, 50, 70, 90, 110];             
 
 
         case 'DNI'
 
+            % Prediction of the position of external markers (CPMB paper)
+            %
             % hppars.nb_runs_cv = 50;
-            % hppars.nb_runs_eval_test = 300;    
+            % hppars.nb_runs_eval_test = 300;
+            % 
+            % hppars.horizon_tab = [1, 2, 3, 4, 5, 6, 7];                                                               % 3.33 Hz sampling
+            % hppars.horizon_tab = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21];         % 10 Hz sampling
+            % hppars.horizon_tab = [3, 6, 9, 12, 15, 18, 21, 24, 27, 30, 33, 36, 39, 42, 45, 48, 51, 54, 57, 60, 63];   % 30 Hz sampling
+            % 
+            % hppars.other(1).name = 'SHL';
+            % hppars.other(1).val = [4, 8, 12, 16, 20];       % 3.33 Hz sampling
+            % hppars.other(1).val = [12, 24, 36, 48, 60];     % 10 Hz sampling    
+            % hppars.other(1).val = [36, 72, 108, 144, 180];  % 30 Hz sampling  
+            % 
+            % hppars.other(2).name = 'learn_rate';
+            % hppars.other(2).val = [0.005, 0.01, 0.02];            
+            % 
+            % hppars.other(3).name = 'learn_rate_A';           
+            % hppars.other(3).val = [0.002];  
+            % 
+            % hppars.other(4).name = 'rnn_state_space_dim'; 
+            % hppars.other(4).val = [30, 60, 90, 120, 150, 180];
+
+            % Next-frame MR image prediction (CMIG paper)      
             hppars.nb_runs_cv = 250;
             hppars.nb_runs_eval_test = 250;  
-
-            % hppars.horizon_tab = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21];      
-            %hppars.horizon_tab = [1, 2, 3, 4, 5, 6, 7];    
-            hppars.horizon_tab = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]; 
+   
+            hppars.horizon_tab = [1, 2, 3, 4, 5, 6, 7]   
 
             hppars.other(1).name = 'SHL';
-            %hppars.other(1).val = [12, 24, 36, 48, 60];
             hppars.other(1).val = [6, 12, 18, 24, 30];
 
             hppars.other(2).name = 'learn_rate';
             hppars.other(2).val = [0.005, 0.01, 0.02];            
-            %hppars.other(2).val = [0.005, 0.01]; 
 
             hppars.other(3).name = 'learn_rate_A';           
             hppars.other(3).val = [0.002];  
 
             hppars.other(4).name = 'rnn_state_space_dim'; 
             hppars.other(4).val = [10, 30, 50, 70, 90, 110];            
-            % hppars.other(4).val = [30, 60, 90, 120, 150, 180];   
 
         case 'fixed W'
+            
+            % Prediction of the position of external markers (CPMB paper)
+            % 
+            % hppars.nb_runs_cv = 50;
+            % hppars.nb_runs_eval_test = 300;
+            % 
+            % hppars.horizon_tab = [1, 2, 3, 4, 5, 6, 7];                                                               % 3.33 Hz sampling
+            % hppars.horizon_tab = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21];         % 10 Hz sampling
+            % hppars.horizon_tab = [3, 6, 9, 12, 15, 18, 21, 24, 27, 30, 33, 36, 39, 42, 45, 48, 51, 54, 57, 60, 63];   % 30 Hz sampling
+            % 
+            % hppars.other(1).name = 'SHL';
+            % hppars.other(1).val = [4, 8, 12, 16, 20];       % 3.33 Hz sampling
+            % hppars.other(1).val = [12, 24, 36, 48, 60];     % 10 Hz sampling    
+            % hppars.other(1).val = [36, 72, 108, 144, 180];  % 30 Hz sampling  
+            % 
+            % hppars.other(2).name = 'learn_rate';
+            % hppars.other(2).val = [0.005, 0.01, 0.02];             
+            % 
+            % hppars.other(3).name = 'rnn_state_space_dim'; 
+            % hppars.other(3).val = [30, 60, 90, 120, 150, 180];
 
-            hppars.nb_runs_cv = 50;
-            hppars.nb_runs_eval_test = 300;    
-
-            hppars.horizon_tab = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21];         
+            % Next-frame MR image prediction (CMIG paper)      
+            hppars.nb_runs_cv = 250;
+            hppars.nb_runs_eval_test = 250;  
+   
+            hppars.horizon_tab = [1, 2, 3, 4, 5, 6, 7]   
 
             hppars.other(1).name = 'SHL';
-            hppars.other(1).val = [12, 24, 36, 48, 60];
+            hppars.other(1).val = [6, 12, 18, 24, 30];
 
             hppars.other(2).name = 'learn_rate';
-            hppars.other(2).val = [0.005, 0.01, 0.02];             
+            hppars.other(2).val = [0.005, 0.01, 0.02];            
 
             hppars.other(3).name = 'rnn_state_space_dim'; 
-            hppars.other(3).val = [30, 60, 90, 120, 150, 180];
+            hppars.other(3).val = [10, 30, 50, 70, 90, 110];            
             
 
     end
