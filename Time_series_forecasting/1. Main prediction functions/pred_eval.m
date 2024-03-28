@@ -100,8 +100,8 @@ function [eval_results] = pred_eval(beh_par, path_par, pred_par, disp_par, Ypred
                 instant_jitter = sqrt(sum((pred_pts_pos(:, (pred_par.t_eval_start+1):pred_par.tmax_pred, :) ...
                                             - pred_pts_pos(:, pred_par.t_eval_start:(pred_par.tmax_pred-1), :)).^2, 3));
             case 2 % prediction of other signals (for instance weights of the PCA of the DVF)
-                instant_jitter = pred_data(:,(pred_par.t_eval_start+1):pred_par.tmax_pred) ...
-                                    - pred_data(:,pred_par.t_eval_start:(pred_par.tmax_pred-1));
+                instant_jitter = abs(pred_data(:,(pred_par.t_eval_start+1):pred_par.tmax_pred) ...
+                                    - pred_data(:,pred_par.t_eval_start:(pred_par.tmax_pred-1)));
         end
         eval_results.jitter(run_idx) = mean(mean(instant_jitter));
 
