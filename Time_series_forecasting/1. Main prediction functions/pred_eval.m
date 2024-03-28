@@ -71,7 +71,7 @@ function [eval_results] = pred_eval(beh_par, path_par, pred_par, disp_par, Ypred
                 end
                 delta = sqrt(delta);
             case 2 % prediction of other signals (for instance weights of the PCA of the DVF)
-                delta = org_data - pred_data;
+                delta = abs(org_data - pred_data);
         end
 
         % loss function
