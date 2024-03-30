@@ -6,6 +6,8 @@ function [my_nrmse_val] = my_nrmse(Ipred, Iorg, EVALUATE_IN_ROI, im_par)
 % Version : v1.0
 % License : 3-clause BSD License
 
+    Ipred = double(Ipred);
+    Iorg = double(Iorg);
 
     my_aux_func = @(x,y) sqrt(sum((x-y).^2));
 

@@ -13,6 +13,7 @@ function [Iwarped, im_warp_calc_time] = forward_warp2D(I, u, warp_par)
 % Version : v1.0
 % License : 3-clause BSD License
 
+    I = double(I);
 
     [W, L] = size(I);
     [~,~,~,nb_runs] = size(u);
