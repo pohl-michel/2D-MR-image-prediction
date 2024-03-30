@@ -1,4 +1,4 @@
-function [Ypred, avg_pred_time, pred_loss_function] = train_and_predict(path_par, pred_par, beh_par, br_model_par )
+function [Ypred, avg_pred_time, pred_loss_function] = train_and_predict(path_par, pred_par, beh_par, br_model_par)
 % This function trains different prediction methods (including RNNs trained with RTRL, UORO, DNI, and SnAp-1)
 % for the prediction of time series data. The information concerning the RNN and the predicted data are stored in the file 'myRNN.mat'.
 % Training and prediction are performed multiple times to account for the random initialization of the initial synaptic weights.
@@ -80,8 +80,11 @@ function [Ypred, avg_pred_time, pred_loss_function] = train_and_predict(path_par
     end
     
     if beh_par.SAVE_PRED_RESULTS
-        % pred_results_filename = write_pred_result_variables_filename(path_par, pred_par, br_model_par);
-        pred_results_filename = write_pred_result_variables_filename(path_par, pred_par); % temporary fix
+        if nargin == 4 % br_model_par is passed as an argument
+            pred_results_filename = write_pred_result_variables_filename(path_par, pred_par, br_model_par);
+        else
+            pred_results_filename = write_pred_result_variables_filename(path_par, pred_par); % temporary fix
+        end
         save(pred_results_filename, 'Ypred', 'avg_pred_time', 'pred_loss_function');
     end
 
