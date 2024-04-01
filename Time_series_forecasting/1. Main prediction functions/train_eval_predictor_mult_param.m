@@ -140,8 +140,14 @@ function [optim, best_par] = train_eval_predictor_mult_param(hppars, pred_par, p
     
     for hrz_idx = 1:hppars.nb_hrz_val
         
-        error_aux_tab = optim(hrz_idx).rms_error_tab;
-            % error_aux_tab contains the RMS values of the prediction algorithm for the considered hyperparameters and the current horizon value
+        % error_aux_tab contains the RMSE / nRMSE values of the prediction algorithm for the considered hyperparameters and the current horizon value
+        switch(pred_par.pred_meth)
+            case 'nRMSE'
+                error_aux_tab = optim(hrz_idx).nrmse_tab;
+            case 'RMSE'
+                error_aux_tab = optim(hrz_idx).rms_error_tab;
+        end        
+        
         nb_xplosion_tab_temp = optim(hrz_idx).nb_xplosion_tab;
         
         min_expl = my_min(nb_xplosion_tab_temp);

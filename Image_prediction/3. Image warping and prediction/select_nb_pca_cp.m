@@ -55,7 +55,7 @@ function [eval_results, best_pred_par_struct, best_pca_cp_tab] = select_nb_pca_c
         beh_par.SAVE_PREDICTION_PLOT = false; % We do not need to plot and save figures here, as we want to do cross validation time fast.
         beh_par.SAVE_PRED_RESULTS = true; % so that eval_of_warp_cor can correctly load the predicted DVF
 
-        %% 2) we calculate the c.c. between the predicted and ground-truth images of the c-v set to determine the best nb. of PCA coeffs for each horizon value h            
+        %% 2) we calculate the c.c. between the predicted and ground-truth images of the c-v set or the registration erro to determine the best nb. of PCA coeffs for each horizon value h            
         parfor hrz_idx = 1:hppars.nb_hrz_val
 
             pred_par_h = pred_par;

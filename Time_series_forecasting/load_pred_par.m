@@ -24,6 +24,9 @@ function [pred_par] = load_pred_par(path_par, pred_meth)
         % parallel computing can cause execution to stop with test data if not enough memory on the GPU and prevents debugging
         % another option would be to set the number of workers within the parfor loop: https://www.mathworks.com/help/parallel-computing/parfor.html  
 
+    pred_par.cross_val_metric = 'nRMSE'; 
+        % One can choose between "nRMSE" and "RMSE" at the moment
+
     switch nargin
         case 1 % Choice of the prediction method by hand (most cases)
             pred_par.pred_meth = 'SnAp-1';
