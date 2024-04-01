@@ -131,7 +131,11 @@ function write_im_pred_log_file(path_par, beh_par, im_par, OF_par, hppars, pred_
         fprintf(fid, 'Confidence half-range of the mean nrmse between predicted and original images : %f \n', eval_results.confidence_half_range_nrmse_im_pred);
         fprintf(fid, 'Mean ssim between predicted and original images : %f \n', eval_results.mean_ssim);
         fprintf(fid, 'Confidence half-range of the mean ssim between predicted and original images : %f \n', eval_results.confidence_half_range_ssim_im_pred);
-        
+        fprintf(fid, 'Mean euclidean error between original and predicted DVF : %f mm \n', eval_results.mean_pred_dvf_error);
+        fprintf(fid, 'Confidence half-range of the mean euclidean error between original and predicted DVF : %f mm \n', eval_results.confidence_half_range_mean_pred_dvf_err);
+        fprintf(fid, 'Max euclidean error between original and predicted DVF : %f mm \n', eval_results.max_pred_dvf_error);
+        fprintf(fid, 'Confidence half-range of the max euclidean error between original and predicted DVF : %f mm \n', eval_results.confidence_half_range_max_pred_dvf_err);
+
         fprintf(fid, 'Same results but for copy-pasting in Excel : \n');
         switch pred_par.pred_meth
             case {'RTRL', 'UORO', 'SnAp-1', 'DNI', 'RTRL v2', 'fixed W'} %RNN
@@ -141,10 +145,16 @@ function write_im_pred_log_file(path_par, beh_par, im_par, OF_par, hppars, pred_
                 fprintf(fid, '%f\n', eval_results.confidence_half_range_nrmse_im_pred);
                 fprintf(fid, '%f\n', eval_results.mean_ssim);
                 fprintf(fid, '%f\n', eval_results.confidence_half_range_ssim_im_pred);
+                fprintf(fid, '%f\n', eval_results.mean_pred_dvf_error);
+                fprintf(fid, '%f\n', eval_results.confidence_half_range_mean_pred_dvf_err);
+                fprintf(fid, '%f\n', eval_results.max_pred_dvf_error);
+                fprintf(fid, '%f\n', eval_results.confidence_half_range_max_pred_dvf_err);
             otherwise
                 fprintf(fid, '%f\n', eval_results.mean_corr_im_pred);
                 fprintf(fid, '%f\n', eval_results.mean_nrmse);
-                fprintf(fid, '%f\n', eval_results.mean_ssim);               
+                fprintf(fid, '%f\n', eval_results.mean_ssim); 
+                fprintf(fid, '%f\n', eval_results.mean_pred_dvf_error); 
+                fprintf(fid, '%f\n', eval_results.max_pred_dvf_error); 
         end
     end        
     

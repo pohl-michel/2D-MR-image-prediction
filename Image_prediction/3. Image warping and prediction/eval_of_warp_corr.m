@@ -29,9 +29,14 @@ function eval_results = eval_of_warp_corr(dvf_type, im_par, OF_par, path_par, wa
         time_signal_pred_results.nb_correct_runs = 1;
     end
 
+    % Storing prediction metrics regarding image pixel intensities
     im_correlation_array = zeros(pred_par.nb_predictions, time_signal_pred_results.nb_correct_runs);   
     mssim_array = zeros(pred_par.nb_predictions, time_signal_pred_results.nb_correct_runs);   
     nrmse_array = zeros(pred_par.nb_predictions, time_signal_pred_results.nb_correct_runs);    
+
+    % Storing prediction metrics regarding geometrical deformation error (assuming that the original OF/DVF is the ground-truth)
+    dvf_mean_error_array = zeros(pred_par.nb_predictions, time_signal_pred_results.nb_correct_runs);  
+    dvf_max_error_array = zeros(pred_par.nb_predictions, time_signal_pred_results.nb_correct_runs);  
     
     if strcmp(dvf_type, 'predicted DVF') && beh_par.SAVE_WARPED_IM % difference color image only if prediction
         diff_im_tensor = zeros(im_par.W, im_par.L, pred_par.nb_predictions);
@@ -39,6 +44,9 @@ function eval_results = eval_of_warp_corr(dvf_type, im_par, OF_par, path_par, wa
     end
     
     for t=pred_par.t_eval_start:pred_par.tmax_pred
+
+        % Loading the original DVF u_t_org between t=1 and t
+        [u_t_org, ~] = load_computeOF_for_warp('initial DVF', t, OF_par, path_par, im_par, br_model_par, pred_par, beh_par, warp_par); % only (t, OF_par, path_par) are used as arguments
 
         % Loading/computing the (predicted or not) DVF u_t between t=1 and t and computing I_warped, which results from warping I_init with u_t.
         if beh_par.NO_PRED_AT_ALL        
@@ -66,6 +74,15 @@ function eval_results = eval_of_warp_corr(dvf_type, im_par, OF_par, path_par, wa
             im_correlation_array(t - pred_par.t_eval_start + 1, run_idx) = corr_two_im2d( I_warped(:,:,run_idx), J, beh_par.EVALUATE_IN_ROI, im_par);
             mssim_array(t - pred_par.t_eval_start + 1, run_idx) = my_ssim(I_warped(:,:,run_idx), J, beh_par.EVALUATE_IN_ROI, im_par);
             nrmse_array(t - pred_par.t_eval_start + 1, run_idx) = my_nrmse(I_warped(:,:,run_idx), J, beh_par.EVALUATE_IN_ROI, im_par);
+
+            % Computing statistics corresponding to the difference between u_t_org and u_t
+            u_t_diff = sqrt((u_t_org(:,:,1) - u_t(:,:,1, run_idx)).^2+(u_t_org(:,:,2) - u_t(:,:,2, run_idx)).^2); % pixel-wise euclidean norm of the difference
+            if EVALUATE_IN_ROI
+                u_t_diff = u_t_diff(im_par.y_m:im_par.y_M, im_par.x_m:im_par.x_M);
+            end 
+            flattened_u_t_diff = u_t_diff(:);
+            dvf_mean_error_array(t - pred_par.t_eval_start + 1, run_idx) = mean(flattened_u_t_diff);
+            dvf_max_error_array(t - pred_par.t_eval_start + 1, run_idx) = max(flattened_u_t_diff);
             
             if (run_idx <= 1) && beh_par.SAVE_WARPED_IM
                 
@@ -101,7 +118,7 @@ function eval_results = eval_of_warp_corr(dvf_type, im_par, OF_par, path_par, wa
         
     end
     
-    eval_results = update_OFwarp_results(dvf_type, eval_results, im_correlation_array, mssim_array, nrmse_array, im_warp_calc_time_array, ...
+    eval_results = update_OFwarp_results(dvf_type, eval_results, im_correlation_array, mssim_array, nrmse_array, dvf_mean_error_array, dvf_max_error_array, im_warp_calc_time_array, ...
                                             OFcalc_time_array, time_signal_pred_results);
     
     % Computing the image difference J-I_warped over t and all the run indexes, and saves it as a thermal image

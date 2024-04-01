@@ -1,4 +1,4 @@
-function eval_results = update_OFwarp_results(dvf_type, eval_results, im_correlation_array, mssim_array, nrmse_array, im_warp_calc_time_array, ...
+function eval_results = update_OFwarp_results(dvf_type, eval_results, im_correlation_array, mssim_array, nrmse_array, dvf_mean_error_array, dvf_max_error_array, im_warp_calc_time_array, ...
                                                                                                                     OFcalc_time_array, time_signal_pred_results)
 % "update_OFwarp_results" computes mean statistics concerning the image reconstruction accuracy (of the test set or cross-validation set): 
 % image correlation, nrmse, ssim, and calculation time.
@@ -41,6 +41,15 @@ function eval_results = update_OFwarp_results(dvf_type, eval_results, im_correla
             % average calculation time for one image
             eval_results.im_warp_calc_time_avg = mean(im_warp_calc_time_array);
             eval_results.OFrec_calc_time_avg = mean(OFcalc_time_array); % OF reconstruction from PCA
+
+            % average deformation error (averaged over the whole cycle)
+            eval_results.mean_pred_dvf_error = mean(mean(dvf_mean_error_array));
+            eval_results.confidence_half_range_mean_pred_dvf_err = 1.96*std(mean(dvf_mean_error_array))/sqrt(time_signal_pred_results.nb_correct_runs);
+
+            % average maximum error (averaged over the whole cycle) - I could take maximum over the cycle, which would lead to a higher error value but the
+            % choice is arbitrary
+            eval_results.max_pred_dvf_error = mean(mean(dvf_max_error_array));
+            eval_results.confidence_half_range_max_pred_dvf_err = 1.96*std(mean(dvf_max_error_array))/sqrt(time_signal_pred_results.nb_correct_runs);
             
     end    
     
