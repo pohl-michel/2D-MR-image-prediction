@@ -141,7 +141,7 @@ function [optim, best_par] = train_eval_predictor_mult_param(hppars, pred_par, p
     for hrz_idx = 1:hppars.nb_hrz_val
         
         % error_aux_tab contains the RMSE / nRMSE values of the prediction algorithm for the considered hyperparameters and the current horizon value
-        switch(pred_par.pred_meth)
+        switch(pred_par.cross_val_metric)
             case 'nRMSE'
                 error_aux_tab = optim(hrz_idx).nrmse_tab;
             case 'RMSE'

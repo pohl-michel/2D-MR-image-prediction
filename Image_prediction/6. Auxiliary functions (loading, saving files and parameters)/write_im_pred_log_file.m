@@ -57,7 +57,7 @@ function write_im_pred_log_file(path_par, beh_par, im_par, OF_par, hppars, pred_
         fprintf(fid, 'Cross-validation between t = %d and t = %d \n', 1+pred_par.tmax_training, pred_par.tmax_cv);
         fprintf(fid, 'Number of runs on the cross validation set due to random weights initialization nb_runs_cv = %d \n', hppars.nb_runs_cv);
 
-        fprintf(fid, 'Cross-validation metric to select forecasting hyper-parameters given a set number of principal components: %s', pred_par.pred_meth);
+        fprintf(fid, 'Cross-validation metric to select forecasting hyper-parameters given a set number of principal components: %s', pred_par.cross_val_metric);
 
         fprintf(fid, 'Range of parameters tested \n');   
         for hppar_idx = 1:hppars.nb_additional_params

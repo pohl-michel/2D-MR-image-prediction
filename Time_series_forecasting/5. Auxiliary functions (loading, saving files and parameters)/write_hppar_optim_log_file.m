@@ -30,7 +30,7 @@ function write_hppar_optim_log_file( hppars, pred_par, path_par, optim, best_par
     fprintf(fid, 'Number of runs on the cross validation set due to random weights initialization nb_runs_cv = %d \n', hppars.nb_runs_cv);   
     fprintf(fid, 'Number of runs on the test set due to random weights initialization nb_runs_test = %d \n', hppars.nb_runs_eval_test);        
 
-    fprintf(fid, 'Cross-validation metric: %s', pred_par.pred_meth);
+    fprintf(fid, 'Cross-validation metric: %s', pred_par.cross_val_metric);
 
     switch(pred_par.pred_meth)
         case {'LMS', 'RTRL', 'UORO', 'SnAp-1', 'DNI', 'RTRL v2', 'fixed W'}

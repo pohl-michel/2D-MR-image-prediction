@@ -79,13 +79,15 @@ function eval_results = eval_of_warp_corr(dvf_type, im_par, OF_par, path_par, wa
             nrmse_array(t - pred_par.t_eval_start + 1, run_idx) = my_nrmse(I_warped(:,:,run_idx), J, beh_par.EVALUATE_IN_ROI, im_par);
 
             % Computing statistics corresponding to the difference between u_t_org and u_t
-            u_t_diff = sqrt((u_t_org(:,:,1) - u_t(:,:,1, run_idx)).^2+(u_t_org(:,:,2) - u_t(:,:,2, run_idx)).^2); % pixel-wise euclidean norm of the difference
-            if EVALUATE_IN_ROI
-                u_t_diff = u_t_diff(im_par.y_m:im_par.y_M, im_par.x_m:im_par.x_M);
-            end 
-            flattened_u_t_diff = u_t_diff(:);
-            dvf_mean_error_array(t - pred_par.t_eval_start + 1, run_idx) = mean(flattened_u_t_diff);
-            dvf_max_error_array(t - pred_par.t_eval_start + 1, run_idx) = max(flattened_u_t_diff);
+            if strcmp(dvf_type, 'predicted DVF')
+                u_t_diff = sqrt((u_t_org(:,:,1) - u_t(:,:,1, run_idx)).^2+(u_t_org(:,:,2) - u_t(:,:,2, run_idx)).^2); % pixel-wise euclidean norm of the difference
+                if beh_par.EVALUATE_IN_ROI
+                    u_t_diff = u_t_diff(im_par.y_m:im_par.y_M, im_par.x_m:im_par.x_M);
+                end 
+                flattened_u_t_diff = u_t_diff(:);
+                dvf_mean_error_array(t - pred_par.t_eval_start + 1, run_idx) = mean(flattened_u_t_diff);
+                dvf_max_error_array(t - pred_par.t_eval_start + 1, run_idx) = max(flattened_u_t_diff);
+            end
             
             if (run_idx <= 1) && beh_par.SAVE_WARPED_IM
                 
