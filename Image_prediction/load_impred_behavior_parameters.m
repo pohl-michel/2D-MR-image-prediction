@@ -19,21 +19,21 @@ beh_par.SAVE_ORG_IM_SQ = false;
 beh_par.SAVE_MEAN_IMAGE = false;
     % For saving the average image (over every time step) of the test set
 
-beh_par.COMPUTE_OPTICAL_FLOW = true;
+beh_par.COMPUTE_OPTICAL_FLOW = false;
     % For computing the optical flow (OF) / deformation vector field (DVF) at every time step and saving the results as mat files
-beh_par.SAVE_OF_JPG = true;
+beh_par.SAVE_OF_JPG = false;
     % For saving DVF images
-beh_par.EVAL_INIT_OF_WARP = true;
+beh_par.EVAL_INIT_OF_WARP = false;
     % For computing statistics describing deformable image registration (DIR) accuracy of the test set
-beh_par.SAVE_INIT_OF_WARP_JPG = true;
+beh_par.SAVE_INIT_OF_WARP_JPG = false;
     % For saving the image at t=1 warped by the initial DVF/OF at time t for each time step t of the test set
 
-beh_par.OPTIMIZE_NB_PCA_CP = true;
+beh_par.OPTIMIZE_NB_PCA_CP = false;
     % For optimizing the number of PCA components for prediction using hyper-parameter grid search
-beh_par.REGISTRATION_ERROR_CV = true;
+beh_par.REGISTRATION_ERROR_CV = false;
     % For optimizing the number of PCA components based on the DVF registration NRMSE rather than cross-correlation between the initial image and the warped images 
 
-beh_par.PCA_OF_DVF = false;
+beh_par.PCA_OF_DVF = true;
     % For computing principal component analysis (PCA) from the DVF data
 beh_par.SAVE_PCA_CP_WEIGHTS_JPG = false;
     % For saving jpg images of the principal components (the 2D principal deformation vectors)
@@ -65,5 +65,8 @@ beh_par.EVALUATE_IN_ROI = false;
 beh_par.SAVE_WARPED_IM = beh_par.SAVE_INIT_OF_WARP_JPG || beh_par.SAVE_PCA_RECONSTR_JPG || beh_par.SAVE_PRED_IM;
 beh_par.SAVE_PREDICTION_PLOT = true;
 beh_par.EVALUATE_PREDICTION = true;
+if (beh_par.TRAIN_EVAL_PREDICTOR && beh_par.IM_PREDICTION)
+    beh_par.SAVE_PRED_RESULTS = true; % because the image prediction step will load the predicted PCA components from disk.
+end
 
 end

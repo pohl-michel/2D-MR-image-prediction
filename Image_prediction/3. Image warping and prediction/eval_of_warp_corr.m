@@ -106,7 +106,7 @@ function eval_results = eval_of_warp_corr(dvf_type, im_par, OF_par, path_par, wa
                     difference_dvf_name = sprintf('predicted dvf error %s t = %d %s %s %d cpts', path_par.input_im_dir_suffix, ...
                         t, pred_par.pred_meth, pred_param_str, br_model_par.nb_pca_cp);
                     
-                    save_crop_thermal_2Dim_jpg_fig(abs(J-I_warped(:,:,run_idx_for_save)), difference_im_name, crop_flag, disp_par, ...
+                    save_crop_thermal_2Dim_jpg_fig(abs(double(J)-I_warped(:,:,run_idx_for_save)), difference_im_name, crop_flag, disp_par, ...
                         path_par, im_par.x_m, im_par.x_M, im_par.y_m, im_par.y_M);
                     save_crop_thermal_2Dim_jpg_fig(u_t_diff, difference_dvf_name, crop_flag, disp_par, ...
                         path_par, im_par.x_m, im_par.x_M, im_par.y_m, im_par.y_M);
@@ -116,7 +116,7 @@ function eval_results = eval_of_warp_corr(dvf_type, im_par, OF_par, path_par, wa
 
             % Computing the image difference J-I_warped at time t and run "run_idx" - and storing as well the difference between original and predicted DVFs
             if strcmp(dvf_type, 'predicted DVF') && beh_par.SAVE_WARPED_IM % difference color image only if prediction
-                temp_runs_tensor(:,:,run_idx) = abs(J-I_warped(:,:,run_idx));
+                temp_runs_tensor(:,:,run_idx) = abs(double(J)-I_warped(:,:,run_idx));
                 temp_runs_dvf_tensor(:,:,run_idx) = u_t_diff;
             end
             
