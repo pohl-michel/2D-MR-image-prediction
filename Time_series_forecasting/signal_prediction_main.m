@@ -13,7 +13,7 @@ clc
 pwd_split_cell = strsplit(pwd, '\');
 pwdir = string(pwd_split_cell(end));
 
-if pwdir == "Future_frame_prediction"
+if any(strcmp({dir(pwd).name},'Time_series_forecasting'))
     cd Time_series_forecasting
 end
 

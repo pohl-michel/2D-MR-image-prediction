@@ -244,7 +244,7 @@ function [ hppars ] = load_hyperpar_cv_info( pred_par )
             hppars.nb_runs_cv = 250;
             hppars.nb_runs_eval_test = 250;  
    
-            hppars.horizon_tab = [1, 2, 3, 4, 5, 6, 7]   
+            hppars.horizon_tab = [1, 2, 3, 4, 5, 6, 7];   
 
             hppars.other(1).name = 'SHL';
             hppars.other(1).val = [6, 12, 18, 24, 30];
@@ -284,7 +284,7 @@ function [ hppars ] = load_hyperpar_cv_info( pred_par )
             hppars.nb_runs_cv = 250;
             hppars.nb_runs_eval_test = 250;  
    
-            hppars.horizon_tab = [1, 2, 3, 4, 5, 6, 7]   
+            hppars.horizon_tab = [1, 2, 3, 4, 5, 6, 7]; 
 
             hppars.other(1).name = 'SHL';
             hppars.other(1).val = [6, 12, 18, 24, 30];
