@@ -33,6 +33,9 @@ addpath(genpath('6. Auxiliary functions (plotting)'))
 
 %% PARAMETERS
 
+% random number generator - generator seed set to 2 and the algorithm set to Mersenne Twister
+rng(0, "twister");
+
 % Directories 
 path_par = load_sigpred_path_parameters();
 

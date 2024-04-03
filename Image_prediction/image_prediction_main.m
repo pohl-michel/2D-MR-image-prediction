@@ -30,6 +30,9 @@ addpath(genpath('6. Auxiliary functions (calculus)'))
 
 %% PARAMETERS 
 
+% random number generator - generator seed set to 2 and the algorithm set to Mersenne Twister
+rng(0, "twister");
+
 % Program behavior
 beh_par = load_impred_behavior_parameters();
 

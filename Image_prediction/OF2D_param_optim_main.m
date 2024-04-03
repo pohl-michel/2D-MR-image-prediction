@@ -20,6 +20,9 @@ end
 
 %% PARAMETERS
 
+% random number generator - generator seed set to 2 and the algorithm set to Mersenne Twister
+rng(0, "twister");
+
 % Program behavior (can be changed)
 beh_par.EVALUATE_IN_ROI = false;
     % when this flag is true, the numerical evaluation is carried only using the ROI
