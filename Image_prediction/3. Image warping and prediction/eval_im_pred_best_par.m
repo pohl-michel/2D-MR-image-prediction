@@ -68,7 +68,7 @@ function eval_im_pred_best_par(eval_results, best_pred_par_struct, best_pca_cp_t
         my_empty_struct = struct();
         eval_results_h = eval_of_warp_corr(dvf_type, im_par, OF_par, path_par_h, warp_par_h, pred_par_h, br_model_par_h, disp_par, beh_par, eval_results_h, my_empty_struct); 
 
-        path_par_h.time_series_data_filename = write_PCAweights_mat_filename(OF_par, path_par, br_model_par_h);
+        path_par_h.time_series_data_filename = write_PCAweights_mat_filename(OF_par, path_par_h, br_model_par_h);
         [Ypred, avg_pred_time, ~] = train_and_predict(path_par_h, pred_par_h, beh_par, br_model_par_h);
         time_signal_pred_results = pred_eval(beh_par, path_par_h, pred_par_h, disp_par, Ypred, avg_pred_time);       
 

@@ -25,6 +25,12 @@ function [eval_results, best_pred_par_struct, best_pca_cp_tab] = select_nb_pca_c
     % Hyperparameters to optimize 
     hppars = load_hyperpar_cv_info(pred_par);
 
+    % Setting some fields of pred_par for cross-validation - to refactor as "train_eval_predictor_mult_param" also has those lines.
+    pred_par.t_eval_start = 1 + pred_par.tmax_training;
+    pred_par.nb_predictions = pred_par.tmax_cv - pred_par.t_eval_start + 1;
+    pred_par.tmax_pred = pred_par.tmax_cv;
+    pred_par.nb_runs = hppars.nb_runs_cv; 
+
     % We redefine nb_pca_cp_max to be the maximum number of PCA components considered, and nb_pca_cp becomes the current value in the loop.
     nb_pca_cp_max = br_model_par.nb_pca_cp;
     br_model_par.nb_pca_cp_max = nb_pca_cp_max;
@@ -38,12 +44,7 @@ function [eval_results, best_pred_par_struct, best_pca_cp_tab] = select_nb_pca_c
 
         % Computation of PCA 
         % [I returned W & F for debugging purposes - the data is saved in the last lines of compute_PCA_of_DVF and loaded later when needed]
-        [W, F, Xmean, ~] = compute_PCA_of_DVF(beh_par, disp_par, OF_par, im_par, path_par, pred_par, br_model_par, eval_results);
-
-        pred_par.t_eval_start = 1 + pred_par.tmax_training;
-        pred_par.nb_predictions = pred_par.tmax_cv - pred_par.t_eval_start + 1;
-        pred_par.tmax_pred = pred_par.tmax_cv;
-        pred_par.nb_runs = hppars.nb_runs_cv;               
+        [W, F, Xmean, ~] = compute_PCA_of_DVF(beh_par, disp_par, OF_par, im_par, path_par, pred_par, br_model_par, eval_results);              
 
         %% 1) We optimize the hyper-parameters for all values of h using the PCA weights of the cross-validation set
         % [I return optim for debugging purposes]
@@ -55,7 +56,7 @@ function [eval_results, best_pred_par_struct, best_pca_cp_tab] = select_nb_pca_c
         beh_par.SAVE_PREDICTION_PLOT = false; % We do not need to plot and save figures here, as we want to do cross validation time fast.
         beh_par.SAVE_PRED_RESULTS = true; % so that eval_of_warp_cor can correctly load the predicted DVF
 
-        %% 2) we calculate the c.c. between the predicted and ground-truth images of the c-v set or the registration erro to determine the best nb. of PCA coeffs for each horizon value h            
+        %% 2) we calculate the c.c. between the predicted and ground-truth images of the c-v set or the registration error to determine the best nb. of PCA coeffs for each horizon value h            
         parfor hrz_idx = 1:hppars.nb_hrz_val
 
             pred_par_h = pred_par;
