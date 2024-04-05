@@ -24,28 +24,26 @@ function eval_im_pred_best_par(eval_results, best_pred_par_struct, best_pca_cp_t
 
     log_txt_filename_suffix_temp = path_par.log_txt_filename(1:end-4); % we suppress the extension .txt
 
-    dvf_type = 'initial DVF'; % warping with the initial optical flow
+    fprintf("Evaluation of the test set when warping 1st image with initial optical flow \n");
+    dvf_type = 'initial DVF';
     my_empty_struct = struct();
     eval_results = eval_of_warp_corr(dvf_type, im_par, OF_par, path_par, warp_par, pred_par, br_model_par, disp_par, beh_par, eval_results, my_empty_struct);                   
 
     beh_par.EVAL_INIT_OF_WARP = true;            
     beh_par.IM_PREDICTION = true;
     beh_par.EVAL_PCA_RECONSTRUCT = true;  
+    beh_par.SAVE_PRED_RESULTS = true; % so that eval_of_warp_cor can correctly load the predicted DVF
 
     eval_results_cell = cell(1, hppars.nb_hrz_val);
 
-    % Computation of PCA inside a for loop otherwise different threads may attempt to write the same file, leading to a "corrupt file" error 
-    for hrz_idx = 1:hppars.nb_hrz_val
-
+    fprintf("Computation of the PCA components with the optimal number of components for each horizon tested \n");
+    for hrz_idx = 1:hppars.nb_hrz_val % for loop otherwise different threads may attempt to write the same file, leading to a "corrupt file" error
         pred_par.horizon = hppars.horizon_tab(hrz_idx);
         br_model_par_h.nb_pca_cp = best_pca_cp_tab(hrz_idx);
-
         for hppar_idx = 1:hppars.nb_additional_params
             pred_par.(hppars.other(hppar_idx).name) = best_pred_par_struct(br_model_par_h.nb_pca_cp).other_hyppar_tab(hrz_idx, hppar_idx);
         end                
-
         [W, F, Xmean, eval_results_cell{1, hrz_idx}] = compute_PCA_of_DVF(beh_par, disp_par, OF_par, im_par, path_par, pred_par, br_model_par_h, eval_results); 
-
     end
 
     parfor hrz_idx = 1:hppars.nb_hrz_val
@@ -64,7 +62,8 @@ function eval_im_pred_best_par(eval_results, best_pred_par_struct, best_pca_cp_t
             pred_par_h.(hppars.other(hppar_idx).name) = best_pred_par_struct(br_model_par_h.nb_pca_cp).other_hyppar_tab(hrz_idx, hppar_idx);
         end                
 
-        dvf_type = 'DVF from PCA'; % warping with the signal reconstructed from PCA on the test set
+        fprintf("Evaluation of the test set when warping 1st image with optical flow reconstructed from original PCA time-dependent weights \n");
+        dvf_type = 'DVF from PCA';
         my_empty_struct = struct();
         eval_results_h = eval_of_warp_corr(dvf_type, im_par, OF_par, path_par_h, warp_par_h, pred_par_h, br_model_par_h, disp_par, beh_par, eval_results_h, my_empty_struct); 
 
@@ -72,7 +71,8 @@ function eval_im_pred_best_par(eval_results, best_pred_par_struct, best_pca_cp_t
         [Ypred, avg_pred_time, ~] = train_and_predict(path_par_h, pred_par_h, beh_par, br_model_par_h);
         time_signal_pred_results = pred_eval(beh_par, path_par_h, pred_par_h, disp_par, Ypred, avg_pred_time);       
 
-        dvf_type = 'predicted DVF'; % warping with the predicted optical flow on the test set
+        fprintf("Evaluation of the test set when warping 1st image with optical flow reconstructed from predicted PCA time-dependent weights \n");
+        dvf_type = 'predicted DVF';
         warp_par_h.nb_runs_for_cc_eval = min(nb_runs_for_cc_eval, time_signal_pred_results.nb_correct_runs);
         time_signal_pred_results.nb_correct_runs = warp_par_h.nb_runs_for_cc_eval;            
         eval_results_h = eval_of_warp_corr(dvf_type, im_par, OF_par, path_par_h, warp_par_h, pred_par_h, br_model_par_h, disp_par, beh_par, eval_results_h, time_signal_pred_results);

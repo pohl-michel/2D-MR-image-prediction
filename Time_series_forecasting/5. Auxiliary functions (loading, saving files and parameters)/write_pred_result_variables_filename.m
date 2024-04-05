@@ -6,7 +6,7 @@ function [str] = write_pred_result_variables_filename(path_par, pred_par, br_mod
 % Version : v1.1
 % License : 3-clause BSD License
 
-    str = sprintf('%s\\pred_result_variables %s %s %s', path_par.temp_var_dir, path_par.time_series_dir, pred_par.pred_meth, sprintf_pred_param(pred_par));
+    str = sprintf('%s\\pred_result_variables %s tmax_pred=%d %s %s', path_par.temp_var_dir, path_par.time_series_dir, pred_par.tmax_pred, pred_par.pred_meth, sprintf_pred_param(pred_par));
     if nargin == 3 % br_model_par is passed as an argument
         str = sprintf('%s %d pca cpts', str, br_model_par.nb_pca_cp);
     end
