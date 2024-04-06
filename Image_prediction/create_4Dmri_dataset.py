@@ -22,7 +22,7 @@ org_data_rel_dirs = [
     "2020-11-26_NE38/Nav_Pur_1"
 ]
 
-out_base_dir = "/mnt/d/Programming2/Matlab_workspace/Future_frame_prediction/Image_prediction/a. Input images/2D images"
+out_base_dir = "/mnt/d/Programming2/Matlab_workspace/Future_frame_prediction/Image_prediction/input_imgs/2D images"
 
 for rel_dir in org_data_rel_dirs:
 

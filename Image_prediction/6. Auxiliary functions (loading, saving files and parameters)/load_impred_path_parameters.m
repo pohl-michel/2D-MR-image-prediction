@@ -10,15 +10,15 @@ function [ path_par ] = load_impred_path_parameters()
     path_par.date_and_time = sprintf('%s %s', datestr(datetime, 'yyyy - mm - dd HH AM MM'), 'min');
 
     % directory of the input images ("pref" means "prefix")
-    path_par.input_im_dir_pref = 'a. Input images\2D images';
+    path_par.input_im_dir_pref = 'input_imgs\2D images';
     % directory for saving temporary fig files
-    path_par.temp_fig_dir = 'b. Temporarily saved figures';
+    path_par.temp_fig_dir = 'tmp_figs';
     % directory for saving temporary images
-    path_par.temp_im_dir = 'c. Temporarily saved images';
+    path_par.temp_im_dir = 'tmp_imgs';
     % directory for saving temporary variables
-    path_par.temp_var_dir = 'd. Temporarily saved variables';
+    path_par.temp_var_dir = 'tmp_vars';
     % directory for saving log files
-    path_par.txt_file_dir = 'e. Temporarily saved txt files';
+    path_par.txt_file_dir = 'tmp_txt_files';
 
     % check if the directories listed above exist and create them if they do not
     if ~exist(path_par.temp_fig_dir, 'dir')

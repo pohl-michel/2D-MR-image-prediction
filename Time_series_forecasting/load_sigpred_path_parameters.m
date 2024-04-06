@@ -36,10 +36,10 @@ function [ path_par ] = load_sigpred_path_parameters()
     
     % time series data directories
     path_par.time_series_dir_tab = [
-       string('Ext markers seq 1');
+       % string('Ext markers seq 1');
 %          string('Ext markers seq 2');
-%          string('Ext markers seq 3');
-%          string('Ext markers seq 4');
+%         string('Ext markers seq 3');
+%         string('Ext markers seq 4');
 %          string('Ext markers seq 5');
 %          string('Ext markers seq 6');
 %          string('Ext markers seq 7');
@@ -63,10 +63,14 @@ function [ path_par ] = load_sigpred_path_parameters()
 %         string('Ext markers seq 7  3.33 Hz'); 
 %         string('Ext markers seq 8  3.33 Hz'); 
 %         string('Ext markers seq 9  3.33 Hz');      
-%         string('2. sq sl010 sag Xcs=125 3 cpts');
-        %string('3. sq sl010 sag Xcs=80 3 cpts');
-        %string('4. sq sl014 sag Xcs=165 3 cpts');
-        %string('5. sq sl014 sag Xcs=95 3 cpts');
+        % string('2. sq sl010 sag Xcs=125 3 cpts');
+        % string('3. sq sl010 sag Xcs=80 3 cpts');
+        % string('4. sq sl014 sag Xcs=165 3 cpts');
+        % string('5. sq sl014 sag Xcs=95 3 cpts');
+        string('2. sq sl010 sag Xcs=125 3 cpts 2024');
+        %string('3. sq sl010 sag Xcs=80 3 cpts 2024');
+        %string('4. sq sl014 sag Xcs=165 3 cpts 2024');
+        %string('5. sq sl014 sag Xcs=95 3 cpts 2024');        
         ];
     
     % time series data filenames

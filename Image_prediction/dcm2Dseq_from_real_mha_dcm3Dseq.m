@@ -56,8 +56,8 @@ transformation_par.t_init = [4, 4, 2, 2];
 %% OTHER PARAMETERS
 
 % Directories 
-path_par.input_im_dir_pref = 'a. Input images\\Original 3D images';
-path_par.output_im_dir_pref = 'a. Input images\\2D images';
+path_par.input_im_dir_pref = 'input_imgs\\Original 3D images';
+path_par.output_im_dir_pref = 'input_imgs\\2D images';
 path_par.im_par_filename = 'im_seq_par.xlsx';
 path_par.im_seq_par_txt_filename = 'Sequence parameters.txt';
 path_par.disp_par_filename = 'disp_par.xlsx';    

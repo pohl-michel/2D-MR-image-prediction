@@ -1,8 +1,8 @@
-/Image_prediction/a. Input images/
-/Image_prediction/b. Temporarily saved figures/
-/Image_prediction/c. Temporarily saved images/
-/Image_prediction/d. Temporarily saved variables/
-/Image_prediction/e. Temporarily saved txt files/
+/Image_prediction/input_imgs/
+/Image_prediction/tmp_figs/
+/Image_prediction/tmp_imgs/
+/Image_prediction/tmp_vars/
+/Image_prediction/tmp_txt_files/
 /Image_prediction/tests
 /Time_series_forecasting/Original data
 /Time_series_forecasting/a. Input time series sequences
