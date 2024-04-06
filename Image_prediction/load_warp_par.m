@@ -24,6 +24,6 @@ function [ warp_par ] = load_warp_par()
            warp_par.filter_dim = warp_par.min_filter_dim;
     end
          
-    warp_par.nb_runs_for_cc_eval = 5;    
+    warp_par.nb_runs_for_cc_eval = 1;    
     
 end

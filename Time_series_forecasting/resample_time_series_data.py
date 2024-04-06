@@ -79,7 +79,7 @@ else:
     for t in range(org_Tmax):
         temp[:, resample_factor * t] = org_time_data[:, t]
         for delta_t in range(resample_factor - 1):
-            temp[:, 3 * t + delta_t + 1] = np.nan   # broadcasting
+            temp[:, resample_factor * t + delta_t + 1] = np.nan   # broadcasting
 
     # Upsampling the input data using cubic interpolation with Pandas
     for dim_idx in range(data_dim):

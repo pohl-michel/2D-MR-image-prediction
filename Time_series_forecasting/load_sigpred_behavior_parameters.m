@@ -14,7 +14,7 @@ beh_par.EVALUATE_PREDICTION = true;
 beh_par.SAVE_PREDICTION_PLOT = true;
     % if set to true, the predicted positions of the objects as well as the error loss function will be saved.
     
-beh_par.SAVE_PRED_RESULTS = false;    
+beh_par.SAVE_PRED_RESULTS = true;    
     % if set to true, a mat file containing the prediction results (predicted objects' positions, loss function, and prediction time) will be saved.
 	
 end

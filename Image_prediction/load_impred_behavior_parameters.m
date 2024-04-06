@@ -35,24 +35,24 @@ beh_par.REGISTRATION_ERROR_CV = false;
 
 beh_par.PCA_OF_DVF = true;
     % For computing principal component analysis (PCA) from the DVF data
-beh_par.SAVE_PCA_CP_WEIGHTS_JPG = false;
+beh_par.SAVE_PCA_CP_WEIGHTS_JPG = true;
     % For saving jpg images of the principal components (the 2D principal deformation vectors)
 beh_par.EVAL_PCA_RECONSTRUCT = false;
     % For evaluating the quality of the DVFs reconstructed with a few principal components by warping the initial image at t=1 by the DVF at time t for each
     % time step t of the test set
-beh_par.SAVE_PCA_RECONSTR_JPG = false;
+beh_par.SAVE_PCA_RECONSTR_JPG = true;
     % For saving the image at t=1 warped by the DVF/OF reconstructed from PCA at time t for each time step t of the test set
 
-beh_par.TRAIN_EVAL_PREDICTOR = true;
+beh_par.TRAIN_EVAL_PREDICTOR = false;
     % For training and evaluating the prediction/forecast of the PCA weights
-beh_par.SAVE_PRED_RESULTS = true;
+beh_par.SAVE_PRED_RESULTS = false;
     % For saving a mat file containing the prediction results (predicted PCA weights, loss function, and prediction time)
 
 beh_par.NO_PRED_AT_ALL = false; 
     % The original images are used instead of predicted images as a base case for performance evaluation
-beh_par.IM_PREDICTION = true; 
+beh_par.IM_PREDICTION = false; 
     % Performing image prediction
-beh_par.SAVE_PRED_IM = true; 
+beh_par.SAVE_PRED_IM = false; 
     % Saving the predicted images and the thermal difference images
 
 beh_par.CROP_FOR_DISP_SAVE = false;
