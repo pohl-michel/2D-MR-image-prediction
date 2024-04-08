@@ -57,7 +57,7 @@ input_im_dir_suffix_tab = [
 pred_meths = {'no prediction'};
 
 % br_model_par.nb_pca_cp_tab = [4, 4, 4, 4, 4, 4, 4, 4]; % length = nb of sequences to process
-br_model_par.nb_pca_cp_tab = [2];
+br_model_par.nb_pca_cp_tab = [4];
 %br_model_par.nb_pca_cp_tab = [4, 4, 4, 4];
 % br_model_par.nb_pca_cp_tab = [3, 3, 3, 3]; % For the experiment where I predict 3 components
 

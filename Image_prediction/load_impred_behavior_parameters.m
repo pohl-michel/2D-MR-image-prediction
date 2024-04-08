@@ -68,5 +68,6 @@ beh_par.EVALUATE_PREDICTION = true;
 if (beh_par.TRAIN_EVAL_PREDICTOR && beh_par.IM_PREDICTION)
     beh_par.SAVE_PRED_RESULTS = true; % because the image prediction step will load the predicted PCA components from disk.
 end
+beh_par.NORMALIZE_EIGENVECTORS = true; % otherwise different machines or versions of matlab can return principal components and weights with opposite signs
 
 end

@@ -61,7 +61,7 @@ function [Wtrain, F, Xtrain_mean, eval_results] = compute_PCA_of_DVF(beh_par, di
     
     % Computation of the principal components using the centered training data
     pca_obj = myPCA(br_model_par.nb_pca_cp);
-    [ Wtrain, ~, ~, pca_obj ] = pca_obj.fit(Xtrain_centered);
+    [ Wtrain, ~, ~, pca_obj ] = pca_obj.fit(Xtrain_centered, beh_par.NORMALIZE_EIGENVECTORS);
 
     % Computation of the weights for all time t using the former principal components
     [F, weights_calc_time] = pca_obj.compute_weights(Xcentered);

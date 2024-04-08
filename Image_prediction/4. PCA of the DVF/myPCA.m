@@ -23,7 +23,7 @@ classdef myPCA
 
         end
 
-        function [ W, F, LAMBDA_squared_elts, pca_obj ] = fit(pca_obj, X)
+        function [ W, F, LAMBDA_squared_elts, pca_obj ] = fit(pca_obj, X, normalize_eigenvectors)
             % Computes PCA given the data matrix X and returns the m principal components' matrix F, the associated weight matrix W, and the eigenvalues LAMBDA_squared_elts.
             % Usually, the input matrix X needs to be centered, i.e., each column of X should have a mean equal to 0. 
             %
@@ -38,6 +38,10 @@ classdef myPCA
             % Rk 2: The PCA notations in the code, in the paper/thesis, and in the book (Adachi, Matrix-based introduction to Mult. data analysis) differ:
             %  - F in the code/book <-> W in the paper/thesis (weight matrix)
             %  - W in the code/book <-> U in the paper/thesis (principal component matrix)
+            %
+            % Rk 3: % the "eigs" method return eigenvectors with signs varying depending on the machine or the Matlab version
+            % https://www.mathworks.com/help/matlab/ref/eigs.html 
+            % When normalize_eigenvectors is set to true, we multiply each eigenvector by the sign of its first nonzero element for repeatability.
 
             % spectral decomposition of the matrix X*X^t
             % [n,~] = size(X);
@@ -49,13 +53,18 @@ classdef myPCA
             % sort the elements of D and return them as a vector 
             [LAMBDA_squared_elts, ind] = sort(diag(D), 'descend');
             
-            % matrices from the singular decomposition of X
+            % sorted eigenvector matrix
             K_m = V(:,ind);
+
+            if normalize_eigenvectors
+                K_m = normalize(K_m);
+            end
+
+            % vector containing the square root of the eigenvectors 
             lambda_m_vec = sqrt(LAMBDA_squared_elts);
-            lambda_m = diag(lambda_m_vec);
             
             % principal components scores matrix
-            F = K_m*lambda_m;
+            F = K_m*diag(lambda_m_vec);
             
             % weight matrix
             W = (X')*K_m*diag((lambda_m_vec.^-1));
@@ -84,4 +93,23 @@ classdef myPCA
         end
 
     end
+end
+
+function normalized_K = normalize(K)
+    % multiplies each column of the matrix K by the sign of its first non-zero element
+
+    % Find indices of first non-zero elements in each column
+    [~, first_nonzero_idx] = max(K~=0, [], 1);
+
+    % column indices
+    col_idces = (0:size(K, 2)-1);
+    
+    % number of rows
+    nb_rows = size(K, 1);
+
+    % Extract signs of first non-zero elements
+    signs = sign(K(first_nonzero_idx + col_idces*nb_rows));
+
+    normalized_K = K .* signs;
+
 end
