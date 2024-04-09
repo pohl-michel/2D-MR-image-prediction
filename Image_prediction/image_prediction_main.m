@@ -52,8 +52,8 @@ input_im_dir_suffix_tab = [
     % string('2020-11-26_NE38_Nav_Pur_1');
     ];
 
-% Prediction methods to test if beh_par.OPTIMIZE_NB_PCA_CP == true
-% pred_meths = {'multivariate linear regression', 'LMS', 'UORO', 'SnAp-1', 'DNI', 'RTRL v2', 'no prediction'};
+% Prediction methods to test if beh_par.OPTIMIZE_NB_PCA_CP == true - otherwise the prediction method is that specified in load_pred_par
+% pred_meths = {'multivariate linear regression', 'LMS', 'UORO', 'SnAp-1', 'DNI', 'RTRL v2', 'no prediction', 'fixed W'};
 pred_meths = {'no prediction'};
 
 % br_model_par.nb_pca_cp_tab = [4, 4, 4, 4, 4, 4, 4, 4]; % length = nb of sequences to process
