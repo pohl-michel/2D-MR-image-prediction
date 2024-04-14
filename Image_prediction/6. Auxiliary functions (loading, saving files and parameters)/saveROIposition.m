@@ -21,7 +21,7 @@ function saveROIposition(im_par, path_par, disp_par)
     rectangle('Position',[im_par.x_m, im_par.y_m, ROIx_size, ROIy_size],'EdgeColor','r','LineWidth', disp_par.ROI_rectangle_linew)
 
     fprintf('saving position of ROI image \n');
-    filename = sprintf('%s\\%s %s', path_par.temp_im_dir, path_par.input_im_dir_suffix, 'ROI_position_tinit');
+    filename = sprintf('%s\\%s %s.png', path_par.temp_im_dir, path_par.input_im_dir_suffix, 'ROI_position_tinit');
     set(gca,'position',[0 0 1 1],'units','normalized');
     print(filename, '-dpng', disp_par.wrp_im_res);
     close(f);
