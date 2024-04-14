@@ -29,7 +29,7 @@ function [pred_par] = load_pred_par(path_par, pred_meth)
 
     switch nargin
         case 1 % Choice of the prediction method by hand (most cases)
-            pred_par.pred_meth = 'no prediction';
+            pred_par.pred_meth = 'UORO';
         case 2 % prediction method specified in image_prediction_main.m if beh_par.OPTIMIZE_NB_PCA_CP = true 
             pred_par.pred_meth = pred_meth;
     end

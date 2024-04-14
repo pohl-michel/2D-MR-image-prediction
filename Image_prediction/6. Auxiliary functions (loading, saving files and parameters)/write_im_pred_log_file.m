@@ -28,8 +28,6 @@ function write_im_pred_log_file(path_par, beh_par, im_par, OF_par, hppars, pred_
         fprintf(fid, 'x_M = %d \n', im_par.x_M);        
         fprintf(fid, 'y_m = %d \n', im_par.y_m);        
         fprintf(fid, 'y_M = %d \n', im_par.y_M); 
-        fprintf(fid, 'z_m = %d \n', im_par.z_m);        
-        fprintf(fid, 'z_M = %d \n', im_par.z_M);
     else
         fprintf(fid, 'evaluation in the entire image \n');
     end
@@ -113,7 +111,25 @@ function write_im_pred_log_file(path_par, beh_par, im_par, OF_par, hppars, pred_
     if beh_par.IM_PREDICTION  fprintf(fid, 'Optical flow warping (for one image or time step) : %f s\n', eval_results.im_warp_calc_time_avg); end    
     fprintf(fid, '\n');
     
-    fprintf(fid, 'Evaluation results \n');
+    if isfield(eval_results, "whole_im") % not always the case for instance if only "beh_par.SAVE_ROI_DISPLAY" is true 
+        fprintf(fid, 'Evaluation results in entire image \n');
+        print_acc_results(eval_results.whole_im, fid, beh_par, pred_par);
+    end
+
+    if beh_par.EVALUATE_IN_ROI && isfield(eval_results, "roi")
+        fprintf(fid, '\n');
+        fprintf(fid, 'Evaluation results in ROI \n');
+        print_acc_results(eval_results.roi, fid, beh_par, pred_par);
+    end
+    
+    fprintf(fid, '\n');
+    fclose(fid);
+
+end
+
+
+function print_acc_results(eval_results, fid, beh_par, pred_par)
+
     if beh_par.EVAL_INIT_OF_WARP 
         fprintf(fid, 'Mean cross-correlation between original images and the 1st image warped with initOF: %f \n', eval_results.mean_corr_initOF_warp); 
         fprintf(fid, 'Mean nRMSE between original images and the 1st image warped with initOF: %f \n', eval_results.mean_nrmse_initOF_warp);
@@ -123,7 +139,7 @@ function write_im_pred_log_file(path_par, beh_par, im_par, OF_par, hppars, pred_
         fprintf(fid, '%f\n', eval_results.mean_nrmse_initOF_warp);
         fprintf(fid, '%f\n', eval_results.mean_ssim_initOF_warp); 
     end 
-    if beh_par.EVAL_PCA_RECONSTRUCT fprintf(fid, 'Mean cross-cor between orgnal images and the 1st image warped with OF reconstructed from PCA : %f \n', eval_results.mean_corr_warp_from_PCA); end        
+    if beh_par.EVAL_PCA_RECONSTRUCT fprintf(fid, 'Mean cross-cor between original images and the 1st image warped with OF reconstructed from PCA : %f \n', eval_results.mean_corr_warp_from_PCA); end        
     if beh_par.IM_PREDICTION  
         fprintf(fid, 'Mean cross-correlation between predicted and original images : %f \n', eval_results.mean_corr_im_pred);
         fprintf(fid, 'Confidence half-range of the mean cross-correlation between predicted and original images : %f \n', eval_results.confidence_half_range_corr_im_pred);
@@ -161,16 +177,13 @@ function write_im_pred_log_file(path_par, beh_par, im_par, OF_par, hppars, pred_
     if beh_par.NO_PRED_AT_ALL 
         fprintf(fid, 'Case when no prediction is performed \n'); 
         fprintf(fid, 'Evaluation between t = %d and t = %d \n', pred_par.t_eval_start, pred_par.tmax_pred);            
-        fprintf(fid, 'Mean cross-correlation between images at t and images at t-%d: %f \n', pred_par.horizon, eval_results.mean_corr_im_pred); 
-        fprintf(fid, 'Mean nmrse between images at t and images at t-%d: %f \n', pred_par.horizon, eval_results.mean_nrmse);
-        fprintf(fid, 'Mean ssim between images at t and images at t-%d : %f \n', pred_par.horizon, eval_results.mean_ssim);
+        fprintf(fid, 'Mean cross-correlation between images at t and images at t-%d: %f \n', pred_par.horizon, eval_results.mean_corr_no_pred); 
+        fprintf(fid, 'Mean nmrse between images at t and images at t-%d: %f \n', pred_par.horizon, eval_results.mean_nrmse_no_pred);
+        fprintf(fid, 'Mean ssim between images at t and images at t-%d : %f \n', pred_par.horizon, eval_results.mean_ssim_no_pred);
         fprintf(fid, 'Same results but for copy-pasting in Excel : \n');
-        fprintf(fid, '%f\n', eval_results.mean_corr_im_pred);
-        fprintf(fid, '%f\n', eval_results.mean_nrmse);
-        fprintf(fid, '%f\n', eval_results.mean_ssim); 
-    end               
-    
-    fprintf(fid, '\n');
-    fclose(fid);
+        fprintf(fid, '%f\n', eval_results.mean_corr_no_pred);
+        fprintf(fid, '%f\n', eval_results.mean_nrmse_no_pred);
+        fprintf(fid, '%f\n', eval_results.mean_ssim_no_pred); 
+    end        
 
 end

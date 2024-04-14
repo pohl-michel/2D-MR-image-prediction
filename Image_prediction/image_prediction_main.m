@@ -37,11 +37,11 @@ path_par = load_impred_path_parameters();
 
 % Input image sequences
 input_im_dir_suffix_tab = [
-    %string('write here the sequence name');
+    % string('write here the sequence name');
     string('2. sq sl010 sag Xcs=125');
-    %string('3. sq sl010 sag Xcs=80');   
-    %string('4. sq sl014 sag Xcs=165');  
-    %string('5. sq sl014 sag Xcs=95');  
+    % string('3. sq sl010 sag Xcs=80');   
+    % string('4. sq sl014 sag Xcs=165');  
+    % string('5. sq sl014 sag Xcs=95');  
     % string('2020-11-10_KS81_Nav_Pur_1');
     % string('2020-11-12_QN76_Nav_Pur_1');
     % string('2020-11-17_CS31_Nav_Pur_2');
@@ -54,11 +54,11 @@ input_im_dir_suffix_tab = [
 
 % Prediction methods to test if beh_par.OPTIMIZE_NB_PCA_CP == true - otherwise the prediction method is that specified in load_pred_par
 % pred_meths = {'multivariate linear regression', 'LMS', 'UORO', 'SnAp-1', 'DNI', 'RTRL v2', 'no prediction', 'fixed W'};
-pred_meths = {'no prediction'};
+pred_meths = {'multivariate linear regression'};
 
 % br_model_par.nb_pca_cp_tab = [4, 4, 4, 4, 4, 4, 4, 4]; % length = nb of sequences to process
-br_model_par.nb_pca_cp_tab = [4];
-%br_model_par.nb_pca_cp_tab = [4, 4, 4, 4];
+br_model_par.nb_pca_cp_tab = [3];
+% br_model_par.nb_pca_cp_tab = [4, 4, 4, 4];
 % br_model_par.nb_pca_cp_tab = [3, 3, 3, 3]; % For the experiment where I predict 3 components
 
 nb_seq = length(input_im_dir_suffix_tab);
@@ -91,10 +91,7 @@ for im_seq_idx = 1:nb_seq
     %  PROGRAM -------------------------------------------------------------------------------------------------------------------------------------------
     %  --------------------------------------------------------------------------------------------------------------------------------------------------- 
 
-    % eval_results = initialize_eval_results();
-    eval_results = struct();
-    time_signal_pred_results = struct();
-    hppars = struct();
+    [eval_results, time_signal_pred_results, hppars] = init_structs(beh_par);
 
     if beh_par.SAVE_ORG_IM_SQ
         save2Dimseq(im_par, path_par, disp_par);
@@ -105,7 +102,7 @@ for im_seq_idx = 1:nb_seq
     end    
     
     if beh_par.COMPUTE_OPTICAL_FLOW
-        eval_results = compute_2Dof(OF_par, im_par, path_par); 
+        eval_results = compute_2Dof(OF_par, im_par, path_par); % rather pass eval_results as a parameter to update 
     end
 
     if beh_par.SAVE_OF_JPG
@@ -139,7 +136,6 @@ for im_seq_idx = 1:nb_seq
         % Parameters concerning the prediction of the position of objects
         pred_par = load_pred_par(path_par);
         pred_par.t_eval_start = 1 + pred_par.tmax_cv; % car je veux faire l'eval sur l'ensemble de test
-        %  ce moment précis du développement du code, on ne s'intéresse pas  la validation croisée
         pred_par.nb_predictions = im_par.nb_im - pred_par.t_eval_start + 1;    
 
         if beh_par.SAVE_MEAN_IMAGE
@@ -153,7 +149,7 @@ for im_seq_idx = 1:nb_seq
 
         if beh_par.NO_PRED_AT_ALL
             %pred_par.horizon = 7; % to modify as needed
-            dvf_type = 'predicted DVF'; % no warping - evaluation when no prediction is performed
+            dvf_type = 'no prediction'; % no warping - evaluation when no prediction is performed
             eval_results = eval_of_warp_corr(dvf_type, im_par, OF_par, path_par, warp_par, pred_par, br_model_par, disp_par, beh_par, eval_results, time_signal_pred_results);        
         end        
         
@@ -187,5 +183,18 @@ for im_seq_idx = 1:nb_seq
         path_par = update_path_par_return_child_dir(path_par);
         
     end
+
+end
+
+
+function [eval_results, time_signal_pred_results, hppars] = init_structs(beh_par)
+
+    eval_results = struct();
+    eval_results.whole_im = struct();
+    if beh_par.EVALUATE_IN_ROI
+        eval_results.roi = struct();
+    end
+    time_signal_pred_results = struct();
+    hppars = struct();
 
 end

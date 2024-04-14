@@ -38,6 +38,8 @@ function [eval_results, best_pred_par_struct, best_pca_cp_tab] = select_nb_pca_c
 
     pca_perf_optim_tab = zeros(hppars.nb_hrz_val, nb_pca_cp_max);
 
+    beh_par.EVALUATE_IN_ROI = false; % here we will select the number of PCA components based on the whole image
+
     for nb_pca_cp=1:nb_pca_cp_max
 
         br_model_par.nb_pca_cp = nb_pca_cp;
@@ -82,9 +84,10 @@ function [eval_results, best_pred_par_struct, best_pca_cp_tab] = select_nb_pca_c
                                                                                         beh_par, eval_results_pca_optim, time_signal_pred_results);
                 pca_perf_optim_tab(hrz_idx, nb_pca_cp) = eval_results_pca_optim.mean_of_nrmse;
             else
+                eval_results_pca_optim.whole_im = struct();
                 eval_results_pca_optim = eval_of_warp_corr(dvf_type, im_par, OF_par, path_par, warp_par_h, pred_par_h, br_model_par, disp_par, ...
                                                                                         beh_par, eval_results_pca_optim, time_signal_pred_results);
-                pca_perf_optim_tab(hrz_idx, nb_pca_cp) = eval_results_pca_optim.mean_corr_im_pred;
+                pca_perf_optim_tab(hrz_idx, nb_pca_cp) = eval_results_pca_optim.whole_im.mean_corr_im_pred;
             end
 
         end

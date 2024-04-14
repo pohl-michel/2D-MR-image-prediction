@@ -22,24 +22,40 @@ function eval_results = eval_of_warp_corr(dvf_type, im_par, OF_par, path_par, wa
     t_init = 1; crop_flag = false; filter_flag = false; sigma_init = 'whatever';
     I_init = load_crop_filter2D(t_init, crop_flag, filter_flag, sigma_init, im_par, path_par.input_im_dir);
     
-    % Initializing various arrays
+    % Initializing various variables
     im_warp_calc_time_array = zeros(pred_par.nb_predictions, 1);
     OFcalc_time_array = zeros(pred_par.nb_predictions, 1);
+    
+    acc_metrics = struct(); 
+    acc_metrics.whole_im = struct(); 
+    if beh_par.EVALUATE_IN_ROI
+        acc_metrics.roi = struct(); 
+    end
 
     if ismember(dvf_type, {'initial DVF', 'DVF from PCA'}) || beh_par.NO_PRED_AT_ALL % evaluation of warping with the initial OF or evaluation of warping after PCA (no prediction)
         time_signal_pred_results.nb_correct_runs = 1;
     end
 
     % Storing prediction metrics regarding image pixel intensities
-    im_correlation_array = zeros(pred_par.nb_predictions, time_signal_pred_results.nb_correct_runs);   
-    mssim_array = zeros(pred_par.nb_predictions, time_signal_pred_results.nb_correct_runs);   
-    nrmse_array = zeros(pred_par.nb_predictions, time_signal_pred_results.nb_correct_runs);    
+    acc_metrics.whole_im.im_correlation_array = zeros(pred_par.nb_predictions, time_signal_pred_results.nb_correct_runs);   
+    acc_metrics.whole_im.ssim_array = zeros(pred_par.nb_predictions, time_signal_pred_results.nb_correct_runs);   
+    acc_metrics.whole_im.nrmse_array = zeros(pred_par.nb_predictions, time_signal_pred_results.nb_correct_runs);    
+
+    if beh_par.EVALUATE_IN_ROI
+        acc_metrics.roi.ssim_array = zeros(pred_par.nb_predictions, time_signal_pred_results.nb_correct_runs);  
+        acc_metrics.roi.im_correlation_array = zeros(pred_par.nb_predictions, time_signal_pred_results.nb_correct_runs);   
+        acc_metrics.roi.nrmse_array = zeros(pred_par.nb_predictions, time_signal_pred_results.nb_correct_runs);    
+    end
 
     % Storing prediction metrics regarding geometrical deformation error (assuming that the original OF/DVF is the ground-truth)
-    dvf_mean_error_array = zeros(pred_par.nb_predictions, time_signal_pred_results.nb_correct_runs);  
-    dvf_max_error_array = zeros(pred_par.nb_predictions, time_signal_pred_results.nb_correct_runs);  
+    acc_metrics.whole_im.dvf_mean_error_array = zeros(pred_par.nb_predictions, time_signal_pred_results.nb_correct_runs);  
+    acc_metrics.whole_im.dvf_max_error_array = zeros(pred_par.nb_predictions, time_signal_pred_results.nb_correct_runs);  
+    if beh_par.EVALUATE_IN_ROI
+        acc_metrics.roi.dvf_mean_error_array = zeros(pred_par.nb_predictions, time_signal_pred_results.nb_correct_runs);  
+        acc_metrics.roi.dvf_max_error_array = zeros(pred_par.nb_predictions, time_signal_pred_results.nb_correct_runs);  
+    end     
     
-    if strcmp(dvf_type, 'predicted DVF') && beh_par.SAVE_WARPED_IM % difference color image only if prediction
+    if strcmp(dvf_type, 'predicted DVF') && beh_par.SAVE_WARPED_IM % difference color image only if prediction (at the moment)
         diff_im_tensor = zeros(im_par.W, im_par.L, pred_par.nb_predictions);
         diff_dvf_tensor = zeros(im_par.W, im_par.L, pred_par.nb_predictions);
         temp_runs_tensor = zeros(im_par.W, im_par.L, time_signal_pred_results.nb_correct_runs); % contains the images I(:,:,t) - Iwarped(:,:,t,run_idx) for t fixed
@@ -52,7 +68,7 @@ function eval_results = eval_of_warp_corr(dvf_type, im_par, OF_par, path_par, wa
         [u_t_org, ~] = load_computeOF_for_warp('initial DVF', t, OF_par, path_par, im_par, br_model_par, pred_par, beh_par, warp_par); % only (t, OF_par, path_par) are used as arguments
 
         % Loading/computing the (predicted or not) DVF u_t between t=1 and t and computing I_warped, which results from warping I_init with u_t.
-        if beh_par.NO_PRED_AT_ALL        
+        if strcmp(dvf_type, 'no prediction')   
             I_warped = load_crop_filter2D(t-pred_par.horizon, crop_flag, filter_flag, 0.0, im_par, path_par.input_im_dir);      
             im_warp_calc_time_t = 0.0; %arbitrary
         else
@@ -73,20 +89,34 @@ function eval_results = eval_of_warp_corr(dvf_type, im_par, OF_par, path_par, wa
             crop_flag = false; filter_flag = false;
             J = load_crop_filter2D(t, crop_flag, filter_flag, 0.0, im_par, path_par.input_im_dir);
 
+            % Image I warped by the push-forward DVF u_t at time t with the current run run_idx
+            I_warped_crt_run = I_warped(:,:,run_idx);
+
             % Computing the statistics corresponding to the difference between J and I_warped
-            im_correlation_array(t - pred_par.t_eval_start + 1, run_idx) = corr_two_im2d( I_warped(:,:,run_idx), J, beh_par.EVALUATE_IN_ROI, im_par);
-            mssim_array(t - pred_par.t_eval_start + 1, run_idx) = my_ssim(I_warped(:,:,run_idx), J, beh_par.EVALUATE_IN_ROI, im_par);
-            nrmse_array(t - pred_par.t_eval_start + 1, run_idx) = my_nrmse(I_warped(:,:,run_idx), J, beh_par.EVALUATE_IN_ROI, im_par);
+            eval_in_roi = false;
+            acc_metrics.whole_im.nrmse_array(t - pred_par.t_eval_start + 1, run_idx) = my_nrmse(I_warped_crt_run, J, eval_in_roi, im_par);
+            acc_metrics.whole_im.ssim_array(t - pred_par.t_eval_start + 1, run_idx) = my_ssim(I_warped_crt_run, J, eval_in_roi, im_par);
+            acc_metrics.whole_im.im_correlation_array(t - pred_par.t_eval_start + 1, run_idx) = corr_two_im2d(I_warped_crt_run, J, eval_in_roi, im_par);
+
+            if beh_par.EVALUATE_IN_ROI
+                eval_in_roi = true;
+                acc_metrics.roi.ssim_array(t - pred_par.t_eval_start + 1, run_idx) = my_ssim(I_warped_crt_run, J, eval_in_roi, im_par);
+                acc_metrics.roi.im_correlation_array(t - pred_par.t_eval_start + 1, run_idx) = corr_two_im2d(I_warped_crt_run, J, eval_in_roi, im_par);
+                acc_metrics.roi.nrmse_array(t - pred_par.t_eval_start + 1, run_idx) = my_nrmse(I_warped_crt_run, J, eval_in_roi, im_par);
+            end
 
             % Computing statistics corresponding to the difference between u_t_org and u_t
             if strcmp(dvf_type, 'predicted DVF')
                 u_t_diff = sqrt((u_t_org(:,:,1) - u_t(:,:,1, run_idx)).^2+(u_t_org(:,:,2) - u_t(:,:,2, run_idx)).^2); % pixel-wise euclidean norm of the difference
-                if beh_par.EVALUATE_IN_ROI
-                    u_t_diff = u_t_diff(im_par.y_m:im_par.y_M, im_par.x_m:im_par.x_M);
-                end 
                 flattened_u_t_diff = u_t_diff(:);
-                dvf_mean_error_array(t - pred_par.t_eval_start + 1, run_idx) = mean(flattened_u_t_diff);
-                dvf_max_error_array(t - pred_par.t_eval_start + 1, run_idx) = max(flattened_u_t_diff);
+                acc_metrics.whole_im.dvf_mean_error_array(t - pred_par.t_eval_start + 1, run_idx) = mean(flattened_u_t_diff);
+                acc_metrics.whole_im.dvf_max_error_array(t - pred_par.t_eval_start + 1, run_idx) = max(flattened_u_t_diff);                
+                if beh_par.EVALUATE_IN_ROI
+                    u_t_roi_diff = u_t_diff(im_par.y_m:im_par.y_M, im_par.x_m:im_par.x_M);
+                    flattened_u_t_roi_diff = u_t_roi_diff(:);
+                    acc_metrics.roi.dvf_mean_error_array(t - pred_par.t_eval_start + 1, run_idx) = mean(flattened_u_t_roi_diff);
+                    acc_metrics.roi.dvf_max_error_array(t - pred_par.t_eval_start + 1, run_idx) = max(flattened_u_t_roi_diff);       
+                end 
             end
             
             if (run_idx <= 1) && beh_par.SAVE_WARPED_IM
@@ -116,7 +146,7 @@ function eval_results = eval_of_warp_corr(dvf_type, im_par, OF_par, path_par, wa
 
             % Computing the image difference J-I_warped at time t and run "run_idx" - and storing as well the difference between original and predicted DVFs
             if strcmp(dvf_type, 'predicted DVF') && beh_par.SAVE_WARPED_IM % difference color image only if prediction
-                temp_runs_tensor(:,:,run_idx) = abs(double(J)-I_warped(:,:,run_idx));
+                temp_runs_tensor(:,:,run_idx) = abs(double(J)-I_warped_crt_run);
                 temp_runs_dvf_tensor(:,:,run_idx) = u_t_diff;
             end
             
@@ -130,8 +160,15 @@ function eval_results = eval_of_warp_corr(dvf_type, im_par, OF_par, path_par, wa
         
     end
     
-    eval_results = update_OFwarp_results(dvf_type, eval_results, im_correlation_array, mssim_array, nrmse_array, dvf_mean_error_array, dvf_max_error_array, im_warp_calc_time_array, ...
-                                            OFcalc_time_array, time_signal_pred_results);
+    eval_results.whole_im = update_OFwarp_results(eval_results.whole_im, dvf_type, acc_metrics.whole_im);
+    if beh_par.EVALUATE_IN_ROI
+        eval_results.roi = update_OFwarp_results(eval_results.roi, dvf_type, acc_metrics.roi);
+    end
+    
+    % average calculation time for one image
+    eval_results.im_warp_calc_time_avg = mean(im_warp_calc_time_array);
+    eval_results.OFrec_calc_time_avg = mean(OFcalc_time_array); % OF reconstruction from PCA
+
     
     % Computing the image difference J-I_warped and the DVF difference norm(pred_DVF-org_DVF) over t and all the run indexes, and saves it as a thermal image
     if strcmp(dvf_type, 'predicted DVF') && beh_par.SAVE_WARPED_IM % difference color image only if prediction

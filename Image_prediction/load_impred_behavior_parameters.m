@@ -28,9 +28,9 @@ beh_par.EVAL_INIT_OF_WARP = false;
 beh_par.SAVE_INIT_OF_WARP_JPG = false;
     % For saving the image at t=1 warped by the initial DVF/OF at time t for each time step t of the test set
 
-beh_par.OPTIMIZE_NB_PCA_CP = true;
+beh_par.OPTIMIZE_NB_PCA_CP = false;
     % For optimizing the number of PCA components for prediction using hyper-parameter grid search
-beh_par.REGISTRATION_ERROR_CV = true;
+beh_par.REGISTRATION_ERROR_CV = false;
     % For optimizing the number of PCA components based on the DVF registration NRMSE rather than cross-correlation between the initial image and the warped images 
 
 beh_par.PCA_OF_DVF = false;
@@ -48,16 +48,16 @@ beh_par.TRAIN_EVAL_PREDICTOR = false;
 beh_par.SAVE_PRED_RESULTS = false;
     % For saving a mat file containing the prediction results (predicted PCA weights, loss function, and prediction time)
 
-beh_par.NO_PRED_AT_ALL = false; 
+beh_par.NO_PRED_AT_ALL = true; 
     % The original images are used instead of predicted images as a base case for performance evaluation
-beh_par.IM_PREDICTION = false; 
+beh_par.IM_PREDICTION = true; 
     % Performing image prediction
 beh_par.SAVE_PRED_IM = false; 
     % Saving the predicted images and the thermal difference images
 
 beh_par.CROP_FOR_DISP_SAVE = false;
     % For saving the deformation vector field images, predicted images, or error images only in the ROI, i.e. the area specified by x_m, x_M, y_m, y_M
-beh_par.EVALUATE_IN_ROI = false;
+beh_par.EVALUATE_IN_ROI = true;
     % if EVALUATE_IN_ROI is set to true, the prediction errors are calculated using only the pixels in the region of interest (ROI)
 
 
@@ -65,7 +65,8 @@ beh_par.EVALUATE_IN_ROI = false;
 beh_par.SAVE_WARPED_IM = beh_par.SAVE_INIT_OF_WARP_JPG || beh_par.SAVE_PCA_RECONSTR_JPG || beh_par.SAVE_PRED_IM;
 beh_par.SAVE_PREDICTION_PLOT = true;
 beh_par.EVALUATE_PREDICTION = true;
-if (beh_par.TRAIN_EVAL_PREDICTOR && beh_par.IM_PREDICTION)
+if beh_par.IM_PREDICTION
+    beh_par.TRAIN_EVAL_PREDICTOR = true; % because the "time_signal_pred_results" variable is required in the chain
     beh_par.SAVE_PRED_RESULTS = true; % because the image prediction step will load the predicted PCA components from disk.
 end
 beh_par.NORMALIZE_EIGENVECTORS = true; % otherwise different machines or versions of matlab can return principal components and weights with opposite signs

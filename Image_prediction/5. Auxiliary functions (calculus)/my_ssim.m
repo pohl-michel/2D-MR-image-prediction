@@ -1,7 +1,6 @@
 function [my_ssim_val] = my_ssim(I, J, EVALUATE_IN_ROI, im_par)
 % Computes the SSIM between two images I and J
 
-
     if EVALUATE_IN_ROI
         Itemp = I(im_par.y_m:im_par.y_M, im_par.x_m:im_par.x_M);
         Jtemp = J(im_par.y_m:im_par.y_M, im_par.x_m:im_par.x_M);   
@@ -11,7 +10,6 @@ function [my_ssim_val] = my_ssim(I, J, EVALUATE_IN_ROI, im_par)
     end
 
     [my_ssim_val, ~] = ssim_index(Itemp, Jtemp);
-
 
 end
 
