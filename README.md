@@ -9,8 +9,8 @@ Specifically, various methods for online learning of recurrent neural networks (
  - [decoupled neural interfaces (DNI)](http://proceedings.mlr.press/v70/jaderberg17a.html)
 
 Video forecasting is executed by performing the following steps in order:
-1. computation of the "push" deformation vector field $\vec{u}(\vec{x}, t_n)$ between the image at time $t_1$ and $t_n$ for all indices $n$.
-2. computation of the projection of $\vec{u}(\vec{x}, t_n)$ onto principal deformation vector fields (the principal components) $\vec{u}_i(\vec{x})$. The coordinates of that projection are the time-dependent weights $w_i(t)$.
+1. computation of the "push" deformation vector field ${\vec{u}(\vec{x}, t_n)}$ between the image at time $t_1$ and $t_n$ for all indices $n$.
+2. computation of the projection of ${\vec{u}(\vec{x}, t_n)}$ onto principal deformation vector fields (the principal components) ${\vec{u}_i(\vec{x})}$. The coordinates of that projection are the time-dependent weights $w_i(t)$.
 3. prediction of the weights $w_i(t)$ using various methods including the RNN learning algorithms mentioned above.
 4. warping forward the image at time $t_1$ using the deformation field reconstructed using the predicted weights $w_i(t+h)$ where $h$ is the prediction horizon.
 
