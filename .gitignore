@@ -20,13 +20,11 @@
 /Image_prediction/dcm2Dseq_from_real_mha_dcm3Dseq.m
 /Image_prediction/0. 2D image sequence extraction
 
-/Time_series_forecasting/Original data
-/Time_series_forecasting/a. Input time series sequences
+# Excluding temporary folders
 /Time_series_forecasting/b. Prediction results (figures)
 /Time_series_forecasting/c. Prediction results (images)
 /Time_series_forecasting/d. RNN variables (temp)
 /Time_series_forecasting/e. Log txt files
-/Time_series_forecasting/disp_par.xlsx
 
 # File extensions to exclude
 *.bak
