@@ -1,9 +1,18 @@
 function [ path_par ] = load_sigpred_path_parameters()
-% This function returns path_par, which contains information concerning the folders and the files to save or open
+% LOAD_SIGPRED_PATH_PARAMETERS Initializes and returns the structure `path_par`, which contains file paths and folder information
+% used in the signal prediction algorithm pipeline. This function creates necessary directories if they do not already exist and 
+% organizes paths for time series data, result figures, and other intermediate files.
+%
+% INPUTS:
+%   (None)
+%
+% OUTPUTS:
+% - path_par (struct): Structure containing paths and file/folder names used within the signal prediction pipeline. 
+%
+% REMARK:
+% - to perform prediction with a new time series, just add the corresponding folder to "path_par.time_series_dir_tab"
 %
 % Author : Pohl Michel
-% Date : January 20th, 2020
-% Version : v1.1
 % License : 3-clause BSD License
 
     % date and time
@@ -35,42 +44,46 @@ function [ path_par ] = load_sigpred_path_parameters()
     end     
     
     % time series data directories
-    path_par.time_series_dir_tab = [
-       % string('Ext markers seq 1');
-%          string('Ext markers seq 2');
-%         string('Ext markers seq 3');
-%         string('Ext markers seq 4');
-%          string('Ext markers seq 5');
-%          string('Ext markers seq 6');
-%          string('Ext markers seq 7');
-%          string('Ext markers seq 8');   
-%          string('Ext markers seq 9');  
-%         string('Ext markers seq 1 30 Hz');
-%         string('Ext markers seq 2 30 Hz');
-%         string('Ext markers seq 3 30 Hz');
-%         string('Ext markers seq 4 30 Hz');
-%         string('Ext markers seq 5 30 Hz');
-%         string('Ext markers seq 6 30 Hz');
-%         string('Ext markers seq 7 30 Hz');
-%         string('Ext markers seq 8 30 Hz');   
-%         string('Ext markers seq 9 30 Hz'); 
-%         string('Ext markers seq 1  3.33 Hz'); 
-%         string('Ext markers seq 2  3.33 Hz');
-%         string('Ext markers seq 3  3.33 Hz'); 
-%         string('Ext markers seq 4  3.33 Hz'); 
-%         string('Ext markers seq 5  3.33 Hz'); 
-%         string('Ext markers seq 6  3.33 Hz'); 
-%         string('Ext markers seq 7  3.33 Hz'); 
-%         string('Ext markers seq 8  3.33 Hz'); 
-%         string('Ext markers seq 9  3.33 Hz');      
-        % string('2. sq sl010 sag Xcs=125 3 cpts');
-        % string('3. sq sl010 sag Xcs=80 3 cpts');
-        % string('4. sq sl014 sag Xcs=165 3 cpts');
-        % string('5. sq sl014 sag Xcs=95 3 cpts');
-        string('2. sq sl010 sag Xcs=125 3 cpts 2024');
-        %string('3. sq sl010 sag Xcs=80 3 cpts 2024');
-        %string('4. sq sl014 sag Xcs=165 3 cpts 2024');
-        %string('5. sq sl014 sag Xcs=95 3 cpts 2024');        
+    path_par.time_series_dir_tab = [ % You can add additional directories here if needed
+        
+    % Original external marker positions sampled at 10 Hz
+        % string('Ext markers seq 1');
+        % string('Ext markers seq 2');
+        % string('Ext markers seq 3');
+        % string('Ext markers seq 4');
+        % string('Ext markers seq 5');
+        % string('Ext markers seq 6');
+        % string('Ext markers seq 7');
+        % string('Ext markers seq 8');   
+        % string('Ext markers seq 9');  
+        
+    % External marker positions resampled at 10 Hz        
+        % string('Ext markers seq 1 30 Hz');
+        % string('Ext markers seq 2 30 Hz');
+        % string('Ext markers seq 3 30 Hz');
+        % string('Ext markers seq 4 30 Hz');
+        % string('Ext markers seq 5 30 Hz');
+        % string('Ext markers seq 6 30 Hz');
+        % string('Ext markers seq 7 30 Hz');
+        % string('Ext markers seq 8 30 Hz');   
+        % string('Ext markers seq 9 30 Hz'); 
+
+    % External marker positions resampled at 3.33 Hz         
+        % string('Ext markers seq 1  3.33 Hz'); 
+        % string('Ext markers seq 2  3.33 Hz');
+        % string('Ext markers seq 3  3.33 Hz'); 
+        % string('Ext markers seq 4  3.33 Hz'); 
+        % string('Ext markers seq 5  3.33 Hz'); 
+        % string('Ext markers seq 6  3.33 Hz'); 
+        % string('Ext markers seq 7  3.33 Hz'); 
+        % string('Ext markers seq 8  3.33 Hz'); 
+        % string('Ext markers seq 9  3.33 Hz');      
+        
+    % Normalized PCA weights associated with the time-varying deformation fields in the cine-MR sequence
+        string('2. sq sl010 sag Xcs=125 3 cpts 2024 normalised');
+        % string('3. sq sl010 sag Xcs=80 3 cpts 2024 normalised');
+        % string('4. sq sl014 sag Xcs=165 3 cpts 2024 normalised');
+        % string('5. sq sl014 sag Xcs=95 3 cpts 2024 normalised');        
         ];
     
     % time series data filenames
@@ -81,7 +94,7 @@ function [ path_par ] = load_sigpred_path_parameters()
     path_par.pred_par_filename_suffix = 'pred_par.xlsx';
     % txt file with parameters and results
     path_par.log_txt_filename = sprintf('log file %s.txt', path_par.date_and_time);
-    % directory containing the results 
+    % directory containing the results of hyperparameter optimization
     path_par.hyperpar_optim_log_filename = sprintf('optim log file %s.txt', path_par.date_and_time);
     
 end
