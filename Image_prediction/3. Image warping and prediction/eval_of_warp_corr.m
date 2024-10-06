@@ -1,19 +1,43 @@
 function eval_results = eval_of_warp_corr(dvf_type, im_par, OF_par, path_par, warp_par, pred_par, br_model_par, disp_par, beh_par, eval_results, time_signal_pred_results)
-% This function performs several actions in the following order:
-%  - Computes/loads the DVF (initial DVF, DVF from PCA, or predicted DVF) u_t between t=1 and t for t in [t_eval_start, tmax_pred] using load_computeOF_for_warp
-%  - Computes I_warped, the image warped from I_init using u_t, and compares I_warped with the ground-truth image J at t 
-%  - Computes statistics to evaluate the reconstruction/prediction accuracy and stores them in eval_results
-%  - Saves the predicted/reconstructed images 
-%  - Saves (instantaneous and mean) difference thermal images when we perform prediction (i.e., when u_t corresponds to a predicted DVF):
+% EVAL_OF_WARP_CORR Evaluates image warping accuracy based on different deformation vector field (DVF) types (e.g., ground-truth or predicted DVF).
 %
-% Rk 1: prediction is random so we use different runs and take them into account when computing statistics and the difference images
-% Rk 2: this function is called when evaluating the prediction of the test set (when evaluating the whole algorithm) or c.v. set (when selecting the nb. of PCA
-% components)
-% Rk 3: the code could be slightly improved by fixing a maximum for the error in the legend when saving the thermal instantanous error images 
+% This function performs several actions in the following order:
+%  1. Computes/loads the DVF (initial DVF, DVF from PCA, or predicted DVF) u_t between t=1 and t for t in [t_eval_start, tmax_pred]
+%  2. Computes I_warped, the image warped from I_init using u_t, and compares I_warped with the ground-truth image J at t 
+%  3. Computes statistics evaluating the reconstruction/prediction accuracy (e.g., SSIM, NRMSE, image correlation) and stores them in eval_results
+%  4. Optionally saves the predicted/reconstructed images (histogram enhancement is performed if "enhance_flag" is set to "true")
+%  5. Optionally saves the (instantaneous and mean) difference thermal images when we perform prediction (i.e., when u_t corresponds to a predicted DVF):
+%
+% INPUTS:
+%  - dvf_type (string): Specifies the type of DVF to evaluate and perform image reconstruction. Options are:
+%    - 'initial DVF': initial DVF (computed using the optical flow algorithm).
+%    - 'DVF from PCA': DVF derived from PCA after removal of the high-order components
+%    - 'predicted DVF': the predicted DVF obtained from predicting the PCA time-varying weights
+%    - 'no prediction': the DVF in the past is used as the predicted one (as an edge case)
+% - im_par (struct): Image parameters, including dimensions, paths, and ROI boundaries (`x_m`, `x_M`, `y_m`, `y_M`)
+% - OF_par (struct): Parameters related to optical flow computation
+% - path_par (struct): Parameters related to input/output directories
+% - warp_par (struct): Warping-related parameters controlling the forward-warping process
+% - pred_par (struct): Prediction-related parameters (e.g., `t_eval_start`, `tmax_pred`, `nb_predictions`)
+% - br_model_par (struct): Breathing motion model parameters
+% - disp_par (struct): Display parameters related to image saving
+% - beh_par (struct): Behavior parameters indicating evaluation options such as:
+%   - `EVALUATE_IN_ROI`: Flag to evaluate within the ROI
+%   - `NO_PRED_AT_ALL`: The original images are used instead of predicted images, no DVF is loaded or used for warping
+%   - `SAVE_WARPED_IM`: Flag to save the warped images and error images.
+% - eval_results (struct): Structure to store the evaluation results.
+% - time_signal_pred_results (struct): Stores results related to signal forecasting (e.g., number of correct runs).
+% 
+% OUTPUT:
+% - eval_results (struct): Updated structure containing accuracy metrics and warping time statistics.
+%
+% REMARKS:
+%  - prediction is random so we use different runs and take them into account when computing statistics and the error images
+%  - this function is called when evaluating the prediction of the test set (when evaluating the whole pipeline) or c.v. set (when selecting the nb. of PCA components)
+%  - the code could be slightly improved by fixing a maximum for the error in the legend when saving the thermal instantanous error images 
+%  - another improvement could be to set the "enhance_flag" outside of that function, possibly in disp_par
 %
 % Author : Pohl Michel
-% Date : Sept 18th, 2022
-% Version : v1.1
 % License : 3-clause BSD License
 
     pred_param_str = sprintf_pred_param(pred_par); % auxiliary variable used when making file names
@@ -32,7 +56,7 @@ function eval_results = eval_of_warp_corr(dvf_type, im_par, OF_par, path_par, wa
         acc_metrics.roi = struct(); 
     end
 
-    if ismember(dvf_type, {'initial DVF', 'DVF from PCA'}) || beh_par.NO_PRED_AT_ALL % evaluation of warping with the initial OF or evaluation of warping after PCA (no prediction)
+    if ismember(dvf_type, {'initial DVF', 'DVF from PCA'}) || beh_par.NO_PRED_AT_ALL % warping evaluation with the initial optical flow or the denoised optical flow by keeping the low-order PCA components (no prediction)
         time_signal_pred_results.nb_correct_runs = 1;
     end
 
@@ -59,7 +83,7 @@ function eval_results = eval_of_warp_corr(dvf_type, im_par, OF_par, path_par, wa
         diff_im_tensor = zeros(im_par.W, im_par.L, pred_par.nb_predictions);
         diff_dvf_tensor = zeros(im_par.W, im_par.L, pred_par.nb_predictions);
         temp_runs_tensor = zeros(im_par.W, im_par.L, time_signal_pred_results.nb_correct_runs); % contains the images I(:,:,t) - Iwarped(:,:,t,run_idx) for t fixed
-        temp_runs_dvf_tensor = zeros(im_par.W, im_par.L, time_signal_pred_results.nb_correct_runs); % contains the images "norm(u_t(:,:,t) - u_t_pred(:,:,t,run_idx))" for t fixed
+        temp_runs_dvf_tensor = zeros(im_par.W, im_par.L, time_signal_pred_results.nb_correct_runs); % contains the images norm(u_t(:,:,t) - u_t_pred(:,:,t,run_idx)) for t fixed
     end
     
     for t=pred_par.t_eval_start:pred_par.tmax_pred
@@ -70,7 +94,7 @@ function eval_results = eval_of_warp_corr(dvf_type, im_par, OF_par, path_par, wa
         % Loading/computing the (predicted or not) DVF u_t between t=1 and t and computing I_warped, which results from warping I_init with u_t.
         if strcmp(dvf_type, 'no prediction')   
             I_warped = load_crop_filter2D(t-pred_par.horizon, crop_flag, filter_flag, 0.0, im_par, path_par.input_im_dir);      
-            im_warp_calc_time_t = 0.0; %arbitrary
+            im_warp_calc_time_t = 0.0; % arbitrary
         else
             [u_t, OFcalc_time_t] = load_computeOF_for_warp(dvf_type, t, OF_par, path_par, im_par, br_model_par, pred_par, beh_par, warp_par);
             OFcalc_time_array(t - pred_par.t_eval_start + 1) = OFcalc_time_t;
@@ -123,7 +147,7 @@ function eval_results = eval_of_warp_corr(dvf_type, im_par, OF_par, path_par, wa
                 
                 % Saving the warped image I_warped (at time t since this is in the for loop, and run index "run_idx_for_save")
                 warped_im_name = write_warp_2Dim_filename(dvf_type, t, path_par, OF_par, warp_par, pred_par, br_model_par );
-                enhance_flag = true;
+                enhance_flag = false; % to modify based on needs
                 run_idx_for_save = 1;
                 save_crop_enhance_2Dim_jpg(I_warped(:,:,run_idx_for_save), warped_im_name, beh_par.CROP_FOR_DISP_SAVE, enhance_flag, ...
                     disp_par, path_par, im_par.x_m, im_par.x_M, im_par.y_m, im_par.y_M, t);
