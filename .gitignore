@@ -1,4 +1,10 @@
-/Image_prediction/input_imgs/
+/Image_prediction/input_imgs/*
+!/Image_prediction/input_imgs/2D images/
+/Image_prediction/input_imgs/2D images/*
+!/Image_prediction/input_imgs/2D images/2. sq sl010 sag Xcs=125/
+!/Image_prediction/input_imgs/2D images/3. sq sl010 sag Xcs=80/
+!/Image_prediction/input_imgs/2D images/4. sq sl014 sag Xcs=165/
+!/Image_prediction/input_imgs/2D images/5. sq sl014 sag Xcs=95/
 /Image_prediction/tmp_figs/
 /Image_prediction/tmp_imgs/
 /Image_prediction/tmp_vars/
@@ -13,3 +19,5 @@
 /Time_series_forecasting/disp_par.xlsx
 *.bak
 *.asv
+*.jpg
+*.txt
