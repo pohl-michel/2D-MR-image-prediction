@@ -1,3 +1,4 @@
+# Excluding all images except the input 2D .dcm images corresponding to the ETH dataset
 /Image_prediction/input_imgs/*
 !/Image_prediction/input_imgs/2D images/
 /Image_prediction/input_imgs/2D images/*
@@ -5,11 +6,20 @@
 !/Image_prediction/input_imgs/2D images/3. sq sl010 sag Xcs=80/
 !/Image_prediction/input_imgs/2D images/4. sq sl014 sag Xcs=165/
 !/Image_prediction/input_imgs/2D images/5. sq sl014 sag Xcs=95/
+
+# Excluding directories corresponding to temporary files
 /Image_prediction/tmp_figs/
 /Image_prediction/tmp_imgs/
 /Image_prediction/tmp_vars/
 /Image_prediction/tmp_txt_files/
 /Image_prediction/tests
+
+# Excluding files corresponding to data curation (not in the Github repo)
+/Image_prediction/mat2Dseq_from_complex_npy3Dseq.py
+/Image_prediction/create_4Dmri_dataset.py
+/Image_prediction/dcm2Dseq_from_real_mha_dcm3Dseq.m
+/Image_prediction/0. 2D image sequence extraction
+
 /Time_series_forecasting/Original data
 /Time_series_forecasting/a. Input time series sequences
 /Time_series_forecasting/b. Prediction results (figures)
@@ -17,6 +27,8 @@
 /Time_series_forecasting/d. RNN variables (temp)
 /Time_series_forecasting/e. Log txt files
 /Time_series_forecasting/disp_par.xlsx
+
+# File extensions to exclude
 *.bak
 *.asv
 *.jpg

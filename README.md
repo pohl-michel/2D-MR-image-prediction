@@ -29,18 +29,16 @@ The repository is split into two different folders:
 The "Image_prediction" folder contains the following scripts:
  - image_prediction_main.m : main script performing image prediction 
  - OF2D_param_optim_main.m : script optimising parameters associated with deformation vector field computation using the pyramidal Lucas-Kanade optical flow method
- - dcm2Dseq_from_real_mha_dcm3Dseq.m : script that converts 4D chest MR scans into 2D videos that are used as input for the forecasting script.
- - create_4Dmri_dataset.py : temporary script for creating 2D image sequences from 4D MR images from the Magdeburg university dataset (experimental)
 
 The behavior of "image_prediction_main.m" is controlled by "load_impred_behavior_parameters.m" and essentially has two modes:
  1. optimization of the number of principal components and hyperparameters associated with the forecasting methods (corresponding to "beh_par.OPTIMIZE_NB_PCA_CP = true" in "load_impred_behavior_parameters.m"). Parallel computations are performed (which requires the parallel computing toolbox). In case one does not have access to the parallel computing toolbox, one can still run the script by replacing the "parfor" loops by "for" loops.
  2. inference with given prediction parameters (corresponding to "beh_par.OPTIMIZE_NB_PCA_CP = false" in "load_impred_behavior_parameters.m")
 
-The parameters corresponding to image prediction can be modified in the following parts of the code:
+The parameters corresponding to image prediction can be modified in the following .m files:
  - load_pred_par.m : file containing time-series forecasting parameters. It loads the "pred_par.xlsx" file in each sequence directory and paramters in those files can also be modified.
  - load_warp_par.m : file containing the parameters related to image warping
- - image_prediction_main.m : the variables "pred_meths" and "br_model_par.nb_pca_cp_tab" contain the prediction methods used and the number of principal components for inference (or the maximum number of principal comopnents when doing hyper-parameter optimisation), respectively. The input sequence names are specified in the "input_im_dir_suffix_tab" variable.
  - load_hyperpar_cv_info.m : file containing the range of hyper-parameters used for cross-validation.
+ - image_prediction_main.m : the variables "pred_meths" and "br_model_par.nb_pca_cp_tab" contain the prediction methods used and the number of principal components for inference (or the maximum number of principal comopnents when doing hyper-parameter optimisation), respectively. The input sequence names are specified in the "input_im_dir_suffix_tab" variable.
 
 The input images loaded by "image_prediction_main.m" are located in the "input_imgs/2D images" directory. The directory corresponding to each image sequence contain several files, among which:
  - pred_par.xlsx : contains parameter values related to low-dimensional representation forecasting
