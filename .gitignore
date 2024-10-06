@@ -1,4 +1,4 @@
-# Excluding all images except the input 2D .dcm images corresponding to the ETH dataset
+# Excluding all images except the input 2D .dcm images corresponding to the ETH Zurich dataset
 /Image_prediction/input_imgs/*
 !/Image_prediction/input_imgs/2D images/
 /Image_prediction/input_imgs/2D images/*
@@ -6,6 +6,10 @@
 !/Image_prediction/input_imgs/2D images/3. sq sl010 sag Xcs=80/
 !/Image_prediction/input_imgs/2D images/4. sq sl014 sag Xcs=165/
 !/Image_prediction/input_imgs/2D images/5. sq sl014 sag Xcs=95/
+
+# Ignoring txt files inside the "2D images" subdireectory
+/Image_prediction/input_imgs/2D images/*.txt
+/Image_prediction/input_imgs/2D images/**/*.txt
 
 # Excluding directories corresponding to temporary files
 /Image_prediction/tmp_figs/
@@ -19,6 +23,7 @@
 /Image_prediction/create_4Dmri_dataset.py
 /Image_prediction/dcm2Dseq_from_real_mha_dcm3Dseq.m
 /Image_prediction/0. 2D image sequence extraction
+create_4Dmri_dataset_spec-file.txt
 
 # Excluding temporary folders
 /Time_series_forecasting/b. Prediction results (figures)
@@ -30,4 +35,3 @@
 *.bak
 *.asv
 *.jpg
-*.txt
