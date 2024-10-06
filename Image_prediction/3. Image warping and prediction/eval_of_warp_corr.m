@@ -56,7 +56,8 @@ function eval_results = eval_of_warp_corr(dvf_type, im_par, OF_par, path_par, wa
         acc_metrics.roi = struct(); 
     end
 
-    if ismember(dvf_type, {'initial DVF', 'DVF from PCA'}) || beh_par.NO_PRED_AT_ALL % warping evaluation with the initial optical flow or the denoised optical flow by keeping the low-order PCA components (no prediction)
+    % warping evaluation with the initial optical flow or the denoised optical flow by keeping the low-order PCA components (no prediction), or prediction using the previous image.
+    if ismember(dvf_type, {'initial DVF', 'DVF from PCA'}) || beh_par.NO_PRED_AT_ALL  
         time_signal_pred_results.nb_correct_runs = 1;
     end
 
