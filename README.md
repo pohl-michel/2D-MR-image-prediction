@@ -35,16 +35,16 @@ The behavior of "image_prediction_main.m" is controlled by "load_impred_behavior
  2. inference with given prediction parameters (corresponding to "beh_par.OPTIMIZE_NB_PCA_CP = false" in "load_impred_behavior_parameters.m")
 
 The parameters corresponding to image prediction can be modified in the following .m files:
- - load_pred_par.m : file containing time-series forecasting parameters. It loads the "pred_par.xlsx" file in each sequence directory and paramters in those files can also be modified.
- - load_warp_par.m : file containing the parameters related to image warping
- - load_hyperpar_cv_info.m : file containing the range of hyper-parameters used for cross-validation.
- - image_prediction_main.m : the variables "pred_meths" and "br_model_par.nb_pca_cp_tab" contain the prediction methods used and the number of principal components for inference (or the maximum number of principal comopnents when doing hyper-parameter optimisation), respectively. The input sequence names are specified in the "input_im_dir_suffix_tab" variable.
+ - Image_prediction/load_warp_par.m : file containing the parameters related to image warping.
+ - Image_prediction/image_prediction_main.m : the variables "pred_meths" and "br_model_par.nb_pca_cp_tab" contain the prediction methods used and the number of principal components for inference (or the maximum number of principal comopnents when doing hyper-parameter optimisation), respectively. The input sequence names are specified in the "input_im_dir_suffix_tab" variable.
+ - Time_series_forecasting/load_pred_par.m : file containing time-series forecasting parameters. It loads the "pred_par.xlsx" file in each sequence directory and parameters in those files can also be modified.
+ - Time_series_forecasting/load_hyperpar_cv_info.m : file containing the range of hyper-parameters used for cross-validation.
 
 The input images loaded by "image_prediction_main.m" are located in the "input_imgs/2D images" directory. The directory corresponding to each image sequence contain several files, among which:
  - pred_par.xlsx : contains parameter values related to low-dimensional representation forecasting
  - OF_calc_par.xlsx : contains optical flow computation parameters
- - disp_par.xlsx : contains parameters related to the display of image or figure results 
+ - disp_par.xlsx : contains parameters related to the display of images or figures 
  - im_seq_par.xlsx : contains parameters related to the input image seuqnece itself (image dimensions, number of images...)
 
-The output .mat variables, text files, images, and figures, are located in the "tmp_vars", "tmp_txt_files", "tmp_imgs", and 'tmp_figs" folders, respectively. 
-
+The cine-MR sequences in the "Image_prediction/input_imgs" folder come originally from a public dataset from ETH Zürich publicly accessible online: [4D MRI lung data](https://bmic.ee.ethz.ch/research/datasets.html).
+We selected 2 sagittal cross-sections for each of the 4D sequences, resampled them so that the resolution becomes 1mm*1mm per pixel, and shifted them so that the first image corresponds to the middle of expiration. Please cite the following article if you use that data in your work: "Boye, D. et al. - Population based modeling of respiratory lung motion and prediction from partial information - Proc. SPIE 8669, Medical Imaging 2013: Image Processing, 86690U (March 13, 2013); doi:10.1117/12.2007076"
