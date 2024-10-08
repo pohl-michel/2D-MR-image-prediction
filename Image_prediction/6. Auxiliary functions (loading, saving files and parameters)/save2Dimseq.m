@@ -7,7 +7,7 @@ function save2Dimseq(im_par, path_par, disp_par)
 % License : 3-clause BSD License
 
 
-    enhance_flag = true;  
+    enhance_flag = false;  
 
     for t=1:im_par.nb_im
 

@@ -8,6 +8,10 @@ Specifically, various methods for online learning of recurrent neural networks (
  - [sparse-1 step approximation (SnAp-1)](https://arxiv.org/abs/2006.07232)
  - [decoupled neural interfaces (DNI)](http://proceedings.mlr.press/v70/jaderberg17a.html)
 
+<img src="Image_prediction/visualization/4. sq sl014 sag Xcs=165 SnAp-1 k=6 q=110 eta=0.01 sg=0.02 h=6 3 cpts_t=181_to_200_cropped.gif" width="40%" height="40%"/>
+
+Left: ground-truth / right: predicted image 6 time steps in advance using SnAp-1. Other video forecasting results can be found in the "/Image_prediction/visualization" folder.
+
 Video forecasting is executed by performing the following steps in order:
 1. computation of the "push" deformation vector field ${\vec{u}(\vec{x}, t_n)}$ between the image at time $t_1$ and $t_n$ for all indices $n$.
 2. computation of the projection of ${\vec{u}(\vec{x}, t_n)}$ onto principal deformation vector fields (the principal components) ${\vec{u}_i(\vec{x})}$. The coordinates of that projection are the time-dependent weights $w_i(t)$.
