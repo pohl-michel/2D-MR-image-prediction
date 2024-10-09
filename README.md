@@ -2,11 +2,13 @@ This repository contains code performing the following:
 1. time series forecasting
 2. video forecasting
 
-Specifically, various methods for online learning of recurrent neural networks (RNN) are implemented in order to execute the two tasks above:
+Specifically, various methods for online learning of recurrent neural networks (RNN) are used to execute the two tasks above:
  - real-time recurrent learning (RTRL)
  - [unbiased online recurrent optimization (UORO)](https://arxiv.org/abs/1702.05043)
  - [sparse-1 step approximation (SnAp-1)](https://arxiv.org/abs/2006.07232)
  - [decoupled neural interfaces (DNI)](http://proceedings.mlr.press/v70/jaderberg17a.html)
+
+We invite the readers interested specifically in time series forecasting to refer to the README.md file located in the "Time_series_forecasting" folder as the current file focus mostly on video forecasting for brevity.
 
 <img src="Image_prediction/visualization/4. sq sl014 sag Xcs=165 SnAp-1 k=6 q=110 eta=0.01 sg=0.02 h=6 3 cpts_t=181_to_200_cropped.gif" width="40%" height="40%"/>
 
@@ -27,7 +29,7 @@ This repository supports the claims in the following research articles, that pro
 Please consider citing these articles if you use this code in your research.
 
 The repository is split into two different folders:
- - "Time series_forecasting" contains scripts and functions that perform time series forecasting. It is essentially self-contained / independent, and is an extension of the repository https://github.com/pohl-michel/time-series-forecasting-with-UORO-RTRL-LMS-and-linear-regression associated with [our former research article](https://arxiv.org/abs/2106.01100). Readers specifically interested in time-series forecasting should refer to the readme file within that folder.
+ - "Time series_forecasting" contains scripts and functions that perform time series forecasting. It is essentially self-contained / independent, and is an extension of the repository https://github.com/pohl-michel/time-series-forecasting-with-UORO-RTRL-LMS-and-linear-regression associated with [our former research article](https://arxiv.org/abs/2106.01100). cf the readme file within that folder for more details.
  - "Image_prediction" contains scripts and function that perform video forecasting. Those call functions from the former folder, that are used to predict $w_i(t)$, which is the (low-dimensional) compressed representation of motion within these videos.
 
 The "Image_prediction" folder contains the following scripts:
@@ -49,6 +51,8 @@ The input images loaded by "image_prediction_main.m" are located in the "input_i
  - OF_calc_par.xlsx : contains optical flow computation parameters
  - disp_par.xlsx : contains parameters related to the display of images or figures 
  - im_seq_par.xlsx : contains parameters related to the input image seuqnece itself (image dimensions, number of images...)
+
+The Lucas-Kanade implementation for 2D images in this repository is an adaptation of that for 3D images over there: https://github.com/pohl-michel/Lucas-Kanade-pyramidal-optical-flow-for-3D-image-sequences. 
 
 The cine-MR sequences in the "Image_prediction/input_imgs" folder come originally from a public dataset from ETH Zürich publicly accessible online: [4D MRI lung data](https://bmic.ee.ethz.ch/research/datasets.html).
 We selected 2 sagittal cross-sections for each of the 4D sequences, resampled them so that the resolution becomes 1mm*1mm per pixel, and shifted them so that the first image corresponds to the middle of expiration. Please cite the following article if you use that data in your work: "Boye, D. et al. - Population based modeling of respiratory lung motion and prediction from partial information - Proc. SPIE 8669, Medical Imaging 2013: Image Processing, 86690U (March 13, 2013); doi:10.1117/12.2007076"
