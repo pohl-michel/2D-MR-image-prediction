@@ -23,13 +23,13 @@ Video forecasting is executed by performing the following steps in order:
 The examples given correspond to respiratory motion forecasting: external marker position prediction for the first application, and 2D magnetic resonance chest image sequence prediction for the second application. However, the code is general and could be applied to the prediction of time series and (simple) videos in general.   
 
 This repository supports the claims in the following research articles, that provide detailed technical information:
-1. Michel Pohl, Mitsuru Uesaka, Hiroyuki Takahashi, Kazuyuki Demachi, Ritu Bhusal Chhatkuli, ["Respiratory motion forecasting with online learning of recurrent neural networks for safety enhancement in externally guided radiotherapy"](https://arxiv.org/abs/2403.01607), arXiv preprint arXiv:2403.01607, 2024  
-2. other article to submit
+1. Michel Pohl, Mitsuru Uesaka, Hiroyuki Takahashi, Kazuyuki Demachi, Ritu Bhusal Chhatkuli, ["Respiratory motion forecasting with online learning of recurrent neural networks for safety enhancement in externally guided radiotherapy"](https://doi.org/10.48550/arXiv.2403.01607), arXiv preprint arXiv:2403.01607, 2024  
+2. Michel Pohl, Mitsuru Uesaka, Hiroyuki Takahashi, Kazuyuki Demachi, Ritu Bhusal Chhatkuli, ["Future frame prediction in chest cine MR imaging using the PCA respiratory motion model and dynamically trained recurrent neural networks"](https://doi.org/10.48550/arXiv.2410.05882), arXiv preprint arXiv:2410.05882, 2024
 
 Please consider citing these articles if you use this code in your research.
 
 The repository is split into two different folders:
- - "Time series_forecasting" contains scripts and functions that perform time series forecasting. It is essentially self-contained / independent, and is an extension of the repository https://github.com/pohl-michel/time-series-forecasting-with-UORO-RTRL-LMS-and-linear-regression associated with [our former research article](https://arxiv.org/abs/2106.01100). cf the readme file within that folder for more details.
+ - "Time series_forecasting" contains scripts and functions that perform time series forecasting. It is essentially self-contained / independent, and is an extension of the repository https://github.com/pohl-michel/time-series-forecasting-with-UORO-RTRL-LMS-and-linear-regression associated with [our former research article](https://doi.org/10.48550/arXiv.2106.01100). cf the readme file within that folder for more details.
  - "Image_prediction" contains scripts and function that perform video forecasting. Those call functions from the former folder, that are used to predict $w_i(t)$, which is the (low-dimensional) compressed representation of motion within these videos.
 
 The "Image_prediction" folder contains the following scripts:

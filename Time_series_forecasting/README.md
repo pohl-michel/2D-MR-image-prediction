@@ -9,7 +9,7 @@ The figure below gives an example of prediction 2.0s in advance with UORO (the s
 This code supports the claims in the following research articles:
  - Michel Pohl, Mitsuru Uesaka, Hiroyuki Takahashi, Kazuyuki Demachi, Ritu Bhusal Chhatkuli, "Prediction of the Position of External Markers Using a Recurrent Neural Network Trained With Unbiased Online Recurrent Optimization for Safe Lung Cancer Radiotherapy", Computer Methods and Programs in Biomedicine (2022): 106908. [[published version]](https://doi.org/10.1016/j.cmpb.2022.106908) [[accepted manuscript (preprint)]](https://doi.org/10.48550/arXiv.2106.01100)
  - Michel Pohl, Mitsuru Uesaka, Hiroyuki Takahashi, Kazuyuki Demachi, Ritu Bhusal Chhatkuli, "Respiratory motion forecasting with online learning of recurrent neural networks for safety enhancement in externally guided radiotherapy." arXiv preprint arXiv:2403.01607 (2024). [[preprint]](https://doi.org/10.48550/arXiv.2403.01607)
- - to update
+ - Michel Pohl, Mitsuru Uesaka, Hiroyuki Takahashi, Kazuyuki Demachi, Ritu Bhusal Chhatkuli, "Future frame prediction in chest cine MR imaging using the PCA respiratory motion model and dynamically trained recurrent neural networks", arXiv preprint arXiv:2410.05882, 2024 [[preprint]](https://doi.org/10.48550/arXiv.2410.05882)
 
  Please consider citing our articles if you use this code in your research.
 
