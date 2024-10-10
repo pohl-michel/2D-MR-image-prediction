@@ -15,14 +15,14 @@ We invite the readers interested specifically in time series forecasting to refe
 Left: ground-truth / right: predicted image 6 time steps in advance using SnAp-1. Other video forecasting results can be found in the "/Image_prediction/visualization" folder.
 
 Video forecasting is executed by performing the following steps in order:
-1. computation of the "push" deformation vector field ${\vec{u}(\vec{x}, t_n)}$ between the image at time $t_1$ and $t_n$ for all indices $n$.
-2. computation of the projection of ${\vec{u}(\vec{x}, t_n)}$ onto principal deformation vector fields (the principal components) ${\vec{u}_i(\vec{x})}$. The coordinates of that projection are the time-dependent weights $w_i(t)$.
+1. estimation of the "push" deformation vector field ${\vec{u}(\vec{x}, t_n)}$ between the image at time $t_1$ and $t_n$ for all indices $n$.
+2. projection of ${\vec{u}(\vec{x}, t_n)}$ onto principal deformation vector fields (the principal components) ${\vec{u}_i(\vec{x})}$. The coordinates of that projection are the time-dependent weights $w_i(t)$.
 3. prediction of the weights $w_i(t)$ using various methods including the RNN learning algorithms mentioned above.
 4. warping forward the image at time $t_1$ using the deformation field reconstructed using the predicted weights $w_i(t+h)$ where $h$ is the prediction horizon.
 
 The examples given correspond to respiratory motion forecasting: external marker position prediction for the first application, and 2D magnetic resonance chest image sequence prediction for the second application. However, the code is general and could be applied to the prediction of time series and (simple) videos in general.   
 
-This repository supports the claims in the following research articles, that provide detailed technical information:
+This repository supports the claims in the following research articles, that provide more detailed technical information:
 1. Michel Pohl, Mitsuru Uesaka, Hiroyuki Takahashi, Kazuyuki Demachi, Ritu Bhusal Chhatkuli, ["Respiratory motion forecasting with online learning of recurrent neural networks for safety enhancement in externally guided radiotherapy"](https://doi.org/10.48550/arXiv.2403.01607), arXiv preprint arXiv:2403.01607, 2024  
 2. Michel Pohl, Mitsuru Uesaka, Hiroyuki Takahashi, Kazuyuki Demachi, Ritu Bhusal Chhatkuli, ["Future frame prediction in chest cine MR imaging using the PCA respiratory motion model and dynamically trained recurrent neural networks"](https://doi.org/10.48550/arXiv.2410.05882), arXiv preprint arXiv:2410.05882, 2024
 
@@ -30,13 +30,9 @@ Please consider citing these articles if you use this code in your research.
 
 The repository is split into two different folders:
  - "Time series_forecasting" contains scripts and functions that perform time series forecasting. It is essentially self-contained / independent, and is an extension of the repository https://github.com/pohl-michel/time-series-forecasting-with-UORO-RTRL-LMS-and-linear-regression associated with [our former research article](https://doi.org/10.48550/arXiv.2106.01100). cf the readme file within that folder for more details.
- - "Image_prediction" contains scripts and function that perform video forecasting. Those call functions from the former folder, that are used to predict $w_i(t)$, which is the (low-dimensional) compressed representation of motion within these videos.
+ - "Image_prediction" contains scripts and functions that perform video forecasting. Those call functions from the former folder, that are used to predict $w_i(t)$ (step 3 above), which is the (low-dimensional) compressed representation of motion within these videos.
 
-The "Image_prediction" folder contains the following scripts:
- - image_prediction_main.m : main script performing image prediction 
- - OF2D_param_optim_main.m : script optimising parameters associated with deformation vector field computation using the pyramidal Lucas-Kanade optical flow method
-
-The behavior of "image_prediction_main.m" is controlled by "load_impred_behavior_parameters.m" and essentially has two modes:
+The main script performing image prediction is "image_prediction_main.m". The behavior of "image_prediction_main.m" is controlled by "load_impred_behavior_parameters.m" and essentially has two modes:
  1. optimization of the number of principal components and hyperparameters associated with the forecasting methods (corresponding to "beh_par.OPTIMIZE_NB_PCA_CP = true" in "load_impred_behavior_parameters.m"). Parallel computations are performed (which requires the parallel computing toolbox). In case one does not have access to the parallel computing toolbox, one can still run the script by replacing the "parfor" loops by "for" loops.
  2. inference with given prediction parameters (corresponding to "beh_par.OPTIMIZE_NB_PCA_CP = false" in "load_impred_behavior_parameters.m")
 
@@ -52,7 +48,8 @@ The input images loaded by "image_prediction_main.m" are located in the "input_i
  - disp_par.xlsx : contains parameters related to the display of images or figures 
  - im_seq_par.xlsx : contains parameters related to the input image seuqnece itself (image dimensions, number of images...)
 
-The Lucas-Kanade implementation for 2D images in this repository is an adaptation of that for 3D images over there: https://github.com/pohl-michel/Lucas-Kanade-pyramidal-optical-flow-for-3D-image-sequences. 
+The implementation of the pyramidal and iterative Lucas-Kanade optical flow algorithm for 2D images in this repository is an adaptation of that for 3D images in the following repository: https://github.com/pohl-michel/Lucas-Kanade-pyramidal-optical-flow-for-3D-image-sequences. The script "OF2D_param_optim_main.m" optimizes the parameters associated with deformation vector field computation using that algorithm. The parameter grid is specified in the file "load_OF_hyperparameters.m". One can also compute the optical flow for a given set of parameters using "image_prediction_main.m". The complete description of the registration algorithm can be found in the following article: 
+Michel Pohl, Mitsuru Uesaka, Kazuyuki Demachi, Ritu Bhusal Chhatkuli, "Prediction of the motion of chest internal points using a recurrent neural network trained with real-time recurrent learning for latency compensation in lung cancer radiotherapy", Computerized Medical Imaging and Graphics, Volume 91, 2021, 101941, ISSN 0895-6111 [[journal version with restricted access]](https://doi.org/10.1016/j.compmedimag.2021.101941) [[accepted manuscript version, openly available]](https://doi.org/10.48550/arXiv.2207.05951). Please consider citing that work if you use this code to perform image registration in your research.
 
 The cine-MR sequences in the "Image_prediction/input_imgs" folder come originally from a public dataset from ETH Zürich publicly accessible online: [4D MRI lung data](https://bmic.ee.ethz.ch/research/datasets.html).
 We selected 2 sagittal cross-sections for each of the 4D sequences, resampled them so that the resolution becomes 1mm*1mm per pixel, and shifted them so that the first image corresponds to the middle of expiration. Please cite the following article if you use that data in your work: "Boye, D. et al. - Population based modeling of respiratory lung motion and prediction from partial information - Proc. SPIE 8669, Medical Imaging 2013: Image Processing, 86690U (March 13, 2013); doi:10.1117/12.2007076"
