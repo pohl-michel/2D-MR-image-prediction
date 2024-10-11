@@ -1,5 +1,5 @@
 This repository contains code performing the following:
-1. time series forecasting
+1. [time series forecasting](https://github.com/pohl-michel/2D-MR-image-prediction/tree/main/Time_series_forecasting)
 2. video forecasting
 
 Specifically, various methods for online learning of recurrent neural networks (RNN) are used to execute the two tasks above:
@@ -8,7 +8,7 @@ Specifically, various methods for online learning of recurrent neural networks (
  - [sparse-1 step approximation (SnAp-1)](https://arxiv.org/abs/2006.07232)
  - [decoupled neural interfaces (DNI)](http://proceedings.mlr.press/v70/jaderberg17a.html)
 
-We invite the readers interested specifically in time series forecasting to refer to the README.md file located in the "Time_series_forecasting" folder as the current file focus mostly on video forecasting for brevity.
+We invite the readers interested specifically in time series forecasting to refer to the [README.md file located in the "Time_series_forecasting" folder](https://github.com/pohl-michel/2D-MR-image-prediction/blob/main/Time_series_forecasting/README.md) as the current file focus mostly on video forecasting for brevity.
 
 <img src="Image_prediction/visualization/4. sq sl014 sag Xcs=165 SnAp-1 k=6 q=110 eta=0.01 sg=0.02 h=6 3 cpts_t=181_to_200_cropped.gif" width="40%" height="40%"/>
 
