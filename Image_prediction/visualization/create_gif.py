@@ -12,21 +12,33 @@ from PIL import Image, ImageSequence
 # gt_img_dir = "2._sq_sl010_sag_Xcs=125_gt_t=181_to_200"
 # pred_img_dir = "prediction_2._sq_sl010_sag_Xcs=125_SnAp-1_k=12_q=110_eta=0.02_sg=0.02_h=6_3_cpts_t=181_to_200"
 
+# sequence 1 in the paper - cropped
+# gt_img_dir = "2._sq_sl010_sag_Xcs=125_gt_t=181_to_200_cropped"
+# pred_img_dir = "prediction_2._sq_sl010_sag_Xcs=125_SnAp-1_k=12_q=110_eta=0.02_sg=0.02_h=6_3_cpts_t=181_to_200_cropped"
+
 # sequence 2 in the paper 
 # gt_img_dir = "3._sq_sl010_sag_Xcs=80_gt_t=181_to_200"
 # pred_img_dir = "prediction_3._sq_sl010_sag_Xcs=80_SnAp-1_k=30_q=70_eta=0.02_sg=0.02_h=6_4_cpts_t=181_to_200"
+
+# sequence 2 in the paper - cropped
+# gt_img_dir = "3._sq_sl010_sag_Xcs=80_gt_t=181_to_200_cropped"
+# pred_img_dir = "prediction_3._sq_sl010_sag_Xcs=80_SnAp-1_k=30_q=70_eta=0.02_sg=0.02_h=6_4_cpts_t=181_to_200_cropped"
 
 # sequence 3 in the paper 
 # gt_img_dir = "4. sq sl014 sag Xcs=165_gt_t=181_to_200"
 # pred_img_dir = "prediction_4. sq sl014 sag Xcs=165 SnAp-1 k=6 q=110 eta=0.01 sg=0.02 h=6 3 cpts_t=181_to_200"
 
 # sequence 3 in the paper - gt and predicted images cropped
-gt_img_dir = "4. sq sl014 sag Xcs=165_gt_t=181_to_200_cropped"
-pred_img_dir = "prediction_4. sq sl014 sag Xcs=165 SnAp-1 k=6 q=110 eta=0.01 sg=0.02 h=6 3 cpts_t=181_to_200_cropped"
+# gt_img_dir = "4. sq sl014 sag Xcs=165_gt_t=181_to_200_cropped"
+# pred_img_dir = "prediction_4. sq sl014 sag Xcs=165 SnAp-1 k=6 q=110 eta=0.01 sg=0.02 h=6 3 cpts_t=181_to_200_cropped"
 
 # sequence 4 in the paper 
 # gt_img_dir = "5. sq sl014 sag Xcs=95_gt_t=181_to_200"
 # pred_img_dir = "prediction_5. sq sl014 sag Xcs=95 SnAp-1 k=6 q=110 eta=0.01 sg=0.02 h=6 2 cpts_t=181_to_200"
+
+# sequence 4 in the paper - cropped
+gt_img_dir = "5. sq sl014 sag Xcs=95_gt_t=181_to_200_cropped"
+pred_img_dir = "prediction_5. sq sl014 sag Xcs=95 SnAp-1 k=6 q=110 eta=0.01 sg=0.02 h=6 2 cpts_t=181_to_200_cropped"
 
 root_folder = os.path.dirname(__file__)
 output_file = os.path.join(root_folder, "output.gif")
