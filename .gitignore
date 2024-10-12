@@ -31,6 +31,13 @@ create_4Dmri_dataset_spec-file.txt
 /Time_series_forecasting/d. RNN variables (temp)
 /Time_series_forecasting/e. Log txt files
 
+# Excluding gifs inside the visualisation folder except a few ones
+/Image_prediction/visualization/*.gif
+!/Image_prediction/visualization/2._sq_sl010_sag_Xcs=125_SnAp-1_k=12_q=110_eta=0.02_sg=0.02_h=6_3_cpts_t=181_to_200_cropped.gif
+!/Image_prediction/visualization/3._sq_sl010_sag_Xcs=80_SnAp-1_k=30_q=70_eta=0.02_sg=0.02_h=6_4_cpts_t=181_to_200_cropped.gif
+!/Image_prediction/visualization/4. sq sl014 sag Xcs=165 SnAp-1 k=6 q=110 eta=0.01 sg=0.02 h=6 3 cpts_t=181_to_200_cropped.gif
+!/Image_prediction/visualization/5. sq sl014 sag Xcs=95 SnAp-1 k=6 q=110 eta=0.01 sg=0.02 h=6 2 cpts_t=181_to_200_cropped.gif
+
 # File extensions to exclude
 *.bak
 *.asv
