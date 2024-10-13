@@ -22,8 +22,8 @@ function plot_pred_signal( pred_data, org_data, pred_par, path_par, disp_par, SA
 
         switch pred_par.data_type
             case 1 % prediction of the 3D position of markers 
-                obj_idx = mod(cp_idx, pred_par.dim_per_obj); 
-                crt_dim = 1 + floor(cp_idx/pred_par.dim_per_obj);
+                obj_idx = 1 + mod(cp_idx - 1, pred_par.dim_per_obj); 
+                crt_dim = 1 + floor((cp_idx-1)/pred_par.dim_per_obj);
                 switch crt_dim 
                     case 1
                         dir_char = 'x';
