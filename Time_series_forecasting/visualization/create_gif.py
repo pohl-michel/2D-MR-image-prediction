@@ -51,7 +51,9 @@ class ForecastingAnimation:
             params["paths"]["input_sq_name"],
             params["paths"]["input_sq_mat_filename"],
         )
-        pred_filename = os.path.join(os.path.dirname(__file__), params["paths"]["pred_sq_filename"])
+        crt_directory = os.path.dirname(__file__)
+        pred_filename = os.path.join(crt_directory, params["paths"]["pred_sq_filename"])
+        self.params["paths"]["out_gif_path"] = os.path.join(crt_directory, self.params["paths"]["out_gif_filename"])
 
         dim_idx = params["display"]["dim_idx_to_plot"]
 
@@ -125,7 +127,7 @@ class ForecastingAnimation:
         )
 
         # Save the animation as a GIF
-        anim.save(self.params["paths"]["out_gif_filename"], writer=PillowWriter(fps=self.params["display"]["fps"]))
+        anim.save(self.params["paths"]["out_gif_path"], writer=PillowWriter(fps=self.params["display"]["fps"]))
 
     def get_dynamic_ylim(self):
         """Compute the dynamic y-axis limits"""

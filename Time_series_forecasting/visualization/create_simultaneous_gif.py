@@ -42,7 +42,7 @@ parameters = {
         "input_sq_dir": "Time_series_forecasting/a. Input time series sequences",
         "input_sq_name": "Ext markers seq 1  3.33 Hz",
         "input_sq_mat_filename": "data.mat",
-        "pred_sq_filename": "pred_result_variables Ext markers seq 1  3.33 Hz tmax_pred=740 no prediction h=7 no nrmztion",  # "pred_result_variables Ext markers seq 1  3.33 Hz tmax_pred=740 DNI k=12 q=180 eta=0.01 sg=0.02 grd_tshld=100 h=7 nrlzed data.mat",
+        "pred_sq_filename": "pred_result_variables Ext markers seq 1  3.33 Hz tmax_pred=740 DNI k=12 q=180 eta=0.01 sg=0.02 grd_tshld=100 h=7 nrlzed data.mat",
         "out_gif_filename": "signals_animation_multivariate.gif",  # Output GIF filename
     },
 }
@@ -66,11 +66,11 @@ class ForecastingAnimation:
 
         # Loading the original data
         org_data_mat = scipy.io.loadmat(sq_filename)
-        self.org_time_data = org_data_mat[ORG_DATA_KEY][:, :50]  # shape: (num_objects * num_coordinates, Tmax)
+        self.org_time_data = org_data_mat[ORG_DATA_KEY]  # shape: (num_objects * num_coordinates, Tmax)
 
         # Loading the predicted data
         pred_data_mat = scipy.io.loadmat(pred_filename)
-        self.pred_time_data = pred_data_mat[PRED_DATA_KEY][:, :50]
+        self.pred_time_data = pred_data_mat[PRED_DATA_KEY]
 
         # Number of timepoints in the original signal
         self.Tmax = self.org_time_data.shape[TIME_IDX]
