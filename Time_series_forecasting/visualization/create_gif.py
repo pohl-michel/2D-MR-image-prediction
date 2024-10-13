@@ -61,8 +61,11 @@ def animate_signals(original_signal, predicted_signal, t, horizon, nb_units, fig
 
         ax.set_xlim(current_time - nb_units, current_time)
 
-        # Update the original signal to stop at (t - horizon)
-        original_line.set_data(t[:frame - horizon], original_signal[:frame - horizon])
+        # Update the original signal to stop at (frame - horizon)
+        if frame - horizon > 0:
+            original_line.set_data(t[:frame - horizon], original_signal[:frame - horizon])
+        else:
+            original_line.set_data([], [])
 
         # Update the predicted signal to start after the warm-up period (only display after time step m)
         if frame > m:
@@ -74,7 +77,7 @@ def animate_signals(original_signal, predicted_signal, t, horizon, nb_units, fig
 
     # Create the animation
     anim = FuncAnimation(
-        fig, update, frames=len(t), init_func=init, blit=True, interval=20
+        fig, update, frames=range(start_time, len(t)), init_func=init, blit=True, interval=20
     )
 
     # Save the animation as a GIF
@@ -128,7 +131,7 @@ if __name__ == "__main__":
     nb_units = 28
 
     # Set the manual start time (e.g., start from time step index 10)
-    start_time = nb_units + 1  # This can be set higher than nb_units
+    start_time = m  # This will start at the point where prediction begins; to center at x=0 at t = 0, one can choose start_time = nb_units
 
     # Set the figure width and height (e.g., 4*6 inches)
     figsize = (4, 6)
