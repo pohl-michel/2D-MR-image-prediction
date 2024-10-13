@@ -3,9 +3,10 @@ import matplotlib
 matplotlib.use('Agg')  # Use the Agg backend for rendering on headless systems
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation, PillowWriter
+import os
 import scipy.io
 
-FPS = 10
+FPS = 3 # acquisition frequency
 
 # Generate sample data for the original signal and the predicted signal
 def generate_signals():
@@ -26,13 +27,13 @@ def get_dynamic_ylim(original_signal, predicted_signal):
     return signal_min - margin, signal_max + margin
 
 # Create the animation function
-def animate_signals(original_signal, predicted_signal, t, horizon, nb_units):
+def animate_signals(original_signal, predicted_signal, t, horizon, nb_units, figsize, m, start_time):
 
     # Compute the dynamic y-axis limits
     y_min, y_max = get_dynamic_ylim(original_signal, predicted_signal)
 
     # Create the figure and axis for the animation
-    fig, ax = plt.subplots()
+    fig, ax = plt.subplots(figsize=figsize)  # Set width to 6 and height to fig_height)
 
     # Set x-axis and y-axis labels
     ax.set_xlabel("Time step index")
@@ -42,8 +43,8 @@ def animate_signals(original_signal, predicted_signal, t, horizon, nb_units):
     ax.set_ylim(y_min, y_max)  # Set the y-axis limit based on the signals
 
     # Plot empty lines for the original and predicted signals
-    original_line, = ax.plot([], [], lw=2, label="Original Signal", color="black")
-    predicted_line, = ax.plot([], [], lw=2, label="Predicted Signal", color="red")
+    original_line, = ax.plot([], [], lw=2, label="Original Signal", color="black") # lw: line width
+    predicted_line, = ax.plot([], [], lw=1, label="Predicted Signal", color="red")
 
     # Add a legend
     ax.legend()
@@ -57,13 +58,17 @@ def animate_signals(original_signal, predicted_signal, t, horizon, nb_units):
     # Update function for each frame of the animation
     def update(frame):
         current_time = t[frame]
-        ax.set_xlim(current_time - nb_units, current_time)  # Set x-axis window size based on nb_units
+
+        ax.set_xlim(current_time - nb_units, current_time)
 
         # Update the original signal to stop at (t - horizon)
-        original_line.set_data(t[:frame - int(horizon * (len(t) / (t[-1] - t[0])))], original_signal[:frame - int(horizon * (len(t) / (t[-1] - t[0])))])
+        original_line.set_data(t[:frame - horizon], original_signal[:frame - horizon])
 
-        # Update the predicted signal to start from current time
-        predicted_line.set_data(t[:frame], predicted_signal[:frame])
+        # Update the predicted signal to start after the warm-up period (only display after time step m)
+        if frame > m:
+            predicted_line.set_data(t[m:frame], predicted_signal[m:frame])
+        else:
+            predicted_line.set_data([], [])  # No data before m
 
         return original_line, predicted_line
 
@@ -81,15 +86,22 @@ if __name__ == "__main__":
     # Generate signals
     # t, original_signal, predicted_signal = generate_signals()
 
-    input_sq_name = "Ext markers seq 2"
+    input_sq_name = "Ext markers seq 1  3.33 Hz" # seq 3 has few time points so good for experimenting...
+    pred_sq_filename = "pred_result_variables Ext markers seq 1  3.33 Hz tmax_pred=740 DNI k=12 q=180 eta=0.01 sg=0.02 grd_tshld=100 h=7 nrlzed data.mat"
+
     input_sq_dir = "Time_series_forecasting/a. Input time series sequences"
     sq_filename = '%s/%s/data.mat' % (input_sq_dir, input_sq_name)
+    pred_filename = os.path.join(os.path.dirname(__file__), pred_sq_filename)
 
     dim_idx = 6 # z coordinate of marker 1 (according to resample_time_series_data.py)
 
     # Loading the original data
     time_data_mat = scipy.io.loadmat(sq_filename)
     org_time_data = time_data_mat['org_data']
+
+    # Loading the predicted data
+    time_data_mat = scipy.io.loadmat(pred_filename)
+    pred_time_data = time_data_mat['Ypred']
 
     Tmax = org_time_data.shape[1]
 
@@ -98,15 +110,30 @@ if __name__ == "__main__":
 
     t = np.array(range(0, Tmax))  # Time points
     original_signal = org_time_data[dim_idx, :]
-    predicted_signal = np.array([0] + [original_signal[tau - 1] for tau in range(1, Tmax)]) # mock prdiction lagging 1 time step behind
+    
+    # mock predicted signal
+    # predicted_signal = np.array([0] + [original_signal[tau - 1] for tau in range(1, Tmax)]) # mock prdiction lagging 1 time step behind
+    predicted_signal = np.zeros_like(t)
+    nb_predictions = pred_time_data.shape[1]
+
+    # number of initial time steps to skip for the predicted signal filled with zeros (warm-up period)
+    m = Tmax - nb_predictions  # You can adjust m depending on how long your warm-up period is
+
+    predicted_signal[m:]= pred_time_data[dim_idx, :]
 
     # Set the prediction horizon (e.g., h = 1)
-    horizon = 1
+    horizon = 7
 
     # Set the number of x-axis units to show in the window (e.g., 7 units)
-    nb_units = 7
+    nb_units = 28
+
+    # Set the manual start time (e.g., start from time step index 10)
+    start_time = nb_units + 1  # This can be set higher than nb_units
+
+    # Set the figure width and height (e.g., 4*6 inches)
+    figsize = (4, 6)
 
     # Call the animation function with the specified horizon
-    animate_signals(original_signal, predicted_signal, t, horizon, nb_units)
+    animate_signals(original_signal, predicted_signal, t, horizon, nb_units, figsize, m, start_time)
 
     print("GIF animation saved as 'signals_animation_with_horizon.gif'")
