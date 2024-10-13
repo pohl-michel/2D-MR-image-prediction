@@ -1,3 +1,7 @@
+# Animated plot of the ground-truth vs predicted coordinates for all objects and directions (adaptation of create_gif.py)
+# Author: Michel Pohl
+# License : 3-clause BSD License
+
 from functools import partial
 import numpy as np
 import matplotlib
@@ -27,12 +31,18 @@ parameters = {
         "fps": 3,  # acquisition frequency
         "init_xlim": (0, 5),  # Initial x-axis limit (moving window)
         "y_lim_margin_coeff": 0.1,  # Margin for y-limits (10% of signal range)
+        "wspace": 0.4,  # horizontal spacing between subplots
+        "hspace": 0.3,  # vertical spacing between subplots
+        "left": 0.08,  # left margin
+        "right": 0.95,  # right margin
+        "top": 0.95,  # top margin
+        "bottom": 0.08,  # bottom margin
     },
     "paths": {
         "input_sq_dir": "Time_series_forecasting/a. Input time series sequences",
-        "input_sq_name": "Ext markers seq 1  3.33 Hz",  # seq 3 has few time points so good for experimenting...
+        "input_sq_name": "Ext markers seq 1  3.33 Hz",
         "input_sq_mat_filename": "data.mat",
-        "pred_sq_filename": "pred_result_variables Ext markers seq 1  3.33 Hz tmax_pred=740 DNI k=12 q=180 eta=0.01 sg=0.02 grd_tshld=100 h=7 nrlzed data.mat",
+        "pred_sq_filename": "pred_result_variables Ext markers seq 1  3.33 Hz tmax_pred=740 no prediction h=7 no nrmztion",  # "pred_result_variables Ext markers seq 1  3.33 Hz tmax_pred=740 DNI k=12 q=180 eta=0.01 sg=0.02 grd_tshld=100 h=7 nrlzed data.mat",
         "out_gif_filename": "signals_animation_multivariate.gif",  # Output GIF filename
     },
 }
@@ -50,15 +60,17 @@ class ForecastingAnimation:
             params["paths"]["input_sq_name"],
             params["paths"]["input_sq_mat_filename"],
         )
-        pred_filename = os.path.join(os.path.dirname(__file__), params["paths"]["pred_sq_filename"])
+        crt_directory = os.path.dirname(__file__)
+        pred_filename = os.path.join(crt_directory, params["paths"]["pred_sq_filename"])
+        self.params["paths"]["out_gif_path"] = os.path.join(crt_directory, self.params["paths"]["out_gif_filename"])
 
         # Loading the original data
         org_data_mat = scipy.io.loadmat(sq_filename)
-        self.org_time_data = org_data_mat[ORG_DATA_KEY]  # shape: (num_objects * num_coordinates, Tmax)
+        self.org_time_data = org_data_mat[ORG_DATA_KEY][:, :50]  # shape: (num_objects * num_coordinates, Tmax)
 
         # Loading the predicted data
         pred_data_mat = scipy.io.loadmat(pred_filename)
-        self.pred_time_data = pred_data_mat[PRED_DATA_KEY]
+        self.pred_time_data = pred_data_mat[PRED_DATA_KEY][:, :50]
 
         # Number of timepoints in the original signal
         self.Tmax = self.org_time_data.shape[TIME_IDX]
@@ -84,18 +96,28 @@ class ForecastingAnimation:
         # Create the figure and 3x3 grid of axes
         self.fig, self.axes = plt.subplots(3, 3, figsize=self.params["display"]["figsize"])
 
+        # Apply spacing and margins from parameters["display"]
+        plt.subplots_adjust(
+            wspace=self.params["display"]["wspace"],
+            hspace=self.params["display"]["hspace"],
+            left=self.params["display"]["left"],
+            right=self.params["display"]["right"],
+            top=self.params["display"]["top"],
+            bottom=self.params["display"]["bottom"],
+        )
+
         # Compute dynamic y-limits for each subplot
         y_lims = self.get_dynamic_ylims()
 
         # Initialize all 9 subplots (3 objects × 3 coordinates)
-        for obj in range(3):
-            for coord in range(3):
-                idx = obj * 3 + coord
-                ax = self.axes[obj, coord]
+        for coord in range(3):
+            for obj in range(3):
+                idx = coord * 3 + obj
+                ax = self.axes[coord, obj]
 
                 # Set x-axis and y-axis labels
                 ax.set_xlabel("Time step index")
-                ax.set_ylabel(f"Object {obj+1}, Coord {['x', 'y', 'z'][coord]}")
+                ax.set_ylabel(f"{['x', 'y', 'z'][coord]} coordinate of marker {obj+1}")
 
                 # Set initial limits
                 ax.set_xlim(*self.params["display"]["init_xlim"])
@@ -125,15 +147,15 @@ class ForecastingAnimation:
         )
 
         # Save the animation as a GIF
-        anim.save(self.params["paths"]["out_gif_filename"], writer=PillowWriter(fps=self.params["display"]["fps"]))
+        anim.save(self.params["paths"]["out_gif_path"], writer=PillowWriter(fps=self.params["display"]["fps"]))
 
     def get_dynamic_ylims(self):
         """Compute dynamic y-axis limits for each of the 9 subplots"""
 
         y_lims = []
-        for obj in range(3):
-            for coord in range(3):
-                idx = obj * 3 + coord
+        for coord in range(3):
+            for obj in range(3):
+                idx = coord * 3 + obj
 
                 # Extract corresponding signals
                 original_signal = self.org_time_data[idx, :]
@@ -159,10 +181,10 @@ class ForecastingAnimation:
     def update(self, frame):
         """Update function for each frame"""
 
-        for obj in range(3):
-            for coord in range(3):
-                idx = obj * 3 + coord
-                ax = self.axes[obj, coord]
+        for coord in range(3):
+            for obj in range(3):
+                idx = coord * 3 + obj
+                ax = self.axes[coord, obj]
                 current_time = self.t[frame]
 
                 # Set the moving window for the x-axis
