@@ -1,4 +1,7 @@
 # Animated plot of the ground-truth vs predicted coordinates for all objects and directions (adaptation of create_gif.py)
+# The field "pred_sq_filename" of parameters["paths"] corresponds to the prediction result (.mat file in "d. RNN variables (temp)")
+# saved when running signal_prediction_main.m (with beh_par.SAVE_PRED_RESULTS set to "true").
+#
 # Author: Michel Pohl
 # License : 3-clause BSD License
 

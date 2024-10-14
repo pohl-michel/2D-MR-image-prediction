@@ -2,9 +2,8 @@ This folder contains code to predict multidimensional time-series data using lea
 
 It is both a module containing code used for video prediction by calling functions in the "Image_prediction" folder, and a self-contained folder with scripts to perform time series forecasting. This folder is an extension of our former Github repository https://github.com/pohl-michel/time-series-forecasting-with-UORO-RTRL-LMS-and-linear-regression/tree/main in that it additionally contains the implementation of DNI, Snap-1, and another simpler implementation of RTRL, and we added performance evaluation metrics that are not necessarily restricted to the forecast of 3D objects (the former repository used a version of the MAE, RMSE, etc., for 3D objects only).  
 
-The figure below gives an example of prediction 2.0s in advance with UORO (the sampling rate is 10Hz). 
-
-![alt text](prediction_UORO.png "prediction with UORO for sequence 4 and a horizon of 2.0s")
+The figure below illustrates prediction of the 3D position of 3 markers placed on the chest 2.1s (7 time steps) in advance using DNI (the sampling rate is 3.33Hz). 
+<img src="visualization/markers_seq_1_3.33_Hz_DNI_k=12_q=180_eta=0.01_sg=0.02_grd_tshld=100_h=7.gif" width="65%" height="65%"/>
 
 This code supports the claims in the following research articles:
  - Michel Pohl, Mitsuru Uesaka, Hiroyuki Takahashi, Kazuyuki Demachi, Ritu Bhusal Chhatkuli, "Prediction of the Position of External Markers Using a Recurrent Neural Network Trained With Unbiased Online Recurrent Optimization for Safe Lung Cancer Radiotherapy", Computer Methods and Programs in Biomedicine (2022): 106908. [[published version]](https://doi.org/10.1016/j.cmpb.2022.106908) [[accepted manuscript (preprint)]](https://doi.org/10.48550/arXiv.2106.01100)
