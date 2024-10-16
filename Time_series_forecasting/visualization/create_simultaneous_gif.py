@@ -40,6 +40,7 @@ parameters = {
         "right": 0.95,  # right margin
         "top": 0.95,  # top margin
         "bottom": 0.08,  # bottom margin
+        "fontsize": {"xy_labels": 14, "legend": 10, "tick_labels": 12},
     },
     "paths": {
         "input_sq_dir": "Time_series_forecasting/a. Input time series sequences",
@@ -119,12 +120,18 @@ class ForecastingAnimation:
                 ax = self.axes[coord, obj]
 
                 # Set x-axis and y-axis labels
-                ax.set_xlabel("Time step index")
-                ax.set_ylabel(f"{['x', 'y', 'z'][coord]} coordinate of marker {obj+1}")
+                ax.set_xlabel("Time step index", fontsize=self.params["display"]["fontsize"]["xy_labels"])
+                ax.set_ylabel(
+                    f"{['x', 'y', 'z'][coord]} coordinate of marker {obj+1}",
+                    fontsize=self.params["display"]["fontsize"]["xy_labels"],
+                )
 
                 # Set initial limits
                 ax.set_xlim(*self.params["display"]["init_xlim"])
                 ax.set_ylim(y_lims[idx])
+
+                # Adjust the font size of the tick labels on both x and y axes
+                ax.tick_params(axis="both", which="major", labelsize=self.params["display"]["fontsize"]["tick_labels"])
 
                 # Plot empty lines for the original and predicted signals
                 (gt_line,) = ax.plot([], [], label="Original Signal", **self.params["display"]["line_properties"]["gt"])
@@ -136,7 +143,7 @@ class ForecastingAnimation:
                 self.lines_pred.append(pred_line)
 
                 # Add a legend to each subplot
-                ax.legend()
+                ax.legend(fontsize=self.params["display"]["fontsize"]["legend"])
 
         # Create the animation
         frames_indices = range(self.params["display"]["start_time"], len(self.t))
