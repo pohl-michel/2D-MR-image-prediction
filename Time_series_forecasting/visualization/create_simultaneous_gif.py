@@ -2,6 +2,9 @@
 # The field "pred_sq_filename" of parameters["paths"] corresponds to the prediction result (.mat file in "d. RNN variables (temp)")
 # saved when running signal_prediction_main.m (with beh_par.SAVE_PRED_RESULTS set to "true").
 #
+# Note using the gifsicle program in linux can help reduce the size of the output gif, for instance:
+# gifsicle -O3 --colors 16 --interlace --threads my_input.gif -o compressed_output.gif
+#
 # Author: Michel Pohl
 # License : 3-clause BSD License
 
