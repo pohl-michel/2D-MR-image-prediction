@@ -9,6 +9,7 @@
 # License : 3-clause BSD License
 
 from functools import partial
+import json
 import numpy as np
 import matplotlib
 
@@ -22,38 +23,7 @@ ORG_DATA_KEY = "org_data"
 PRED_DATA_KEY = "Ypred"
 DIM_IDX, TIME_IDX = 0, 1
 T_MAX = 50  # Plots only the first T_MAX time steps (for debugging for instance)
-
-# to modify manually - ideally load from JSON if code gets improved
-parameters = {
-    "display": {
-        "horizon": 7,  # the prediction horizon
-        "nb_displayed_points": 28,  # number of x-axis units to show in the window
-        "figsize": (12, 12),  # Increased figure size for 9 subplots
-        "start_time": None,  # one can manually set it so that the 2nd frame corresponds to the beginning of the prediction
-        "line_properties": {
-            "gt": {"lw": 2, "color": "black"},  # Ground truth (original) line properties
-            "prediction": {"lw": 1, "color": "red"},  # Prediction line properties
-        },
-        "delay_ms": 20,
-        "fps": 3,  # acquisition frequency
-        "init_xlim": (0, 5),  # Initial x-axis limit (moving window)
-        "y_lim_margin_coeff": 0.1,  # Margin for y-limits (10% of signal range)
-        "wspace": 0.4,  # horizontal spacing between subplots
-        "hspace": 0.3,  # vertical spacing between subplots
-        "left": 0.08,  # left margin
-        "right": 0.95,  # right margin
-        "top": 0.95,  # top margin
-        "bottom": 0.08,  # bottom margin
-        "fontsize": {"xy_labels": 14, "legend": 10, "tick_labels": 12},
-    },
-    "paths": {
-        "input_sq_dir": "Time_series_forecasting/a. Input time series sequences",
-        "input_sq_name": "Ext markers seq 1  3.33 Hz",
-        "input_sq_mat_filename": "data.mat",
-        "pred_sq_filename": "pred_result_variables Ext markers seq 1  3.33 Hz tmax_pred=740 DNI k=12 q=180 eta=0.01 sg=0.02 grd_tshld=100 h=7 nrlzed data.mat",
-        "out_gif_filename": "signals_animation_multivariate.gif",  # Output GIF filename
-    },
-}
+JSON_CONFIG_FILENAME = "external_markers_sq_1_config.json"  # file that can be configured manually
 
 
 class ForecastingAnimation:
@@ -116,17 +86,17 @@ class ForecastingAnimation:
 
         # Create the figure and 3x3 grid of axes
         self.fig, self.axes = plt.subplots(
-            nrows=self.POS_DIMENSIONALITY, ncols=self.nb_obj, figsize=self.params["display"]["figsize"]
+            nrows=self.POS_DIMENSIONALITY, ncols=self.nb_obj, figsize=tuple(self.params["display"]["figsize"])
         )
 
         # Apply spacing and margins from parameters["display"]
         plt.subplots_adjust(
-            wspace=self.params["display"]["wspace"],
-            hspace=self.params["display"]["hspace"],
-            left=self.params["display"]["left"],
-            right=self.params["display"]["right"],
-            top=self.params["display"]["top"],
-            bottom=self.params["display"]["bottom"],
+            wspace=self.params["display"]["wspace"],  # horizontal spacing between subplots
+            hspace=self.params["display"]["hspace"],  # vertical spacing between subplots
+            left=self.params["display"]["left"],  # left margin
+            right=self.params["display"]["right"],  # right margin
+            top=self.params["display"]["top"],  # top margin
+            bottom=self.params["display"]["bottom"],  # bottom margin
         )
 
         # Compute dynamic y-limits for each subplot
@@ -175,7 +145,7 @@ class ForecastingAnimation:
             interval=self.params["display"]["delay_ms"],
         )
 
-        # Save the animation as a GIF
+        # Save the animation as a GIF - fps ideally corresponds to the acquisition frequency in Hz
         anim.save(self.params["paths"]["out_gif_path"], writer=PillowWriter(fps=self.params["display"]["fps"]))
 
     def get_dynamic_ylims(self):
@@ -213,7 +183,7 @@ class ForecastingAnimation:
             ax = self.axes[coord, obj]
             current_time = self.t[frame]
 
-            # Set the moving window for the x-axis
+            # Set the moving window for the x-axis - # nb_displayed_points is nb of x-axis units to show in the window
             ax.set_xlim(current_time - self.params["display"]["nb_displayed_points"], current_time)
 
             # Update the original signal to stop at (frame - horizon)
@@ -245,6 +215,10 @@ class ForecastingAnimation:
 
 # Main code
 if __name__ == "__main__":
+
+    json_config_path = os.path.join(os.path.dirname(__file__), JSON_CONFIG_FILENAME)
+    with open(json_config_path, "r") as parameters_file:
+        parameters = json.load(parameters_file)
 
     animation = ForecastingAnimation(params=parameters)
     animation.animate_signals()
