@@ -8,6 +8,7 @@
 # Author: Michel Pohl
 # License : 3-clause BSD License
 
+from abc import ABC, abstractmethod
 from functools import partial
 import json
 import numpy as np
@@ -23,15 +24,15 @@ ORG_DATA_KEY = "org_data"
 PRED_DATA_KEY = "Ypred"
 DIM_IDX, TIME_IDX = 0, 1
 T_MAX = 50  # Plots only the first T_MAX time steps (for debugging for instance)
-JSON_CONFIG_FILENAME = "external_markers_sq_1_config.json"  # file that can be configured manually
+
+# JSON config file to load - can be configured manually
+JSON_CONFIG_FILENAME = "external_markers_sq_1_config.json"
+# JSON_CONFIG_FILENAME = "third_im_seq_pca_weight_pred_config.json"
 
 
-class ForecastingAnimation:
-
-    POS_DIMENSIONALITY = 3  # 3D position
+class ForecastingAnimation(ABC):
 
     def __init__(self, params):
-
         self.params = params
 
         # Setting paths properly
@@ -54,9 +55,6 @@ class ForecastingAnimation:
 
         # Dimensionality of the data - we assume it's the same as in the predicted signal
         self.data_dim = self.org_time_data.shape[DIM_IDX]
-
-        # Number of objects (we assume the division is exact and there is no remainder)
-        self.nb_obj = self.data_dim // self.POS_DIMENSIONALITY
 
         # Number of timepoints in the original signal - we assume it's the same as in the predicted signal
         self.Tmax = self.org_time_data.shape[TIME_IDX]
@@ -84,10 +82,8 @@ class ForecastingAnimation:
     def animate_signals(self):
         """Create the animation function"""
 
-        # Create the figure and 3x3 grid of axes
-        self.fig, self.axes = plt.subplots(
-            nrows=self.POS_DIMENSIONALITY, ncols=self.nb_obj, figsize=tuple(self.params["display"]["figsize"])
-        )
+        # Create the figure and grid of axes
+        self._create_subplots()
 
         # Apply spacing and margins from parameters["display"]
         plt.subplots_adjust(
@@ -104,16 +100,11 @@ class ForecastingAnimation:
 
         # Initialize all 9 subplots (3 objects × 3 coordinates)
         for idx in range(self.data_dim):
-
-            coord, obj = self._get_crd_obj_from_idx(idx)
-            ax = self.axes[coord, obj]
+            ax = self._get_ax_from_dim_idx(idx)
 
             # Set x-axis and y-axis labels
             ax.set_xlabel("Time step index", fontsize=self.params["display"]["fontsize"]["xy_labels"])
-            ax.set_ylabel(
-                f"{['x', 'y', 'z'][coord]} coordinate of marker {obj+1}",
-                fontsize=self.params["display"]["fontsize"]["xy_labels"],
-            )
+            ax.set_ylabel(self._get_ylabel_from_dim_idx(idx), fontsize=self.params["display"]["fontsize"]["xy_labels"])
 
             # Set initial limits
             ax.set_xlim(*self.params["display"]["init_xlim"])
@@ -127,7 +118,6 @@ class ForecastingAnimation:
             (pred_line,) = ax.plot(
                 [], [], label="Predicted Signal", **self.params["display"]["line_properties"]["prediction"]
             )
-
             self.lines_gt.append(gt_line)
             self.lines_pred.append(pred_line)
 
@@ -179,8 +169,8 @@ class ForecastingAnimation:
         """Update function for each frame"""
 
         for idx in range(self.data_dim):
-            coord, obj = self._get_crd_obj_from_idx(idx)
-            ax = self.axes[coord, obj]
+            ax = self._get_ax_from_dim_idx(idx)
+
             current_time = self.t[frame]
 
             # Set the moving window for the x-axis - # nb_displayed_points is nb of x-axis units to show in the window
@@ -203,6 +193,29 @@ class ForecastingAnimation:
 
         return self.lines_gt + self.lines_pred
 
+    @abstractmethod
+    def _create_subplots(self):
+        """Updates self.fig and self.axes"""
+
+    @abstractmethod
+    def _get_ax_from_dim_idx(self, idx):
+        """Return the current ax object given the provided dimension index"""
+
+    @abstractmethod
+    def _get_ylabel_from_dim_idx(self, idx):
+        """Return the ylabel given the provided dimension index"""
+
+
+class ForecastingAnimation3DObjects(ForecastingAnimation):
+
+    POS_DIMENSIONALITY = 3  # 3D position
+
+    def __init__(self, params):
+        super().__init__(params)
+
+        # Number of objects (we assume the division is exact and there is no remainder)
+        self.nb_obj = self.data_dim // self.POS_DIMENSIONALITY
+
     def _get_crd_obj_from_idx(self, idx: int) -> tuple[int]:
         """Returns the coordinate and object index from the dimension index in the initial data (if prediction of 3D
         objects)."""
@@ -212,6 +225,29 @@ class ForecastingAnimation:
 
         return coord, obj
 
+    def _create_subplots(self):
+
+        self.fig, self.axes = plt.subplots(
+            nrows=self.nb_obj,
+            ncols=self.POS_DIMENSIONALITY,
+            squeeze=False,
+            figsize=tuple(self.params["display"]["figsize"]),
+        )
+
+    def _get_ax_from_dim_idx(self, idx):
+
+        coord, obj = self._get_crd_obj_from_idx(idx)
+        ax = self.axes[coord, obj]
+
+        return ax
+
+    def _get_ylabel_from_dim_idx(self, idx):
+
+        coord, obj = self._get_crd_obj_from_idx(idx)
+        ylabel = f"{['x', 'y', 'z'][coord]} coordinate of marker {obj+1}"
+
+        return ylabel
+
 
 # Main code
 if __name__ == "__main__":
@@ -220,6 +256,6 @@ if __name__ == "__main__":
     with open(json_config_path, "r") as parameters_file:
         parameters = json.load(parameters_file)
 
-    animation = ForecastingAnimation(params=parameters)
+    animation = ForecastingAnimation3DObjects(params=parameters)
     animation.animate_signals()
     print(f"GIF animation saved as {parameters['paths']['out_gif_filename']}")
