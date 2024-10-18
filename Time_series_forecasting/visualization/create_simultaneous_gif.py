@@ -20,7 +20,8 @@ import scipy.io
 
 ORG_DATA_KEY = "org_data"
 PRED_DATA_KEY = "Ypred"
-TIME_IDX = 1
+DIM_IDX, TIME_IDX = 0, 1
+T_MAX = 50  # Plots only the first T_MAX time steps (for debugging for instance)
 
 # to modify manually - ideally load from JSON if code gets improved
 parameters = {
@@ -57,6 +58,8 @@ parameters = {
 
 class ForecastingAnimation:
 
+    POS_DIMENSIONALITY = 3  # 3D position
+
     def __init__(self, params):
 
         self.params = params
@@ -79,15 +82,26 @@ class ForecastingAnimation:
         pred_data_mat = scipy.io.loadmat(pred_filename)
         self.pred_time_data = pred_data_mat[PRED_DATA_KEY]
 
-        # Number of timepoints in the original signal
-        self.Tmax = self.org_time_data.shape[TIME_IDX]
+        # Dimensionality of the data - we assume it's the same as in the predicted signal
+        self.data_dim = self.org_time_data.shape[DIM_IDX]
 
-        # Array representing all the timepoints
-        self.t = np.arange(0, self.Tmax)
+        # Number of objects (we assume the division is exact and there is no remainder)
+        self.nb_obj = self.data_dim // self.POS_DIMENSIONALITY
+
+        # Number of timepoints in the original signal - we assume it's the same as in the predicted signal
+        self.Tmax = self.org_time_data.shape[TIME_IDX]
 
         # Determine warm-up length for the prediction
         nb_predictions = self.pred_time_data.shape[TIME_IDX]
         self.warm_up_length = self.Tmax - nb_predictions
+
+        if T_MAX is not None:
+            self.Tmax = T_MAX
+            self.org_time_data = self.org_time_data[:, :T_MAX]
+            self.pred_time_data = self.pred_time_data[:, : T_MAX - self.warm_up_length]
+
+        # Array representing all the timepoints
+        self.t = np.arange(0, self.Tmax)
 
         # Ensure default start time if not set
         if self.params["display"]["start_time"] is None:
@@ -101,7 +115,9 @@ class ForecastingAnimation:
         """Create the animation function"""
 
         # Create the figure and 3x3 grid of axes
-        self.fig, self.axes = plt.subplots(3, 3, figsize=self.params["display"]["figsize"])
+        self.fig, self.axes = plt.subplots(
+            nrows=self.POS_DIMENSIONALITY, ncols=self.nb_obj, figsize=self.params["display"]["figsize"]
+        )
 
         # Apply spacing and margins from parameters["display"]
         plt.subplots_adjust(
@@ -117,36 +133,36 @@ class ForecastingAnimation:
         y_lims = self.get_dynamic_ylims()
 
         # Initialize all 9 subplots (3 objects × 3 coordinates)
-        for coord in range(3):
-            for obj in range(3):
-                idx = coord * 3 + obj
-                ax = self.axes[coord, obj]
+        for idx in range(self.data_dim):
 
-                # Set x-axis and y-axis labels
-                ax.set_xlabel("Time step index", fontsize=self.params["display"]["fontsize"]["xy_labels"])
-                ax.set_ylabel(
-                    f"{['x', 'y', 'z'][coord]} coordinate of marker {obj+1}",
-                    fontsize=self.params["display"]["fontsize"]["xy_labels"],
-                )
+            coord, obj = self._get_crd_obj_from_idx(idx)
+            ax = self.axes[coord, obj]
 
-                # Set initial limits
-                ax.set_xlim(*self.params["display"]["init_xlim"])
-                ax.set_ylim(y_lims[idx])
+            # Set x-axis and y-axis labels
+            ax.set_xlabel("Time step index", fontsize=self.params["display"]["fontsize"]["xy_labels"])
+            ax.set_ylabel(
+                f"{['x', 'y', 'z'][coord]} coordinate of marker {obj+1}",
+                fontsize=self.params["display"]["fontsize"]["xy_labels"],
+            )
 
-                # Adjust the font size of the tick labels on both x and y axes
-                ax.tick_params(axis="both", which="major", labelsize=self.params["display"]["fontsize"]["tick_labels"])
+            # Set initial limits
+            ax.set_xlim(*self.params["display"]["init_xlim"])
+            ax.set_ylim(y_lims[idx])
 
-                # Plot empty lines for the original and predicted signals
-                (gt_line,) = ax.plot([], [], label="Original Signal", **self.params["display"]["line_properties"]["gt"])
-                (pred_line,) = ax.plot(
-                    [], [], label="Predicted Signal", **self.params["display"]["line_properties"]["prediction"]
-                )
+            # Adjust the font size of the tick labels on both x and y axes
+            ax.tick_params(axis="both", which="major", labelsize=self.params["display"]["fontsize"]["tick_labels"])
 
-                self.lines_gt.append(gt_line)
-                self.lines_pred.append(pred_line)
+            # Plot empty lines for the original and predicted signals
+            (gt_line,) = ax.plot([], [], label="Original Signal", **self.params["display"]["line_properties"]["gt"])
+            (pred_line,) = ax.plot(
+                [], [], label="Predicted Signal", **self.params["display"]["line_properties"]["prediction"]
+            )
 
-                # Add a legend to each subplot
-                ax.legend(fontsize=self.params["display"]["fontsize"]["legend"])
+            self.lines_gt.append(gt_line)
+            self.lines_pred.append(pred_line)
+
+            # Add a legend to each subplot
+            ax.legend(fontsize=self.params["display"]["fontsize"]["legend"])
 
         # Create the animation
         frames_indices = range(self.params["display"]["start_time"], len(self.t))
@@ -166,20 +182,18 @@ class ForecastingAnimation:
         """Compute dynamic y-axis limits for each of the 9 subplots"""
 
         y_lims = []
-        for coord in range(3):
-            for obj in range(3):
-                idx = coord * 3 + obj
+        for idx in range(self.data_dim):
 
-                # Extract corresponding signals
-                original_signal = self.org_time_data[idx, :]
-                predicted_signal = np.zeros_like(self.t)
-                predicted_signal[self.warm_up_length :] = self.pred_time_data[idx, :]
+            # Extract corresponding signals
+            original_signal = self.org_time_data[idx, :]
+            predicted_signal = np.zeros_like(self.t)
+            predicted_signal[self.warm_up_length :] = self.pred_time_data[idx, :]
 
-                # Calculate min and max with margin
-                signal_min = min(np.min(original_signal), np.min(predicted_signal))
-                signal_max = max(np.max(original_signal), np.max(predicted_signal))
-                margin = self.params["display"]["y_lim_margin_coeff"] * (signal_max - signal_min)
-                y_lims.append((signal_min - margin, signal_max + margin))
+            # Calculate min and max with margin
+            signal_min = min(np.min(original_signal), np.min(predicted_signal))
+            signal_max = max(np.max(original_signal), np.max(predicted_signal))
+            margin = self.params["display"]["y_lim_margin_coeff"] * (signal_max - signal_min)
+            y_lims.append((signal_min - margin, signal_max + margin))
 
         return y_lims
 
@@ -194,33 +208,39 @@ class ForecastingAnimation:
     def update(self, frame):
         """Update function for each frame"""
 
-        for coord in range(3):
-            for obj in range(3):
-                idx = coord * 3 + obj
-                ax = self.axes[coord, obj]
-                current_time = self.t[frame]
+        for idx in range(self.data_dim):
+            coord, obj = self._get_crd_obj_from_idx(idx)
+            ax = self.axes[coord, obj]
+            current_time = self.t[frame]
 
-                # Set the moving window for the x-axis
-                ax.set_xlim(current_time - self.params["display"]["nb_displayed_points"], current_time)
+            # Set the moving window for the x-axis
+            ax.set_xlim(current_time - self.params["display"]["nb_displayed_points"], current_time)
 
-                # Update the original signal to stop at (frame - horizon)
-                idx_relative_to_hrz = frame - self.params["display"]["horizon"]
-                if idx_relative_to_hrz > 0:
-                    self.lines_gt[idx].set_data(
-                        self.t[:idx_relative_to_hrz], self.org_time_data[idx, :idx_relative_to_hrz]
-                    )
-                else:
-                    self.lines_gt[idx].set_data([], [])
+            # Update the original signal to stop at (frame - horizon)
+            idx_relative_to_hrz = frame - self.params["display"]["horizon"]
+            if idx_relative_to_hrz > 0:
+                self.lines_gt[idx].set_data(self.t[:idx_relative_to_hrz], self.org_time_data[idx, :idx_relative_to_hrz])
+            else:
+                self.lines_gt[idx].set_data([], [])
 
-                # Update the predicted signal (after the warm-up length)
-                if frame > self.warm_up_length:
-                    self.lines_pred[idx].set_data(
-                        self.t[self.warm_up_length : frame], self.pred_time_data[idx, : frame - self.warm_up_length]
-                    )
-                else:
-                    self.lines_pred[idx].set_data([], [])
+            # Update the predicted signal (after the warm-up length)
+            if frame > self.warm_up_length:
+                self.lines_pred[idx].set_data(
+                    self.t[self.warm_up_length : frame], self.pred_time_data[idx, : frame - self.warm_up_length]
+                )
+            else:
+                self.lines_pred[idx].set_data([], [])
 
         return self.lines_gt + self.lines_pred
+
+    def _get_crd_obj_from_idx(self, idx: int) -> tuple[int]:
+        """Returns the coordinate and object index from the dimension index in the initial data (if prediction of 3D
+        objects)."""
+
+        coord = idx // self.POS_DIMENSIONALITY
+        obj = idx % self.POS_DIMENSIONALITY
+
+        return coord, obj
 
 
 # Main code
