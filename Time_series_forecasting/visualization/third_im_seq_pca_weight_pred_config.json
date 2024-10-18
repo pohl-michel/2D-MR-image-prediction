@@ -1,4 +1,5 @@
 {
+    "object_3d_pos": false,
     "display": {
         "horizon": 6, 
         "nb_displayed_points": 28,

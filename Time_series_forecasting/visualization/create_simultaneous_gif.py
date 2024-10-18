@@ -23,11 +23,11 @@ import scipy.io
 ORG_DATA_KEY = "org_data"
 PRED_DATA_KEY = "Ypred"
 DIM_IDX, TIME_IDX = 0, 1
-T_MAX = 50  # Plots only the first T_MAX time steps (for debugging for instance)
+T_MAX = 50  # Plots only the first T_MAX time steps (for debugging for instance) - None if plotting entire sequence
 
 # JSON config file to load - can be configured manually
-JSON_CONFIG_FILENAME = "external_markers_sq_1_config.json"
-# JSON_CONFIG_FILENAME = "third_im_seq_pca_weight_pred_config.json"
+# JSON_CONFIG_FILENAME = "external_markers_sq_1_config.json"
+JSON_CONFIG_FILENAME = "third_im_seq_pca_weight_pred_config.json"
 
 
 class ForecastingAnimation(ABC):
@@ -228,8 +228,8 @@ class ForecastingAnimation3DObjects(ForecastingAnimation):
     def _create_subplots(self):
 
         self.fig, self.axes = plt.subplots(
-            nrows=self.nb_obj,
-            ncols=self.POS_DIMENSIONALITY,
+            nrows=self.POS_DIMENSIONALITY,
+            ncols=self.nb_obj,
             squeeze=False,
             figsize=tuple(self.params["display"]["figsize"]),
         )
@@ -249,6 +249,25 @@ class ForecastingAnimation3DObjects(ForecastingAnimation):
         return ylabel
 
 
+class ForecastingAnimationPCA(ForecastingAnimation):
+
+    N_ROWS = 1
+
+    def _create_subplots(self):
+
+        self.fig, self.axes = plt.subplots(
+            nrows=self.N_ROWS,
+            ncols=self.data_dim,
+            figsize=tuple(self.params["display"]["figsize"]),
+        )
+
+    def _get_ax_from_dim_idx(self, idx):
+        return self.axes[idx]
+
+    def _get_ylabel_from_dim_idx(self, idx):
+        return f"PCA weight of order {idx}"
+
+
 # Main code
 if __name__ == "__main__":
 
@@ -256,6 +275,10 @@ if __name__ == "__main__":
     with open(json_config_path, "r") as parameters_file:
         parameters = json.load(parameters_file)
 
-    animation = ForecastingAnimation3DObjects(params=parameters)
+    if parameters["object_3d_pos"]:
+        animation = ForecastingAnimation3DObjects(params=parameters)
+    else:
+        animation = ForecastingAnimationPCA(params=parameters)
+
     animation.animate_signals()
     print(f"GIF animation saved as {parameters['paths']['out_gif_filename']}")
