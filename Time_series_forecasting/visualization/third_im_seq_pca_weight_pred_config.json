@@ -15,10 +15,10 @@
         "y_lim_margin_coeff": 0.1, 
         "wspace": 0.4, 
         "hspace": 0.3, 
-        "left": 0.08, 
+        "left": 0.10, 
         "right": 0.95,
         "top": 0.95,
-        "bottom": 0.08,
+        "bottom": 0.14,
         "fontsize": {
             "xy_labels": 14, 
             "legend": 10, 

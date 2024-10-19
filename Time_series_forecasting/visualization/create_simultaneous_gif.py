@@ -1,4 +1,5 @@
 # Animated plot of the ground-truth vs predicted coordinates for all objects and directions (adaptation of create_gif.py)
+# The paths and display parameters are specified in the config.json file "JSON_CONFIG_FILENAME".
 # The field "pred_sq_filename" of parameters["paths"] corresponds to the prediction result (.mat file in "d. RNN variables (temp)")
 # saved when running signal_prediction_main.m (with beh_par.SAVE_PRED_RESULTS set to "true").
 #
@@ -23,7 +24,7 @@ import scipy.io
 ORG_DATA_KEY = "org_data"
 PRED_DATA_KEY = "Ypred"
 DIM_IDX, TIME_IDX = 0, 1
-T_MAX = 50  # Plots only the first T_MAX time steps (for debugging for instance) - None if plotting entire sequence
+T_MAX = None  # 50  # Plots only the first T_MAX time steps (e.g., for debugging), None if plotting entire sequence
 
 # JSON config file to load - can be configured manually
 # JSON_CONFIG_FILENAME = "external_markers_sq_1_config.json"
@@ -265,7 +266,7 @@ class ForecastingAnimationPCA(ForecastingAnimation):
         return self.axes[idx]
 
     def _get_ylabel_from_dim_idx(self, idx):
-        return f"PCA weight of order {idx}"
+        return f"PCA weight of order {idx+1}"
 
 
 # Main code
