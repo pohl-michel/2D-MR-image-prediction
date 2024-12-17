@@ -17,6 +17,11 @@ function [Ypred, avg_pred_time, pred_loss_function] = train_and_predict(path_par
 
     switch(pred_par.pred_meth)
         
+        case 'SVR' % support vector regression (with component-wise scalar output)
+
+            fprintf('Performing prediction with support vector regression \n');  
+            [Ypred, avg_pred_time, pred_loss_function] = svr_pred(pred_par, X, Y);
+
         case 'multivariate linear regression' %linear regression
             
             fprintf('Performing prediction with multivariate linear regression \n');  

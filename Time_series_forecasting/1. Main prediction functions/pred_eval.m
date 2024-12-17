@@ -44,7 +44,7 @@ function [eval_results] = pred_eval(beh_par, path_par, pred_par, disp_par, Ypred
     loss_function_tab = zeros(pred_par.tmax_pred, pred_par.nb_runs);     
 
     switch pred_par.pred_meth
-        case {'multivariate linear regression', 'univariate linear regression'} % offline learning
+        case {'multivariate linear regression', 'univariate linear regression', 'SVR'} % offline learning
             pred_par.t_first_prediction = pred_par.tmax_training + 1;
         otherwise % online learning
             pred_par.t_first_prediction = pred_par.SHL+pred_par.horizon;
