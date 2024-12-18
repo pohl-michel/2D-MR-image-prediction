@@ -17,7 +17,8 @@ function pred_param_str = sprintf_pred_param(pred_par)
             pred_param_str = sprintf('k=%d h=%d tmax_train=%d %s', pred_par.SHL, pred_par.horizon, pred_par.tmax_training, nrm_data_str);
                 % tmax_training is recorded because linear regression is an offline method
         case 'SVR'
-            pred_param_str = sprintf('k=%d h=%d tmax_train=%d %s', pred_par.SHL, pred_par.horizon, pred_par.tmax_training, nrm_data_str);        
+            pred_param_str = sprintf('k=%d h=%d tmax_train=%d sigma=%d C=%d epsilon=%d %s', pred_par.SHL, pred_par.horizon, pred_par.tmax_training, ...
+                pred_par.svr_kernel_scale, pred_par.svr_box_constraint, pred_par.svr_epsilon, nrm_data_str);        
         case {'RTRL', 'UORO', 'SnAp-1', 'DNI', 'RTRL v2', 'fixed W'} % RNN
             pred_param_str = sprintf('k=%d q=%d eta=%g sg=%g grd_tshld=%g h=%d %s', pred_par.SHL, pred_par.rnn_state_space_dim, ...
                 pred_par.learn_rate, pred_par.Winit_std_dev, pred_par.grad_threshold, pred_par.horizon, nrm_data_str);

@@ -20,7 +20,10 @@ function fprintfpred_par( fid, pred_par, beh_par )
             case 'multivariate linear regression'
                 fprintf(fid, 'Signal history length k = %d \n', pred_par.SHL);  
             case 'SVR'
-                fprintf(fid, 'Signal history length k = %d \n', pred_par.SHL);                   
+                fprintf(fid, 'Signal history length k = %d \n', pred_par.SHL);    
+                fprintf(fid, 'Kernel scale (~sigma, controls the spread of the RBF kernel) = %d \n', pred_par.svr_kernel_scale); 
+                fprintf(fid, 'Box constraint C (regularization parameter) = %d \n', pred_par.svr_box_constraint); 
+                fprintf(fid, 'Epsilon (regression margin of tolerance) = %d \n', pred_par.svr_epsilon); 
             case {'RTRL', 'SnAp-1', 'RTRL v2', 'fixed W'}
                 fprintfRNN_common(fid, pred_par)
             case 'LMS'

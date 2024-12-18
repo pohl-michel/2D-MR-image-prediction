@@ -154,12 +154,12 @@ function [pred_par] = load_pred_par(path_par, pred_meth)
         case 'SVR'
 
             pred_par.nb_runs = 1;  % not a stochastic method
-            pred_par.NORMALIZE_DATA = false;
+            pred_par.NORMALIZE_DATA = true;
             % pred_par.tmax_training = 160;  % MR data (ETH Zurich - although not in the CMIG paper)
 
-            pred_par.tmax_training = 180; % markers 3.33 Hz (CPMB paper)
+            % pred_par.tmax_training = 180; % markers 3.33 Hz (CPMB paper)
             % pred_par.tmax_training = 540; % markers 10 Hz (CPMB paper)
-            % pred_par.tmax_training = 1620; % markers 30 Hz (CPMB paper)             
+            pred_par.tmax_training = 1620; % markers 30 Hz (CPMB paper)             
 
     end
     
