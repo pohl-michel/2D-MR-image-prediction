@@ -37,8 +37,8 @@ function [Ypred, avg_pred_time, pred_loss_function] = svr_pred(pred_par, X, Y)
     ttl_pred_time = toc;
 
     % for debugging - finding quickly a first set of parameter that can work
-    mse = mean((Y_test - Ypred).^2, 'all');
-    disp(['Mean Squared Error: ', num2str(mse)]);
+    % mse = mean((Y_test - Ypred).^2, 'all');
+    % disp(['Mean Squared Error: ', num2str(mse)]);
 
     Ypred = Ypred';
     avg_pred_time = ttl_pred_time/nb_predictions;
