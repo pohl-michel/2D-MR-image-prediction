@@ -294,7 +294,31 @@ function [ hppars ] = load_hyperpar_cv_info( pred_par )
 
             hppars.other(3).name = 'rnn_state_space_dim'; 
             hppars.other(3).val = [10, 30, 50, 70, 90, 110];            
+
+        case 'SVR'
             
+            % Common parameters (always true)
+            hppars.nb_runs_cv = 1;            
+            hppars.nb_runs_eval_test = 1;
+            
+            % Prediction of the position of external markers (CPMB paper)
+            hppars.horizon_tab = [1, 2, 3, 4, 5, 6, 7];                                                               % 3.33 Hz sampling
+            % hppars.horizon_tab = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21];         % 10 Hz sampling
+            % hppars.horizon_tab = [3, 6, 9, 12, 15, 18, 21, 24, 27, 30, 33, 36, 39, 42, 45, 48, 51, 54, 57, 60, 63];   % 30 Hz sampling
+
+            hppars.other(1).name = 'SHL';
+            hppars.other(1).val = [4, 8, 12, 16, 20];       % 3.33 Hz sampling
+            % hppars.other(1).val = [12, 24, 36, 48, 60];     % 10 Hz sampling    
+            % hppars.other(1).val = [36, 72, 108, 144, 180];  % 30 Hz sampling            
+
+            hppars.other(2).name = 'svr_kernel_scale';
+            hppars.other(2).val = [100, 200, 500, 1000];            
+
+            hppars.other(3).name = 'svr_box_constraint'; 
+            hppars.other(3).val = [0.005, 0.01, 0.02, 0.05, 0.1, 0.2];
+
+            hppars.other(4).name = 'svr_epsilon';
+            hppars.other(4).val = [100, 200, 500, 1000];
 
     end
 
