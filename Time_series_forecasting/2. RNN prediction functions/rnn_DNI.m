@@ -10,9 +10,15 @@ function myRNN = rnn_DNI(myRNN, pred_par, X, Ytrue)
 %       - the values of the loss function "myRNN.pred_loss_function"
 %       - the array containing the time for making each prediction "myRNN.pred_time_array"
 %
+% Remark:
+%   One can comment the expression of dnormfA and uncomment that just below to perform an ablation study.
+%   We argue that the proposed additional term (x_tilde_next.')*(fA*(D.')) is an improvement and leads to better performance (cf  	
+%   https://doi.org/10.48550/arXiv.2403.01607) compared to the version in Marschall, et al., "A unified framework of online learning 
+%   algorithms for training recurrent neural networks." Journal of machine learning research 21.135 (2020): 1-34.
+%
 % Author : Pohl Michel
-% Date : October 24th, 2022
-% Version : v1.0
+% Date : March 12th, 2025
+% Version : v1.1
 % License : 3-clause BSD License
    
     [~, M] = size(X);
@@ -59,6 +65,7 @@ function myRNN = rnn_DNI(myRNN, pred_par, X, Ytrue)
 
         % derivative of the squared norm of f with respect to A
         dnormfA = (myRNN.x_tilde.')*fA - (x_tilde_next.')*(fA*(D.')); % fA*(D.') is computed first to keep a computational complexity O(q^2)
+        % dnormfA = (myRNN.x_tilde.')*fA; % ablation experiment
 
         % finding A which minimizes normfA
         myRNN.A = update_param_optim(myRNN.A, dnormfA, pred_par.optim_par_A);
