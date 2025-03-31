@@ -71,7 +71,7 @@ function write_hppar_optim_log_file( hppars, pred_par, path_par, optim, best_par
         
         switch(pred_par.pred_meth)
         
-            case {'multivariate linear regression', 'no prediction', 'LMS', 'univariate linear regression'} % deterministic algorithms
+            case {'multivariate linear regression', 'no prediction', 'LMS', 'univariate linear regression', 'SVR'} % deterministic algorithms
         
                 fprintf(fid, '(mean of the) rms error on the test set : %f mm \n', best_par.rms_err_test_set_tab(horizon_idx));
                 fprintf(fid, '(mean of the) nmrse on the test set : %f \n', best_par.nrmse_test_set_tab(horizon_idx));  

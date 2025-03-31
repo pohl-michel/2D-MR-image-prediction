@@ -149,7 +149,17 @@ function [pred_par] = load_pred_par(path_par, pred_meth)
             pred_par.update_meth = 'stochastic gradient descent'; 
             pred_par.GRAD_CLIPPING = true; 
             pred_par.grad_threshold = 100.0;
-			pred_par.Winit_std_dev = 0.02;            
+			pred_par.Winit_std_dev = 0.02;     
+
+        case 'SVR'
+
+            pred_par.nb_runs = 1;  % not a stochastic method
+            pred_par.NORMALIZE_DATA = true;
+            pred_par.tmax_training = 160;  % MR data (ETH Zurich - although not in the CMIG paper)
+
+            % pred_par.tmax_training = 180; % markers 3.33 Hz (CPMB paper)
+            % pred_par.tmax_training = 540; % markers 10 Hz (CPMB paper)
+            % pred_par.tmax_training = 1620; % markers 30 Hz (CPMB paper)             
 
     end
     

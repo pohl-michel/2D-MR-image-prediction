@@ -43,7 +43,8 @@ path_par = load_sigpred_path_parameters();
 disp_par = load_sigpred_display_parameters(path_par);  
                
 % Prediction methods to test
-pred_meths = {'multivariate linear regression', 'LMS', 'UORO', 'SnAp-1', 'DNI', 'no prediction', 'fixed W', 'RTRL v2'};
+pred_meths = {'multivariate linear regression', 'LMS', 'UORO', 'SnAp-1', 'DNI', 'no prediction', 'fixed W', 'RTRL v2', 'SVR'};
+% pred_meths = {'DNI'}; % DNI only (for instance) - use the line above if you want to use all methods
 
 nb_seq = length(path_par.time_series_dir_tab);
 for seq_idx = 1:nb_seq
