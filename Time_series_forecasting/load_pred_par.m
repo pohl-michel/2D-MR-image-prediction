@@ -54,7 +54,7 @@ function [pred_par] = load_pred_par(path_par, pred_meth)
 
     switch nargin
         case 1 % Manually choosing the prediction method
-            pred_par.pred_meth = 'SVR'; % 'SnAp-1';
+            pred_par.pred_meth = 'SnAp-1';
         case 2 % Prediction method specified in image_prediction_main.m or sigpred_hyperparameter_optimization_main.m
             pred_par.pred_meth = pred_meth;
     end
