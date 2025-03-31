@@ -315,7 +315,7 @@ function [ hppars ] = load_hyperpar_cv_info( pred_par )
             hppars.other(2).val = [100, 200, 500, 1000];            
 
             hppars.other(3).name = 'svr_epsilon'; 
-            hppars.other(3).val = [0.005, 0.01, 0.02, 0.05, 0.1, 0.2];
+            hppars.other(3).val = [0.005, 0.01, 0.02, 0.05];
 
             hppars.other(4).name = 'svr_box_constraint';
             hppars.other(4).val = [100, 200, 500, 1000];
