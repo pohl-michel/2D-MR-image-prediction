@@ -69,18 +69,18 @@ function [ path_par ] = load_sigpred_path_parameters()
         % string('Ext markers seq 9 30 Hz'); 
 
     % External marker positions resampled at 3.33 Hz         
-        string('Ext markers seq 1  3.33 Hz'); 
-        string('Ext markers seq 2  3.33 Hz');
-        string('Ext markers seq 3  3.33 Hz'); 
-        string('Ext markers seq 4  3.33 Hz'); 
-        string('Ext markers seq 5  3.33 Hz'); 
-        string('Ext markers seq 6  3.33 Hz'); 
-        string('Ext markers seq 7  3.33 Hz'); 
-        string('Ext markers seq 8  3.33 Hz'); 
-        string('Ext markers seq 9  3.33 Hz');      
+        % string('Ext markers seq 1  3.33 Hz'); 
+        % string('Ext markers seq 2  3.33 Hz');
+        % string('Ext markers seq 3  3.33 Hz'); 
+        % string('Ext markers seq 4  3.33 Hz'); 
+        % string('Ext markers seq 5  3.33 Hz'); 
+        % string('Ext markers seq 6  3.33 Hz'); 
+        % string('Ext markers seq 7  3.33 Hz'); 
+        % string('Ext markers seq 8  3.33 Hz'); 
+        % string('Ext markers seq 9  3.33 Hz');      
         
     % Normalized PCA weights associated with the time-varying deformation fields in the cine-MR sequence
-        % string('2. sq sl010 sag Xcs=125 3 cpts 2024 normalised');
+        string('2. sq sl010 sag Xcs=125 3 cpts 2024 normalised');
         % string('3. sq sl010 sag Xcs=80 3 cpts 2024 normalised');
         % string('4. sq sl014 sag Xcs=165 3 cpts 2024 normalised');
         % string('5. sq sl014 sag Xcs=95 3 cpts 2024 normalised');        
