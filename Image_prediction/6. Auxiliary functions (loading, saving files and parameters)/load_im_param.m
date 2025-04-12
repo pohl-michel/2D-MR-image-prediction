@@ -13,5 +13,18 @@ function [ im_par ] = load_im_param(path_par)
     opts.DataRange = '2:2'; % pour pouvoir écrire commentaires sur les variables en dessous ds fichier excel
     im_par = table2struct(readtable(im_par_file, opts));
 
+    if ~isfield(im_par, "x_m")
+        im_par.x_m = 1;
+    end
+    if ~isfield(im_par, "y_m")
+        im_par.y_m = 1;
+    end
+    if ~isfield(im_par, "x_M")
+        im_par.x_M = im_par.W;
+    end
+    if ~isfield(im_par, "y_M")
+        im_par.y_M = im_par.L;
+    end    
+
 end
 

@@ -53,9 +53,9 @@ function [pred_par] = load_pred_par(path_par, pred_meth)
     pred_par.cross_val_metric = 'nRMSE';  % possible options: "nRMSE" or "RMSE"
 
     switch nargin
-        case 1 % Manually choosing the prediction method
+        case 1 % Manually choosing the prediction method in image_prediction_main.m (if OPTIMIZE_NB_PCA_CP == false) or signal_prediction_main.m
             pred_par.pred_meth = 'SnAp-1';
-        case 2 % Prediction method specified in image_prediction_main.m or sigpred_hyperparameter_optimization_main.m
+        case 2 % Prediction method specified in image_prediction_main.m (if OPTIMIZE_NB_PCA_CP == true) or sigpred_hyperparameter_optimization_main.m
             pred_par.pred_meth = pred_meth;
     end
     
