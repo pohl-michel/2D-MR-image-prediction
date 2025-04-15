@@ -31,10 +31,18 @@ path_par = load_impred_path_parameters();
 
 % Input image sequences (modify or add sequences as needed)
 path_par.input_im_dir_suffix_tab = [
-    string('2. sq sl010 sag Xcs=125');    
+    %string('2. sq sl010 sag Xcs=125');    
     %string('3. sq sl010 sag Xcs=80');   
     %string('4. sq sl014 sag Xcs=165');  
     %string('5. sq sl014 sag Xcs=95')
+    string('2020-11-10_KS81_Nav_Pur_1');
+    %string('2020-11-12_QN76_Nav_Pur_1');   
+    %string('2020-11-17_CS31_Nav_Pur_2');  
+    %string('2020-11-17_JY02_Nav_Pur_2');
+    %string('2020-11-23_ON65_Nav_Pur_2');
+    %string('2020-11-23_PS11_Nav_Pur_1');   
+    %string('2020-11-25_II29_Nav_Pur_1');  
+    %string('2020-11-26_NE38_Nav_Pur_1');      
     %string('Add the name of your sequence here')
     ];
 
@@ -65,7 +73,10 @@ for im_seq_idx = 1:nb_seq
 
     % Load image parameters and define number of images for optimization
     im_par = load_im_param(path_par);
-    im_par.nb_im = 90; % ETH Zurich dataset example (can be set arbitrarily)
+    im_par.nb_im = 90; 
+        % ETH Zürich: optimization using the first 90 images of the sequence (training set)
+        % Magdeburg University: 170 images (training set)
+        % software testing: 2 images
 
     %% EVALUATION FOR EACH HYPER-PARAMETER SET IN THE GRID
 
