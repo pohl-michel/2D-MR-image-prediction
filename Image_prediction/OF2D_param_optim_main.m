@@ -26,6 +26,12 @@ beh_par.EVALUATE_IN_ROI = false;
 % When set to true, evaluation is restricted to the region of interest (ROI), improving the DVF accuracy within the latter
 % Restricting the evaluation to the DVF also eliminates zero-padding effects
 
+% manually define nb of images for optimization
+nb_optim_imgs = 2;
+    % ETH Zürich: optimization using the first 90 images of the sequence (training set)
+    % Magdeburg University: 170 images (training set)
+    % software testing: 2 images
+
 % Directories and paths
 path_par = load_impred_path_parameters();
 
@@ -36,13 +42,13 @@ path_par.input_im_dir_suffix_tab = [
     %string('4. sq sl014 sag Xcs=165');  
     %string('5. sq sl014 sag Xcs=95')
     string('2020-11-10_KS81_Nav_Pur_1');
-    %string('2020-11-12_QN76_Nav_Pur_1');   
-    %string('2020-11-17_CS31_Nav_Pur_2');  
-    %string('2020-11-17_JY02_Nav_Pur_2');
-    %string('2020-11-23_ON65_Nav_Pur_2');
-    %string('2020-11-23_PS11_Nav_Pur_1');   
-    %string('2020-11-25_II29_Nav_Pur_1');  
-    %string('2020-11-26_NE38_Nav_Pur_1');      
+    % string('2020-11-12_QN76_Nav_Pur_1');   
+    % string('2020-11-17_CS31_Nav_Pur_2');  
+    % string('2020-11-17_JY02_Nav_Pur_2');
+    % string('2020-11-23_ON65_Nav_Pur_2');
+    % string('2020-11-23_PS11_Nav_Pur_1');   
+    % string('2020-11-25_II29_Nav_Pur_1');  
+    % string('2020-11-26_NE38_Nav_Pur_1');      
     %string('Add the name of your sequence here')
     ];
 
@@ -73,10 +79,7 @@ for im_seq_idx = 1:nb_seq
 
     % Load image parameters and define number of images for optimization
     im_par = load_im_param(path_par);
-    im_par.nb_im = 90; 
-        % ETH Zürich: optimization using the first 90 images of the sequence (training set)
-        % Magdeburg University: 170 images (training set)
-        % software testing: 2 images
+    im_par.nb_im = nb_optim_imgs; 
 
     %% EVALUATION FOR EACH HYPER-PARAMETER SET IN THE GRID
 
@@ -107,7 +110,8 @@ for im_seq_idx = 1:nb_seq
     OF_bestpar_xlsx = rmfield(best_par , 'rms_error');
     OF_bestpar_xlsx.grad_meth = OFeval_par.grad_meth;
     OF_bestpar_xlsx.epsilon_detG = OFeval_par.epsilon_detG;
-    OF_calc_param_file = sprintf('%s\\%s', path_par.input_im_dir, path_par.OFpar_filename);
+    date = sprintf('%s_%s', datestr(datetime, 'yyyy_mm_dd_HH_AM_MM'), 'min');
+    OF_calc_param_file = sprintf('%s\\%s_optimized_%s', path_par.input_im_dir, date, path_par.OFpar_filename);
     if not(isfile(OF_calc_param_file))
         writetable(struct2table(OF_bestpar_xlsx), OF_calc_param_file);
     end
@@ -115,7 +119,7 @@ for im_seq_idx = 1:nb_seq
 end
 
 % Analyze the influence of the parameters on RMS Error
-analyze_OF_param_influence(rms_error_all_seq, OFeval_par, beh_par, path_par);
+analyze_OF_param_influence(rms_error_all_seq, OFeval_par, beh_par, path_par, nb_optim_imgs);
 
 % Save the workspace data for future use
 save(sprintf('%s\\%s', path_par.temp_var_dir, path_par.OFoptim_workspace_filename));
