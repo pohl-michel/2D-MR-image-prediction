@@ -1,4 +1,4 @@
-function eval_OF_results = compute_2Dof( OF_par, im_par, path_par)
+function eval_OF_results = compute_2Dof( OF_par, im_par, path_par, eval_OF_results)
 % Computes the optical flow (OF) between t = 1 and im_par.nb_im,
 % and saves the result in a mat file.
 % The optical flow is saved rather than returned as an output.
@@ -9,6 +9,9 @@ function eval_OF_results = compute_2Dof( OF_par, im_par, path_par)
 % Version : v1.1
 % License : 3-clause BSD License
 
+    if nargin < 4
+        eval_OF_results = struct();
+    end
 
     fprintf('OPTICAL FLOW CALCULATION \n');
     fid = 1; % screen display
