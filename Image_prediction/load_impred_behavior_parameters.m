@@ -13,7 +13,7 @@ function [ beh_par ] = load_impred_behavior_parameters()
 
 %% USER-ADJUSTABLE PARAMETERS
 
-beh_par.SAVE_ROI_DISPLAY = false;  % Save the first image in the sequence with the region of interest (ROI) in a red rectangle
+beh_par.SAVE_ROI_DISPLAY = true;  % Save the first image in the sequence with the region of interest (ROI) in a red rectangle
 beh_par.SAVE_ORG_IM_SQ = false;    % Save jpg images of the original image sequence
 beh_par.SAVE_MEAN_IMAGE = false;   % Save the average image of the test set
 
@@ -22,16 +22,16 @@ beh_par.SAVE_OF_JPG = false;            % Save optical flow images as jpg files
 beh_par.EVAL_INIT_OF_WARP = false;      % Evaluate deformable image registration (DIR) accuracy of the test set
 beh_par.SAVE_INIT_OF_WARP_JPG = false;  % Save the first image warped by the initial deformation vector field (DVF) at every time step of the test set
 
-beh_par.OPTIMIZE_NB_PCA_CP = false;     % Optimize number of PCA components via grid search
-beh_par.REGISTRATION_ERROR_CV = false;  % Optimize PCA components based on registration nRMSE with predicted DVF (instead of cross-correlation between the original and warped images)
+beh_par.OPTIMIZE_NB_PCA_CP = true;     % Optimize number of PCA components via grid search
+beh_par.REGISTRATION_ERROR_CV = true;  % Optimize PCA components based on registration nRMSE with predicted DVF (instead of cross-correlation between the original and warped images)
 
-beh_par.PCA_OF_DVF = true;                % Compute PCA from the DVF data
-beh_par.SAVE_PCA_CP_WEIGHTS_JPG = false;  % Save 2D principal deformation vectors fields (PCA components) as jpg images
-beh_par.EVAL_PCA_RECONSTRUCT = false;     % Evaluate quality of DVF reconstructed using PCA (by warping the first image at t=1 by the DVF at time t when t corresponds to the test set)
-beh_par.SAVE_PCA_RECONSTR_JPG = false;    % Save the image at t=1 warped by the DVF reconstructed from PCA at time t for each time step t of the test set
+beh_par.PCA_OF_DVF = true;               % Compute PCA from the DVF data
+beh_par.SAVE_PCA_CP_WEIGHTS_JPG = true;  % Save 2D principal deformation vectors fields (PCA components) as jpg images
+beh_par.EVAL_PCA_RECONSTRUCT = true;     % Evaluate quality of DVF reconstructed using PCA (by warping the first image at t=1 by the DVF at time t when t corresponds to the test set)
+beh_par.SAVE_PCA_RECONSTR_JPG = true;    % Save the image at t=1 warped by the DVF reconstructed from PCA at time t for each time step t of the test set
 
-beh_par.TRAIN_EVAL_PREDICTOR = false;  % Train the PCA weight forecasting algorithm and evaluate it
-beh_par.SAVE_PRED_RESULTS = false;     % Save a .mat file containing the prediction results (predicted PCA weights, loss function, and time performance)
+beh_par.TRAIN_EVAL_PREDICTOR = true;  % Train the PCA weight forecasting algorithm and evaluate it
+beh_par.SAVE_PRED_RESULTS = true;     % Save a .mat file containing the prediction results (predicted PCA weights, loss function, and time performance)
 
 beh_par.NO_PRED_AT_ALL = false;   % Use original images instead of predictions for performance evaluation
 beh_par.IM_PREDICTION = true;     % Perform image prediction
@@ -50,5 +50,8 @@ if beh_par.IM_PREDICTION
     beh_par.SAVE_PRED_RESULTS = true; % because the image prediction step will load the predicted PCA components from disk.
 end
 beh_par.NORMALIZE_EIGENVECTORS = true; % otherwise different machines or versions of matlab can return principal components and weights with opposite signs
+if beh_par.OPTIMIZE_NB_PCA_CP % to avoid having a bug when logging results
+    beh_par.PCA_OF_DVF = false;
+end
 
 end
