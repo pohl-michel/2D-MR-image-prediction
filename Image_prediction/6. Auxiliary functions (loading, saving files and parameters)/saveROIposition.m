@@ -7,9 +7,16 @@ function saveROIposition(im_par, path_par, disp_par)
 % Version : v1.0
 % License : 3-clause BSD License
 
+    % can be set manually
+    enhance_flag=false;
+
     t_init = 1;
     crop_flag = false; initial_filtering_flag = false; 
     Iinit = load_crop_filter2D(t_init, crop_flag, initial_filtering_flag, 0, im_par, path_par.input_im_dir);
+
+    if enhance_flag
+        Iinit = enhance_2Dim( Iinit, enhance_flag);
+    end
 
     f = figure;
     imshow(Iinit, []);
