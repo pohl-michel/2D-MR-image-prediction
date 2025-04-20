@@ -132,7 +132,7 @@ function eval_results = eval_of_warp_corr(dvf_type, im_par, OF_par, path_par, wa
 
             % Computing statistics corresponding to the difference between u_t_org and u_t
             if strcmp(dvf_type, 'predicted DVF')
-                u_t_diff = sqrt((u_t_org(:,:,1) - u_t(:,:,1, run_idx)).^2+(u_t_org(:,:,2) - u_t(:,:,2, run_idx)).^2); % pixel-wise euclidean norm of the difference
+                u_t_diff = im_par.pixel_size_mm*sqrt((u_t_org(:,:,1) - u_t(:,:,1, run_idx)).^2+(u_t_org(:,:,2) - u_t(:,:,2, run_idx)).^2); % pixel-wise euclidean norm of the difference
                 flattened_u_t_diff = u_t_diff(:);
                 acc_metrics.whole_im.dvf_mean_error_array(t - pred_par.t_eval_start + 1, run_idx) = mean(flattened_u_t_diff);
                 acc_metrics.whole_im.dvf_max_error_array(t - pred_par.t_eval_start + 1, run_idx) = max(flattened_u_t_diff);                
