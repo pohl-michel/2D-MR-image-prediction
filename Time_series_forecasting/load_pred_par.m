@@ -54,7 +54,7 @@ function [pred_par] = load_pred_par(path_par, pred_meth)
 
     switch nargin
         case 1 % Manually choosing the prediction method in image_prediction_main.m (if OPTIMIZE_NB_PCA_CP == false) or signal_prediction_main.m
-            pred_par.pred_meth = 'SnAp-1';
+            pred_par.pred_meth = 'UORO';
         case 2 % Prediction method specified in image_prediction_main.m (if OPTIMIZE_NB_PCA_CP == true) or sigpred_hyperparameter_optimization_main.m
             pred_par.pred_meth = pred_meth;
     end
@@ -64,7 +64,8 @@ function [pred_par] = load_pred_par(path_par, pred_meth)
         case 'multivariate linear regression'
             pred_par.nb_runs = 1;  % not a stochastic method
             pred_par.NORMALIZE_DATA = false;
-            pred_par.tmax_training = 160;  % MR data (ETH Zurich - CMIG paper)
+            % pred_par.tmax_training = 160;  % MR data (ETH Zurich - CMIG paper)
+            pred_par.tmax_training = 303;  % MR data (Magdeburg - CMIG paper)
 
             % pred_par.tmax_training = 180; % markers 3.33 Hz (CPMB paper)
             % pred_par.tmax_training = 540; % markers 10 Hz (CPMB paper)
@@ -116,7 +117,8 @@ function [pred_par] = load_pred_par(path_par, pred_meth)
         case 'univariate linear regression'
             pred_par.nb_runs = 1; % not a stochastic method
             pred_par.NORMALIZE_DATA = false;
-            pred_par.tmax_training = 160; % cine-MR sequence prediction (CMIG paper)
+            % pred_par.tmax_training = 160; % cine-MR sequence prediction (CMIG paper)
+            pred_par.tmax_training = 303;  % MR data (Magdeburg - CMIG paper)
 
             % pred_par.tmax_training = 180; % markers 3.33 Hz (CPMB paper)
             % pred_par.tmax_training = 540; % markers 10 Hz (CPMB paper)
@@ -155,7 +157,8 @@ function [pred_par] = load_pred_par(path_par, pred_meth)
 
             pred_par.nb_runs = 1;  % not a stochastic method
             pred_par.NORMALIZE_DATA = true;
-            pred_par.tmax_training = 160;  % MR data (ETH Zurich - although not in the CMIG paper)
+            % pred_par.tmax_training = 160;  % MR data (ETH Zurich - although not in the CMIG paper)
+            pred_par.tmax_training = 303;  % MR data (Magdeburg - CMIG paper)
 
             % pred_par.tmax_training = 180; % markers 3.33 Hz (CPMB paper)
             % pred_par.tmax_training = 540; % markers 10 Hz (CPMB paper)

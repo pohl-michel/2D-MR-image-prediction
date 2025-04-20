@@ -55,22 +55,20 @@ input_im_dir_suffix_tab = [
     % string('4. sq sl014 sag Xcs=165');  
     % string('5. sq sl014 sag Xcs=95');
     string('2020-11-10_KS81_Nav_Pur_1');
-    % string('2020-11-12_QN76_Nav_Pur_1');   
-    % string('2020-11-17_CS31_Nav_Pur_2');  
-    % string('2020-11-17_JY02_Nav_Pur_2');
-    % string('2020-11-23_ON65_Nav_Pur_2');
-    % string('2020-11-23_PS11_Nav_Pur_1');   
-    % string('2020-11-25_II29_Nav_Pur_1');  
-    % string('2020-11-26_NE38_Nav_Pur_1');    
+    string('2020-11-12_QN76_Nav_Pur_1');   
+    string('2020-11-17_CS31_Nav_Pur_2');  
+    string('2020-11-17_JY02_Nav_Pur_2');
+    string('2020-11-23_ON65_Nav_Pur_2');
+    string('2020-11-23_PS11_Nav_Pur_1');   
+    string('2020-11-25_II29_Nav_Pur_1');  
+    string('2020-11-26_NE38_Nav_Pur_1');    
     ];
 
 % Prediction methods to evaluate if beh_par.OPTIMIZE_NB_PCA_CP == true, otherwise the prediction method is that specified in load_pred_par.m
-% pred_meths = {'multivariate linear regression', 'LMS', 'UORO', 'SnAp-1', 'DNI', 'RTRL v2', 'no prediction', 'fixed W'};
-pred_meths = {'multivariate linear regression'};
+pred_meths = {'multivariate linear regression', 'LMS', 'UORO', 'SnAp-1', 'DNI', 'RTRL v2', 'no prediction', 'fixed W'};
 
 % Set the number of PCA components to use for each sequence
-%br_model_par.nb_pca_cp_tab = [4, 2, 3, 2, 4, 1, 2, 1]; % length = nb of sequences to process
-br_model_par.nb_pca_cp_tab = [2];
+br_model_par.nb_pca_cp_tab = [4, 4, 4, 4, 4, 4, 4, 4]; % length = nb of sequences to process
 
 % Number of image sequences to process
 nb_seq = length(input_im_dir_suffix_tab);

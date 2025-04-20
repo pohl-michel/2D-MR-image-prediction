@@ -27,10 +27,12 @@ function [ hppars ] = load_hyperpar_cv_info( pred_par )
             % hppars.other(1).val = [36, 72, 108, 144, 180];  % 30 Hz sampling
 
             % Next-frame MR image prediction (CMIG paper)
-            hppars.horizon_tab = [1, 2, 3, 4, 5, 6, 7];  
+            % hppars.horizon_tab = [1, 2, 3, 4, 5, 6, 7];  % ETH Zurich
+            hppars.horizon_tab = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14];  % Magdeburg dataset
             
             hppars.other(1).name = 'SHL';
-            hppars.other(1).val = [6, 12, 18, 24, 30];  
+            % hppars.other(1).val = [6, 12, 18, 24, 30]; % ETH Zurich 
+            hppars.other(1).val = [11, 23, 34, 45, 57]; % Magdeburg
             
         case 'RTRL' % Not used anymore - that was the method in my first CPMB and CMIG papers published in 2021 and 2022
           
@@ -77,10 +79,12 @@ function [ hppars ] = load_hyperpar_cv_info( pred_par )
             hppars.nb_runs_cv = 10;
             hppars.nb_runs_eval_test = 10;
 
-            hppars.horizon_tab = [1, 2, 3, 4, 5, 6, 7];       
+            % hppars.horizon_tab = [1, 2, 3, 4, 5, 6, 7];  % ETH Zurich
+            hppars.horizon_tab = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14];  % Magdeburg dataset      
 
             hppars.other(1).name = 'SHL';
-            hppars.other(1).val = [6, 12, 18, 24, 30]; 
+            % hppars.other(1).val = [6, 12, 18, 24, 30]; % ETH Zurich 
+            hppars.other(1).val = [11, 23, 34, 45, 57]; % Magdeburg
 
             hppars.other(2).name = 'learn_rate';
             hppars.other(2).val = [0.005, 0.01, 0.02];            
@@ -104,7 +108,8 @@ function [ hppars ] = load_hyperpar_cv_info( pred_par )
             % hppars.horizon_tab = [3, 6, 9, 12, 15, 18, 21, 24, 27, 30, 33, 36, 39, 42, 45, 48, 51, 54, 57, 60, 63];   % 30 Hz sampling
    
             % Next-frame MR image prediction (CMIG paper)
-            hppars.horizon_tab = [1, 2, 3, 4, 5, 6, 7];  
+            % hppars.horizon_tab = [1, 2, 3, 4, 5, 6, 7];  % ETH Zurich
+            hppars.horizon_tab = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14];  % Magdeburg dataset
   
             
         case 'LMS'
@@ -131,10 +136,12 @@ function [ hppars ] = load_hyperpar_cv_info( pred_par )
 
 
             % Next-frame MR image prediction (CMIG paper)
-            hppars.horizon_tab = [1, 2, 3, 4, 5, 6, 7];
+            % hppars.horizon_tab = [1, 2, 3, 4, 5, 6, 7];  % ETH Zurich
+            hppars.horizon_tab = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14];  % Magdeburg dataset
             
             hppars.other(1).name = 'SHL';           
-            hppars.other(1).val = [6, 12, 18, 24, 30];     
+            % hppars.other(1).val = [6, 12, 18, 24, 30]; % ETH Zurich 
+            hppars.other(1).val = [11, 23, 34, 45, 57]; % Magdeburg    
             
             hppars.other(2).name = 'learn_rate';
             hppars.other(2).val = [0.02, 0.05, 0.1, 0.2];
@@ -166,10 +173,12 @@ function [ hppars ] = load_hyperpar_cv_info( pred_par )
             hppars.nb_runs_cv = 250;
             hppars.nb_runs_eval_test = 250;
             
-            hppars.horizon_tab = [1, 2, 3, 4, 5, 6, 7];
+            % hppars.horizon_tab = [1, 2, 3, 4, 5, 6, 7];  % ETH Zurich
+            hppars.horizon_tab = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14];  % Magdeburg dataset
 
             hppars.other(1).name = 'SHL'; 
-            hppars.other(1).val = [6, 12, 18, 24, 30];  
+            % hppars.other(1).val = [6, 12, 18, 24, 30]; % ETH Zurich 
+            hppars.other(1).val = [11, 23, 34, 45, 57]; % Magdeburg
             
             hppars.other(2).name = 'learn_rate';
             hppars.other(2).val = [0.005, 0.01, 0.02];
@@ -203,10 +212,12 @@ function [ hppars ] = load_hyperpar_cv_info( pred_par )
             hppars.nb_runs_cv = 250;
             hppars.nb_runs_eval_test = 250;            
             
-            hppars.horizon_tab = [1, 2, 3, 4, 5, 6, 7];
+            % hppars.horizon_tab = [1, 2, 3, 4, 5, 6, 7];  % ETH Zurich
+            hppars.horizon_tab = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14];  % Magdeburg dataset
 
             hppars.other(1).name = 'SHL';
-            hppars.other(1).val = [6, 12, 18, 24, 30];    
+            % hppars.other(1).val = [6, 12, 18, 24, 30]; % ETH Zurich 
+            hppars.other(1).val = [11, 23, 34, 45, 57]; % Magdeburg  
             
             hppars.other(2).name = 'learn_rate';
             hppars.other(2).val = [0.005, 0.01, 0.02];
@@ -244,10 +255,12 @@ function [ hppars ] = load_hyperpar_cv_info( pred_par )
             hppars.nb_runs_cv = 250;
             hppars.nb_runs_eval_test = 250;  
    
-            hppars.horizon_tab = [1, 2, 3, 4, 5, 6, 7];   
+            % hppars.horizon_tab = [1, 2, 3, 4, 5, 6, 7];  % ETH Zurich
+            hppars.horizon_tab = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14];  % Magdeburg dataset 
 
             hppars.other(1).name = 'SHL';
-            hppars.other(1).val = [6, 12, 18, 24, 30];
+            % hppars.other(1).val = [6, 12, 18, 24, 30]; % ETH Zurich 
+            hppars.other(1).val = [11, 23, 34, 45, 57]; % Magdeburg
 
             hppars.other(2).name = 'learn_rate';
             hppars.other(2).val = [0.005, 0.01, 0.02];            
@@ -284,10 +297,12 @@ function [ hppars ] = load_hyperpar_cv_info( pred_par )
             hppars.nb_runs_cv = 250;
             hppars.nb_runs_eval_test = 250;  
    
-            hppars.horizon_tab = [1, 2, 3, 4, 5, 6, 7]; 
+            % hppars.horizon_tab = [1, 2, 3, 4, 5, 6, 7];  % ETH Zurich
+            hppars.horizon_tab = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14];  % Magdeburg dataset
 
             hppars.other(1).name = 'SHL';
-            hppars.other(1).val = [6, 12, 18, 24, 30];
+            % hppars.other(1).val = [6, 12, 18, 24, 30]; % ETH Zurich 
+            hppars.other(1).val = [11, 23, 34, 45, 57]; % Magdeburg
 
             hppars.other(2).name = 'learn_rate';
             hppars.other(2).val = [0.005, 0.01, 0.02];            
