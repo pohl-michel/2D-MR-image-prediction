@@ -87,10 +87,6 @@ for im_seq_idx = 1:nb_seq
     
     % Load parameters for display options (visualization settings)
     disp_par = load_impred_display_parameters(path_par);
-
-    % Load parameters for image warping
-    warp_par = load_warp_par();
-    nb_runs_for_cc_eval = warp_par.nb_runs_for_cc_eval;  % number of evaluation runs for image warping
     
     % Parameters of the breathing model (here the PCA respiratory model)
     br_model_par.nb_pca_cp = br_model_par.nb_pca_cp_tab(im_seq_idx);  % that's the max nb of PCA components when performing hyper-parameter optimization (i.e., when beh_par.OPTIMIZE_NB_PCA_CP is set to true)
@@ -134,6 +130,9 @@ for im_seq_idx = 1:nb_seq
         for pred_meth_idx = 1:length(pred_meths)
             pred_meth = pred_meths{pred_meth_idx};
 
+            % Load parameters for image warping
+            warp_par = load_warp_par(pred_meth);         
+
             % Adding the transformer module path to all workers if necessary
             if strcmp(pred_meth, "transformer")
                 set_python_path_all_workers();
@@ -150,6 +149,10 @@ for im_seq_idx = 1:nb_seq
         pred_par = load_pred_par(path_par);
         pred_par.t_eval_start = 1 + pred_par.tmax_cv;  % set evaluation start time (beginning of the test set)
         pred_par.nb_predictions = im_par.nb_im - pred_par.t_eval_start + 1;  % set the nb. of predictions based on remaining images after the eval. start time
+
+        % Load parameters for image warping
+        warp_par = load_warp_par(pred_par.pred_meth);
+        nb_runs_for_cc_eval = warp_par.nb_runs_for_cc_eval;  % number of evaluation runs for image warping
 
         % Save the mean image computed from the image sequence
         if beh_par.SAVE_MEAN_IMAGE
