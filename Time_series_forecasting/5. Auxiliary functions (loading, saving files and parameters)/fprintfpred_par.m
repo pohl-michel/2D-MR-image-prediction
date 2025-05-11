@@ -17,6 +17,19 @@ function fprintfpred_par( fid, pred_par, beh_par )
         end
         
         switch(pred_par.pred_meth)
+            case 'transformer'
+                fprintf(fid, 'Signal history length k = %d \n', pred_par.SHL); % common to all algorithms really - to move before switch
+                fprintf(fid, 'Batch size: %d \n', pred_par.batch_size);
+                fprintf(fid, 'Number of epochs: %d \n', pred_par.num_epochs);
+                fprintf(fid, 'Embedding dimension: %d \n', pred_par.d_model);
+                fprintf(fid, 'Number of heads: %d \n', pred_par.nhead);
+                fprintf(fid, 'Number of encoder layers: %d \n', pred_par.num_layers);
+                fprintf(fid, 'Hidden layer dimension of the feedforward network inside the encoder layers: %d \n', pred_par.dim_feedforward);
+                fprintf(fid, 'Hidden layer dimension of the output feedforward network: %d \n', pred_par.final_layer_dim);
+                fprintf(fid, 'Dropout rate: %g \n', pred_par.dropout);
+                fprintf(fid, 'Learning rate: %g \n', pred_par.learn_rate);
+                fprintf(fid, 'Number of runs due to random weights initialization (for computing RMSE, etc.) nb_runs = %d \n', pred_par.nb_runs);
+                print_device_used(fid, pred_par.GPU_COMPUTING);
             case 'multivariate linear regression'
                 fprintf(fid, 'Signal history length k = %d \n', pred_par.SHL);  
             case 'SVR'
@@ -55,10 +68,14 @@ function fprintfRNN_common(fid, pred_par)
     fprintf(fid, 'Synaptic weights standard deviation (initialization) sg = %g \n', pred_par.Winit_std_dev);
     fprintf(fid, 'Number of runs due to random weights initialization (for computing RMSE of time signals) nb_runs = %d \n', pred_par.nb_runs);
     fprintfoptim_par( fid, pred_par )
-    if pred_par.GPU_COMPUTING
+    print_device_used(fid, pred_par.GPU_COMPUTING);
+
+end
+
+function print_device_used(fid, gpu_computing)
+    if gpu_computing
         fprintf(fid, 'Computation with the GPU \n');
     else
         fprintf(fid, 'Computation with the CPU \n');
     end
-
 end

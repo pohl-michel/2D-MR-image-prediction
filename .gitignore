@@ -50,3 +50,9 @@ create_4Dmri_dataset_spec-file.txt
 *.bak
 *.asv
 *.jpg
+
+# Ignore Python bytecode
+__pycache__/
+*.pyc
+*.pyo
+*.pyd

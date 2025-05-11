@@ -40,7 +40,7 @@ function write_im_pred_log_file(path_par, beh_par, im_par, OF_par, hppars, pred_
     fprintf(fid, 'Reconstruction : %s \n', sprintf_warp_param( warp_par ));
     fprintf(fid, 'Filter application method : %s \n', warp_par.kernel_appl_meth);
     fprintf(fid, '\n');
-    if ismember(pred_par.pred_meth, {'RTRL', 'UORO', 'SnAp-1', 'DNI', 'RTRL v2', 'fixed W'}) % RNN
+    if ismember(pred_par.pred_meth, {'RTRL', 'UORO', 'SnAp-1', 'DNI', 'RTRL v2', 'fixed W', 'transformer'}) % stochastic methods
         fprintf(fid, 'Image cross correlation calculated using %d runs \n', warp_par.nb_runs_for_cc_eval);
     end
     

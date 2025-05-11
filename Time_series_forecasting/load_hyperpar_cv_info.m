@@ -335,6 +335,32 @@ function [ hppars ] = load_hyperpar_cv_info( pred_par )
             hppars.other(4).name = 'svr_box_constraint';
             hppars.other(4).val = [100, 200, 500, 1000];
 
+        case 'transformer'
+            
+            % Common parameters (always true)
+            hppars.nb_runs_cv = 10;            
+            hppars.nb_runs_eval_test = 10;
+
+            % Next-frame MR image prediction (CMIG paper)
+            % hppars.horizon_tab = [1, 2, 3, 4, 5, 6, 7];  % ETH Zurich
+            hppars.horizon_tab = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14];  % Magdeburg dataset
+
+            hppars.other(1).name = 'SHL';
+            % hppars.other(1).val = [6, 12, 18, 24, 30]; % ETH Zurich 
+            hppars.other(1).val = [11, 23, 34, 45, 57]; % Magdeburg                         
+
+            hppars.other(2).name = 'learn_rate';
+            hppars.other(2).val = [0.0001, 0.0005];            
+
+            hppars.other(3).name = 'num_layers'; 
+            hppars.other(3).val = [1, 2];
+            
+            hppars.other(4).name = 'd_model';
+            hppars.other(4).val = [8, 16];
+            
+            hppars.other(5).name = 'dim_feedforward';
+            hppars.other(5).val = [8, 16];
+
     end
 
     hppars.nb_additional_params = numel(hppars.other);

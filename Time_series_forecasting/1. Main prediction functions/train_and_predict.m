@@ -11,12 +11,27 @@ function [Ypred, avg_pred_time, pred_loss_function] = train_and_predict(path_par
 % Version : v1.1
 % License : 3-clause BSD License
 
-
     % loading the "past" data matrix X and the "future" data matrix Y.
     [ X, Y, Mu, Sg] = load_pred_data_XY(path_par, pred_par);
 
     switch(pred_par.pred_meth)
-        
+
+        case 'transformer'
+
+            [p, ~] = size(Y);  % p is the output dimension
+            nb_predictions = pred_par.tmax_pred - pred_par.tmax_training;
+            Ypred = zeros([p, nb_predictions, pred_par.nb_runs]);
+            avg_pred_time = zeros(pred_par.nb_runs, 1);
+            pred_loss_function = zeros(nb_predictions, pred_par.nb_runs);
+
+            fprintf('Performing prediction with a transformer (sequence-wise) \n');  
+            for run_idx=1:pred_par.nb_runs            
+                [Ypred_single_run, pred_time_single_run, pred_loss_function_single_run] = transformer_pred(pred_par, X, Y);
+                Ypred(:, :, run_idx) =  Ypred_single_run;
+                avg_pred_time(run_idx) = pred_time_single_run;
+                pred_loss_function(:, run_idx) = pred_loss_function_single_run;   
+            end
+
         case 'SVR' % support vector regression (with component-wise scalar output)
 
             fprintf('Performing prediction with support vector regression \n');  
@@ -29,7 +44,7 @@ function [Ypred, avg_pred_time, pred_loss_function] = train_and_predict(path_par
             
         case {'RTRL', 'UORO', 'SnAp-1', 'DNI', 'RTRL v2', 'fixed W'} % prediction with an RNN        
 
-            [p, M] = size(Y); %p is the RNN output dimension
+            [p, M] = size(Y); % p is the RNN output dimension
             Ypred = zeros([size(Y), pred_par.nb_runs]);
             avg_pred_time = zeros(pred_par.nb_runs, 1);
             pred_loss_function = zeros(M, pred_par.nb_runs);

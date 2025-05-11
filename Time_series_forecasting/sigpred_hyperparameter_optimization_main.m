@@ -26,7 +26,7 @@ end
 
 addpath(genpath('1. Main prediction functions'))    
 addpath(genpath('2. RNN prediction functions'))    
-addpath(genpath('3. Other prediction functions'))    
+addpath(genpath('other_prediction_functions'))    
 addpath(genpath('4. Auxiliary functions (calculus)')) 
 addpath(genpath('5. Auxiliary functions (loading, saving files and parameters)'))    
 addpath(genpath('6. Auxiliary functions (plotting)'))
@@ -43,7 +43,7 @@ path_par = load_sigpred_path_parameters();
 disp_par = load_sigpred_display_parameters(path_par);  
                
 % Prediction methods to test
-pred_meths = {'multivariate linear regression', 'LMS', 'UORO', 'SnAp-1', 'DNI', 'no prediction', 'fixed W', 'RTRL v2', 'SVR'};
+pred_meths = {'multivariate linear regression', 'LMS', 'UORO', 'SnAp-1', 'DNI', 'no prediction', 'fixed W', 'RTRL v2', 'SVR', 'transformer'};
 % pred_meths = {'DNI'}; % DNI only (for instance) - use the line above if you want to use all methods
 
 nb_seq = length(path_par.time_series_dir_tab);
@@ -59,9 +59,13 @@ for seq_idx = 1:nb_seq
 
         % Parameters concerning the prediction of the position of objects
         pred_par = load_pred_par(path_par, pred_meth);
+        % Adding the transformer module path to all workers if necessary
+        if pred_par.PARALLEL_COMPUTING & strcmp(pred_par.pred_meth, "transformer")
+            set_python_path_all_workers();
+        end
         % Hyperparameters to optimize 
         hppars = load_hyperpar_cv_info(pred_par);
-    
+
         %% PROGRAM
         beh_par = struct();
         [optim, best_par] = train_eval_predictor_mult_param(hppars, pred_par, path_par, disp_par, beh_par);

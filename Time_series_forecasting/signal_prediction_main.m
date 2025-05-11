@@ -19,7 +19,7 @@ end
 
 addpath(genpath('1. Main prediction functions'))    
 addpath(genpath('2. RNN prediction functions'))    
-addpath(genpath('3. Other prediction functions'))    
+addpath(genpath('other_prediction_functions'))    
 addpath(genpath('4. Auxiliary functions (calculus)')) 
 addpath(genpath('5. Auxiliary functions (loading, saving files and parameters)'))    
 addpath(genpath('6. Auxiliary functions (plotting)'))
@@ -39,7 +39,7 @@ path_par = load_sigpred_path_parameters();
 disp_par = load_sigpred_display_parameters(path_par);
 
 % Prediction parameters
-% cf line 53
+% cf line 56
 
 %% ---------------------------------------------------------------------------------------------------------------------------------------------------
 %  PROGRAM -------------------------------------------------------------------------------------------------------------------------------------------

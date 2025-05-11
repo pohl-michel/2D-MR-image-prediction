@@ -20,6 +20,7 @@ function [pred_par] = load_pred_par(path_par, pred_meth)
 %   - 'SnAp-1' (default, Sparse 1-step Approximation)
 %   - 'DNI' (Decoupled Neural Interfaces)
 %   - 'fixed W' (RNN model with fixed hidden layer parameters)
+%   - 'transformer' (transformer encoder with final 1-layer feedforward network)
 %
 % OUTPUT:
 % - pred_par (struct): A structure containing the loaded and computed prediction parameters
@@ -54,7 +55,7 @@ function [pred_par] = load_pred_par(path_par, pred_meth)
 
     switch nargin
         case 1 % Manually choosing the prediction method in image_prediction_main.m (if OPTIMIZE_NB_PCA_CP == false) or signal_prediction_main.m
-            pred_par.pred_meth = 'UORO';
+            pred_par.pred_meth = 'transformer';
         case 2 % Prediction method specified in image_prediction_main.m (if OPTIMIZE_NB_PCA_CP == true) or sigpred_hyperparameter_optimization_main.m
             pred_par.pred_meth = pred_meth;
     end
@@ -162,8 +163,39 @@ function [pred_par] = load_pred_par(path_par, pred_meth)
 
             % pred_par.tmax_training = 180; % markers 3.33 Hz (CPMB paper)
             % pred_par.tmax_training = 540; % markers 10 Hz (CPMB paper)
-            % pred_par.tmax_training = 1620; % markers 30 Hz (CPMB paper)             
+            % pred_par.tmax_training = 1620; % markers 30 Hz (CPMB paper)     
 
+        case 'transformer'
+
+            pred_par.NORMALIZE_DATA = true;
+            % pred_par.tmax_training = 160;  % MR data (ETH Zurich - CMIG paper)
+            pred_par.tmax_training = 303;  % MR data (Magdeburg - CMIG paper) 
+
+            % default parameters specific to the transformer
+            pred_par.batch_size = 32;
+            pred_par.num_epochs = 100;        
+            pred_par.d_model = 16;  % embedding dimension - should be divisible by nhead
+            pred_par.nhead = 2;
+            pred_par.num_layers = 2;
+            pred_par.dim_feedforward = 16;
+            pred_par.final_layer_dim = 0;  % Setting that value to zero sets the final layer dim to geometric avg. of input and output
+            pred_par.dropout = 0.5;
+            pred_par.learn_rate = 0.0001;  % comment that to load from the Excel file instead
+            pred_par.GPU_COMPUTING = true;  % experimentally faster but can be toggled off
+            pred_par.print_every = 50;  % print the loss value every "print_every" step
+            % pred_par.nb_runs = 2;  % for testing - normally loaded from pred_par.xlsx file
+
+            % Add Python module directory if not already in sys.path
+            moduleDir = get_python_transformers_module_dir();
+            if count(py.sys.path, moduleDir) == 0
+                insert(py.sys.path, int32(0), moduleDir);
+            end
+        
+            % Check and set KMP_DUPLICATE_LIB_OK only if not already set
+            currentVal = getenv("KMP_DUPLICATE_LIB_OK");
+            if ~strcmp(currentVal, "TRUE")
+                setenv("KMP_DUPLICATE_LIB_OK", "TRUE");
+            end
     end
     
     % Additional optimizer settings (if required)

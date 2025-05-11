@@ -1,4 +1,7 @@
-*.fig binary
+# end of lines
+*.py text eol=lf
+
+# binary files*.fig binary
 *.mat binary
 *.mdl binary diff merge=mlAutoMerge
 *.mdlp binary

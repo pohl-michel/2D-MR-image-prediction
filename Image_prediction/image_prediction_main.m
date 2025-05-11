@@ -65,7 +65,7 @@ input_im_dir_suffix_tab = [
     ];
 
 % Prediction methods to evaluate if beh_par.OPTIMIZE_NB_PCA_CP == true, otherwise the prediction method is that specified in load_pred_par.m
-pred_meths = {'multivariate linear regression', 'LMS', 'UORO', 'SnAp-1', 'DNI', 'RTRL v2', 'no prediction', 'fixed W'};
+pred_meths = {'multivariate linear regression', 'LMS', 'UORO', 'SnAp-1', 'DNI', 'RTRL v2', 'no prediction', 'fixed W', 'transformer'};
 
 % Set the number of PCA components to use for each sequence
 br_model_par.nb_pca_cp_tab = [4, 4, 4, 4, 4, 4, 4, 4]; % length = nb of sequences to process
@@ -133,6 +133,12 @@ for im_seq_idx = 1:nb_seq
         % Loop through prediction methods and perform hyper-parameter optimization and evaluation of the test set for each of these methods
         for pred_meth_idx = 1:length(pred_meths)
             pred_meth = pred_meths{pred_meth_idx};
+
+            % Adding the transformer module path to all workers if necessary
+            if strcmp(pred_meth, "transformer")
+                set_python_path_all_workers();
+            end
+
             [eval_results, best_pred_par_struct, best_pca_cp_tab] = select_nb_pca_cp(beh_par, disp_par, OF_par, im_par, path_par, br_model_par, eval_results, warp_par, pred_meth);   
             eval_im_pred_best_par(eval_results, best_pred_par_struct, best_pca_cp_tab, beh_par, disp_par, OF_par, im_par, path_par, br_model_par, warp_par, pred_meth)
         end
