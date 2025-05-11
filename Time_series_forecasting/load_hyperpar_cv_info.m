@@ -87,7 +87,7 @@ function [ hppars ] = load_hyperpar_cv_info( pred_par )
             hppars.other(1).val = [11, 23, 34, 45, 57]; % Magdeburg
 
             hppars.other(2).name = 'learn_rate';
-            hppars.other(2).val = [0.005, 0.01, 0.02];            
+            hppars.other(2).val = [0.005, 0.01, 0.015, 0.02];
 
             hppars.other(3).name = 'rnn_state_space_dim'; 
             hppars.other(3).val = [10, 30, 50, 70, 90, 110];            
@@ -181,7 +181,7 @@ function [ hppars ] = load_hyperpar_cv_info( pred_par )
             hppars.other(1).val = [11, 23, 34, 45, 57]; % Magdeburg
             
             hppars.other(2).name = 'learn_rate';
-            hppars.other(2).val = [0.005, 0.01, 0.02];
+            hppars.other(2).val = [0.005, 0.01, 0.015, 0.02];
             
             hppars.other(3).name = 'rnn_state_space_dim'; 
             hppars.other(3).val = [10, 30, 50, 70, 90, 110];  
@@ -220,7 +220,7 @@ function [ hppars ] = load_hyperpar_cv_info( pred_par )
             hppars.other(1).val = [11, 23, 34, 45, 57]; % Magdeburg  
             
             hppars.other(2).name = 'learn_rate';
-            hppars.other(2).val = [0.005, 0.01, 0.02];
+            hppars.other(2).val = [0.005, 0.01, 0.015, 0.02];
             
             hppars.other(3).name = 'rnn_state_space_dim';  
             hppars.other(3).val = [10, 30, 50, 70, 90, 110];             
@@ -263,7 +263,7 @@ function [ hppars ] = load_hyperpar_cv_info( pred_par )
             hppars.other(1).val = [11, 23, 34, 45, 57]; % Magdeburg
 
             hppars.other(2).name = 'learn_rate';
-            hppars.other(2).val = [0.005, 0.01, 0.02];            
+            hppars.other(2).val = [0.005, 0.01, 0.015, 0.02];         
 
             hppars.other(3).name = 'learn_rate_A';           
             hppars.other(3).val = [0.002];  
@@ -305,12 +305,12 @@ function [ hppars ] = load_hyperpar_cv_info( pred_par )
             hppars.other(1).val = [11, 23, 34, 45, 57]; % Magdeburg
 
             hppars.other(2).name = 'learn_rate';
-            hppars.other(2).val = [0.005, 0.01, 0.02];            
+            hppars.other(2).val = [0.005, 0.01, 0.015, 0.02];   
 
             hppars.other(3).name = 'rnn_state_space_dim'; 
             hppars.other(3).val = [10, 30, 50, 70, 90, 110];            
 
-        case 'SVR'
+        case 'SVR' % Only in the CMPB paper - external marker position forecasting
             
             % Common parameters (always true)
             hppars.nb_runs_cv = 1;            
@@ -335,7 +335,7 @@ function [ hppars ] = load_hyperpar_cv_info( pred_par )
             hppars.other(4).name = 'svr_box_constraint';
             hppars.other(4).val = [100, 200, 500, 1000];
 
-        case 'transformer'
+        case 'transformer' % Only in the CMIG paper - future MR frame forecasting
             
             % Common parameters (always true)
             hppars.nb_runs_cv = 10;            
