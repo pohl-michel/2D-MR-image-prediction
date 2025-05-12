@@ -231,6 +231,9 @@ class PositionalEncoding(nn.Module):
 
 
 class MultiDimTimeSeriesTransformer(nn.Module):
+
+    DIM_FF_PROPORTIONALITY_FACTOR = 2  # Proportionality factor for feedforward dimension
+
     def __init__(
         self,
         input_dim,
@@ -239,10 +242,14 @@ class MultiDimTimeSeriesTransformer(nn.Module):
         d_model,
         nhead,
         num_layers,
-        dim_feedforward,
         dropout,
+        dim_feedforward=None,
         final_layer_dim=None,
     ):
+
+        # Setting the feedforward dimension as proportional to d_model if not provided
+        if dim_feedforward in [None, 0]:
+            dim_feedforward = int(d_model * self.DIM_FF_PROPORTIONALITY_FACTOR)
 
         # Setting the final network layer dimension to the geometric mean of its input and output, if not provided
         if final_layer_dim in [None, 0]:

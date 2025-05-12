@@ -357,9 +357,6 @@ function [ hppars ] = load_hyperpar_cv_info( pred_par )
             
             hppars.other(4).name = 'd_model';
             hppars.other(4).val = [8, 16];
-            
-            hppars.other(5).name = 'dim_feedforward';
-            hppars.other(5).val = [8, 16];
 
     end
 
