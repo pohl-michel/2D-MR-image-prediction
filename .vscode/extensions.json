@@ -1,0 +1,11 @@
+{
+    "recommendations": [
+        "gimly81.matlab",
+        "ms-python.python",
+        "ms-toolsai.jupyter",
+        "eamodio.gitlens",
+        "ms-vscode-remote.remote-wsl",
+        "ms-python.black-formatter",
+        "esbenp.prettier-vscode"
+    ]
+}
