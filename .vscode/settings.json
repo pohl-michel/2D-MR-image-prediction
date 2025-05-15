@@ -6,9 +6,8 @@
     },
     "[notebook]":{
         "editor.defaultFormatter": "ms-python.black-formatter",
-        "editor.formatOnSave": true,
-        "editor.formatOnType": false
     },
+    "notebook.formatOnSave.enabled": true,
     "[json]":{
         "editor.defaultFormatter": "esbenp.prettier-vscode"
     },
