@@ -1,4 +1,6 @@
 # standard modules
+from datetime import datetime
+import json
 import math
 import os
 import time
@@ -9,7 +11,7 @@ import scipy
 from sklearn.preprocessing import StandardScaler
 import torch
 import torch.nn as nn
-from torch.utils.data import DataLoader, TensorDataset
+from torch.utils.data import DataLoader, TensorDataset, ConcatDataset
 
 
 DATA_FILENAME = "data.mat"
@@ -121,7 +123,7 @@ def train_and_predict(pred_par, X_train, y_train, X_test, y_test):
     optimizer = torch.optim.Adam(model.parameters(), lr=pred_par["learn_rate"])
 
     start_time = time.monotonic()
-    train_losses, _ = train_model(
+    train_losses, _, _ = train_model(
         model,
         train_loader,
         criterion,
@@ -135,7 +137,7 @@ def train_and_predict(pred_par, X_train, y_train, X_test, y_test):
     elapsed_time = end_time - start_time
     avg_pred_time = elapsed_time / len(train_loader)
 
-    test_predictions, test_targets = test_model(model, test_loader, device)
+    test_predictions, test_targets, _ = eval_model(model, test_loader, device)
     # I can get the loss separately in Matlab as in svr_pred
 
     return test_predictions, avg_pred_time
@@ -310,7 +312,7 @@ def preprocess_data(data_in, horizon, seq_length, training_fraction):
             # Scale the data
             sequence_scaled = scaler.transform(sequence.T).T
 
-            # Create sequences
+            # Create sequences: input [n_samples, seq_length, n_features], target [n_samples, n_features]
             X, y, indices = create_multidim_sequences(sequence_scaled, seq_length, horizon)
 
             if len(X) > 0:  # Only add if we have sequences
@@ -319,32 +321,235 @@ def preprocess_data(data_in, horizon, seq_length, training_fraction):
             else:
                 print(f"Warning: No sequences created for {data_type} data")
 
-    return processed_data
+    return processed_data, scaler
 
 
-def test_model(model, test_loader, device):
+def get_population_data_loaders(processed_data, batch_size):
+    """Create data loaders for training and evaluation"""
+
+    # Create combined datasets for each split
+    data_loaders = {}
+
+    for dataset_name in ["train", "val", "test"]:
+        # Skip if no data
+        if not processed_data[dataset_name]:
+            data_loaders[dataset_name] = None
+            continue
+
+        # Create tensor datasets
+        tensor_datasets = []
+
+        for patient_data in processed_data[dataset_name]:
+            X = torch.FloatTensor(patient_data["X"])
+            y = torch.FloatTensor(patient_data["y"])
+            tensor_datasets.append(TensorDataset(X, y))
+
+        # Combine datasets
+        combined_dataset = ConcatDataset(tensor_datasets)
+
+        # Create data loader
+        data_loaders[dataset_name] = DataLoader(
+            combined_dataset, batch_size=batch_size, shuffle=(dataset_name == "train")
+        )
+
+        print(f"{dataset_name.capitalize()} loader: {len(combined_dataset)} sequences")
+
+    return data_loaders
+
+
+def init_model(config):
+    """Initialize the transformer model with the given configuration.
+    That's useful when we need to initialize different models with different seeds"""
+
+    # Extract parameters from config
+    input_dim = config.get("n_features", 1)
+    output_dim = config.get("n_features", 1)
+    seq_length = config.get("seq_length", 24)
+    d_model = config.get("d_model", 16)
+    nhead = config.get("nhead", 2)
+    num_layers = config.get("num_layers", 2)
+    dim_feedforward = config.get("dim_feedforward", 64)
+    dropout = config.get("dropout", 0.1)
+    final_layer_dim = config.get("final_layer_dim", None)
+
+    # Create model
+    return MultiDimTimeSeriesTransformer(
+        input_dim=input_dim,
+        output_dim=output_dim,
+        seq_length=seq_length,
+        d_model=d_model,
+        nhead=nhead,
+        num_layers=num_layers,
+        dim_feedforward=dim_feedforward,
+        dropout=dropout,
+        final_layer_dim=final_layer_dim,
+    )
+
+def train_multiple_models(
+    config,
+    device,
+    data_loaders,
+    horizon,
+    n_models,
+    num_epochs,
+    learning_rate,
+    early_stop_patience,
+    save_dir,
+    print_every=10,
+):
+    """
+    Train multiple horizon-specific models to account for stochasticity
+
+    Args:
+        horizon: Prediction horizon (steps ahead)
+        n_models: Number of models to train
+        num_epochs: Maximum number of training epochs
+        learning_rate: Learning rate for optimization
+        early_stopping_patience: Patience for early stopping
+        print_every: Print training progress every N epochs
+        save_dir: Directory to save models
+
+    Returns:
+        List of training results for each model
+    """
+
+    # Update config with horizon
+    config["horizon"] = horizon
+
+    # Prepare directory
+    horizon_dir = os.path.join(save_dir, f"horizon_{horizon}")
+    os.makedirs(horizon_dir, exist_ok=True)
+
+    # Train multiple models
+    all_results = []
+
+    for model_idx in range(n_models):
+        print(f"\n{'='*50}")
+        print(f"Training model {model_idx+1}/{n_models} for horizon={horizon}")
+        print(f"{'='*50}")
+
+        # Set different random seed for each model
+        seed = config.get("seed", 42) + model_idx
+        torch.manual_seed(seed)
+        np.random.seed(seed)
+
+        # Initialize new model
+        model = init_model(config).to(device)
+
+        # Set up training
+        criterion = nn.MSELoss()
+        optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
+
+        train_losses, val_losses, best_model_state = train_model(
+            model,
+            data_loaders["train"],
+            criterion,
+            optimizer,
+            device,
+            num_epochs,
+            val_loader=data_loaders["val"],
+            print_every=print_every,
+            early_stop_patience=early_stop_patience,
+        )
+
+        # Restore best model
+        if best_model_state is not None:
+            model.load_state_dict(best_model_state)
+
+        # Evaluate on test set if available
+        if data_loaders["test"] is not None:
+            _, _, test_loss = eval_model(model, data_loaders["test"], device, criterion, return_predictions=False)
+            print(f"Test Loss for Model {model_idx+1}: {test_loss:.4f}")
+
+        # Save this model
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        model_path = os.path.join(horizon_dir, f"transformer_h{horizon}_model{model_idx+1}_{timestamp}.pt")
+        config_path = os.path.join(horizon_dir, f"transformer_h{horizon}_model{model_idx+1}_{timestamp}_config.json")
+
+        # Save model and config
+        torch.save(best_model_state, model_path)
+
+        training_history = {
+            "train_losses": train_losses,
+            "val_losses": val_losses if data_loaders["val"] is not None else None,
+        }
+
+        # Add training history to config
+        model_info = {
+            "config": config,
+            "model_idx": model_idx + 1,
+            "horizon": horizon,
+            "seed": seed,
+            "timestamp": timestamp,
+            "training_history": training_history,
+        }
+
+        with open(config_path, "w") as f:
+            json.dump(model_info, f, indent=2)
+
+        print(f"Model {model_idx+1} saved to {model_path}")
+
+        # Store results - scaler not saved with np.save(scaler_path, scaler_dict) because they are common to all models
+        all_results.append(
+            {
+                "model_idx": model_idx + 1,
+                "model_path": model_path,
+                "config_path": config_path,
+                "training_history": training_history,
+                "test_loss": test_loss if data_loaders["test"] is not None else None,
+            }
+        )
+
+    return all_results
+
+
+def eval_model(model, test_loader, device, criterion=None, return_predictions=True):
     # Evaluate on test set
     model.eval()
     test_predictions = []
     test_targets = []
+    total_loss = 0.0
 
     with torch.no_grad():
         for inputs, targets in test_loader:
             inputs, targets = inputs.to(device), targets.to(device)
             outputs = model(inputs)
-            test_predictions.append(outputs.cpu().numpy())
-            test_targets.append(targets.cpu().numpy())
+            if return_predictions:
+                test_predictions.append(outputs.cpu().numpy())
+                test_targets.append(targets.cpu().numpy())
+
+            if criterion is not None:
+                loss = criterion(outputs, targets)
+                total_loss += loss.item()
 
     # Concatenate batches
-    test_predictions = np.vstack(test_predictions)
-    test_targets = np.vstack(test_targets)
+    if return_predictions:
+        test_predictions = np.vstack(test_predictions)
+        test_targets = np.vstack(test_targets)
 
-    return test_predictions, test_targets
+    avg_loss = total_loss / len(test_loader)
+
+    return test_predictions, test_targets, avg_loss
 
 
-def train_model(model, train_loader, criterion, optimizer, device, num_epochs, val_loader=None, print_every=10):
+def train_model(
+    model,
+    train_loader,
+    criterion,
+    optimizer,
+    device,
+    num_epochs,
+    val_loader=None,
+    print_every=10,
+    early_stop_patience=None,
+):
     train_losses = []
     val_losses = []
+
+    best_model_state = None
+    if early_stop_patience is not None:  # We perform stopping
+        best_val_loss = float("inf")
+        patience_counter = 0
 
     for epoch in range(num_epochs):
         # Training
@@ -367,25 +572,31 @@ def train_model(model, train_loader, criterion, optimizer, device, num_epochs, v
 
         # Validation
         if val_loader is not None:
-            model.eval()
-            val_loss = 0.0
-            with torch.no_grad():
-                for inputs, targets in val_loader:
-                    inputs, targets = inputs.to(device), targets.to(device)
-                    outputs = model(inputs)
-                    loss = criterion(outputs, targets)
-                    val_loss += loss.item()
-
-            val_loss /= len(val_loader)
+            _, _, val_loss = eval_model(model, val_loader, device, criterion, return_predictions=False)
             val_losses.append(val_loss)
             message += f", Val Loss: {val_loss:.4f}"
+
+            if early_stop_patience is not None:
+                # Check for improvement
+                if val_loss < best_val_loss:
+                    best_val_loss = val_loss
+                    best_model_state = model.state_dict().copy()
+                    patience_counter = 0
+                else:
+                    patience_counter += 1
+
+                # Early stopping
+                if patience_counter >= early_stop_patience:
+                    print(f"Early stopping at epoch {epoch+1}")
+                    break
+
         else:
             val_losses = None
 
         if (epoch + 1) % print_every == 0:
             print(message)
 
-    return train_losses, val_losses
+    return train_losses, val_losses, best_model_state
 
 
 class PositionalEncoding(nn.Module):
