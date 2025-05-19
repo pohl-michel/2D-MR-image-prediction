@@ -385,6 +385,7 @@ def init_model(config):
         final_layer_dim=final_layer_dim,
     )
 
+
 def train_multiple_models(
     config,
     device,
@@ -450,6 +451,7 @@ def train_multiple_models(
             val_loader=data_loaders["val"],
             print_every=print_every,
             early_stop_patience=early_stop_patience,
+            augment_data_config=config.get("augment_data_config", None),
         )
 
         # Restore best model
@@ -542,6 +544,7 @@ def train_model(
     val_loader=None,
     print_every=10,
     early_stop_patience=None,
+    augment_data_config = None
 ):
     train_losses = []
     val_losses = []
@@ -558,6 +561,10 @@ def train_model(
         for inputs, targets in train_loader:
             # print(f"input shape: {inputs.shape}, target shape: {targets.shape}")
             # Move data to the appropriate device
+
+            if augment_data_config is not None:
+                inputs, targets = time_series_augmentation_suite(inputs, targets, augment_data_config)
+
             inputs, targets = inputs.to(device), targets.to(device)
             optimizer.zero_grad()
             outputs = model(inputs)
@@ -597,6 +604,93 @@ def train_model(
             print(message)
 
     return train_losses, val_losses, best_model_state
+
+
+def time_series_augmentation_suite(batch_data, batch_targets, config=None):
+    """
+    Comprehensive augmentation suite for time series data. Note: we are not adding noise because the PCA breathing
+    signals are already noisy.
+
+    Args:
+        batch_data: Tensor of shape [batch_size, seq_length, n_features]
+        batch_targets: Tensor of shape [batch_size, n_features]
+        config: Dictionary of augmentation parameters
+
+    Returns:
+        Augmented batch data and targets
+    """
+    if config is None:
+        config = {
+            "scaling_range": (0.8, 1.2),  # Random amplitude scaling
+            "permutation_prob": 0.5,  # Probability of dimension permutation
+            'drift_prob': 0.3,             # Probability of adding baseline drift
+            'max_drift_factor': 0.05,      # Maximum drift (as fraction of signal amplitude)
+            'bias_prob': 0.3,              # Probability of adding baseline bias
+            'max_bias_factor': 0.2         # Maximum bias (as fraction of signal amplitude
+        }
+
+    augmented_data = batch_data.clone()
+    augmented_targets = batch_targets.clone()
+
+    batch_size, seq_length, n_features = batch_data.shape
+
+    for i in range(batch_size):
+
+        # 2. Scaling (amplitude variation)
+        if np.random.rand() < 0.8:
+            for j in range(n_features):
+                scale = np.random.uniform(*config["scaling_range"])
+                augmented_data[i, :, j] *= scale
+                augmented_targets[i, j] *= scale
+
+        # 3. Feature Permutation
+        if np.random.rand() < config["permutation_prob"]:
+            perm = torch.randperm(n_features)
+            augmented_data[i, :, :] = augmented_data[i, :, perm]
+            augmented_targets[i, :] = augmented_targets[i, perm]
+
+        # Calculate feature-wise amplitude for proportional transformations
+        amplitudes = []
+        for j in range(n_features):
+            # Estimate amplitude as 95th percentile - 5th percentile for robustness
+            q95 = torch.quantile(augmented_data[i, :, j], 0.95)
+            q05 = torch.quantile(augmented_data[i, :, j], 0.05)
+            amplitude = q95 - q05
+            amplitudes.append(amplitude.item())
+
+        # Add Baseline Bias (constant offset proportional to amplitude)
+        if np.random.rand() < config.get('bias_prob', 0.7):
+            for j in range(n_features):
+                # Generate random bias proportional to feature amplitude
+                max_bias = amplitudes[j] * config.get('max_bias_factor', 0.3)
+                bias = np.random.uniform(-max_bias, max_bias)
+                
+                # Apply constant bias to entire feature sequence
+                augmented_data[i, :, j] += bias
+                
+                # Apply same bias to the target
+                augmented_targets[i, j] += bias
+
+        # Add Random Drift (linear slope)
+        if np.random.rand() < config.get('drift_prob', 0.5):
+            for j in range(n_features):
+                # Random slope proportional to feature amplitude
+                max_change = amplitudes[j] * config.get('max_drift_factor', 0.05)
+                slope = np.random.uniform(-max_change, max_change)
+                
+                # Create linear trend along time dimension
+                time_steps = np.arange(seq_length) / seq_length
+                drift = torch.FloatTensor(time_steps) * slope
+                
+                # Apply drift to this feature
+                augmented_data[i, :, j] += drift
+                
+                # Adjust target based on final drift value
+                final_drift = drift[-1].item()
+                augmented_targets[i, j] += final_drift                
+
+
+    return augmented_data, augmented_targets
 
 
 class PositionalEncoding(nn.Module):
