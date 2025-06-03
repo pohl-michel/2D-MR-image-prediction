@@ -27,7 +27,7 @@ function [Ypred, avg_pred_time, pred_loss_function] = train_and_predict(path_par
             pred_loss_function = zeros(nb_predictions, pred_par.nb_runs);
 
             for run_idx=1:pred_par.nb_runs            
-                [Ypred_single_run, pred_time_single_run, pred_loss_function_single_run] = pop_transformer_pred(path_par, pred_par, X, Y, run_idx);
+                [Ypred_single_run, pred_time_single_run, pred_loss_function_single_run] = transformer_pred(path_par, pred_par, X, Y, run_idx);
                 Ypred(:, :, run_idx) =  Ypred_single_run;
                 avg_pred_time(run_idx) = pred_time_single_run;
                 pred_loss_function(:, run_idx) = pred_loss_function_single_run;   
