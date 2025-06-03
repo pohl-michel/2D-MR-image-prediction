@@ -30,6 +30,27 @@ function fprintfpred_par( fid, pred_par, beh_par )
                 fprintf(fid, 'Learning rate: %g \n', pred_par.learn_rate);
                 fprintf(fid, 'Number of runs due to random weights initialization (for computing RMSE, etc.) nb_runs = %d \n', pred_par.nb_runs);
                 print_device_used(fid, pred_par.GPU_COMPUTING);
+            case 'population_transformer'
+                fprintf(fid, 'Signal history length k = %d \n', pred_par.SHL); % common to all algorithms really - to move before switch
+                fprintf(fid, 'Batch size: %d \n', pred_par.batch_size);
+                fprintf(fid, 'Maximum number of epochs: %d \n', pred_par.num_epochs);
+                fprintf(fid, 'Early stopping patience: %d \n', pred_par.early_stop_patience);
+                fprintf(fid, 'Embedding dimension: %d \n', pred_par.d_model);
+                fprintf(fid, 'Number of heads: %d \n', pred_par.nhead);
+                fprintf(fid, 'Number of encoder layers: %d \n', pred_par.num_layers);
+                fprintf(fid, 'Hidden layer dimension of the feedforward network inside the encoder layers: %d \n', pred_par.dim_feedforward);
+                fprintf(fid, 'Hidden layer dimension of the output feedforward network: %d \n', pred_par.final_layer_dim);
+                fprintf(fid, 'Dropout rate: %g \n', pred_par.dropout);
+                fprintf(fid, 'Learning rate: %g \n', pred_par.learn_rate);
+                fprintf(fid, 'Number of runs due to random weights initialization (for computing RMSE, etc.) nb_runs = %d \n', pred_par.nb_runs);
+                fprintf(fid, 'Fraction of the development set used for training: %g \n', pred_par.training_fraction);
+                fprintf(fid, 'Scaling range for data augmentation: [%g, %g] \n', pred_par.scaling_range(1), pred_par.scaling_range(2));
+                fprintf(fid, 'Dimension permutation probability for data augmentation: %g \n', pred_par.permutation_prob);
+                fprintf(fid, 'Probability to introduce random drift in data augmentation: %g \n', pred_par.drift_prob);
+                fprintf(fid, 'Max drift factor in data augmentation: %g \n', pred_par.max_drift_factor);
+                fprintf(fid, 'Probability to introduce random bias in data augmentation: %g \n', pred_par.bias_prob);
+                fprintf(fid, 'Max bias factor in data augmentation: %g \n', pred_par.max_bias_factor);
+                print_device_used(fid, pred_par.GPU_COMPUTING);
             case 'multivariate linear regression'
                 fprintf(fid, 'Signal history length k = %d \n', pred_par.SHL);  
             case 'SVR'

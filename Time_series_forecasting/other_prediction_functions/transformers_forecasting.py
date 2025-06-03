@@ -4,6 +4,8 @@ import json
 import math
 import os
 import time
+import glob
+import re
 
 # third-party
 import numpy as np
@@ -15,6 +17,7 @@ from torch.utils.data import DataLoader, TensorDataset, ConcatDataset
 
 
 DATA_FILENAME = "data.mat"
+MODEL_DIR = "d. RNN variables (temp)"
 
 
 def generate_multidimensional_sinusoids(n_samples=1000, n_features=3, noise_level=0.2):
@@ -122,7 +125,6 @@ def train_and_predict(pred_par, X_train, y_train, X_test, y_test):
     criterion = nn.MSELoss()
     optimizer = torch.optim.Adam(model.parameters(), lr=pred_par["learn_rate"])
 
-    start_time = time.monotonic()
     train_losses, _, _ = train_model(
         model,
         train_loader,
@@ -133,14 +135,106 @@ def train_and_predict(pred_par, X_train, y_train, X_test, y_test):
         val_loader=None,
         print_every=pred_par["print_every"],
     )
+
+    start_time = time.monotonic()
+    # I can get the loss separately in Matlab as in svr_pred
+    test_predictions, test_targets, _ = eval_model(model, test_loader, device)
     end_time = time.monotonic()
     elapsed_time = end_time - start_time
-    avg_pred_time = elapsed_time / len(train_loader)
-
-    test_predictions, test_targets, _ = eval_model(model, test_loader, device)
-    # I can get the loss separately in Matlab as in svr_pred
+    avg_pred_time = elapsed_time / len(train_loader)  # only training time... could take inference into account...
 
     return test_predictions, avg_pred_time
+
+
+def population_model_predict(pred_par, X_test, run_idx):
+    """Perform prediction with a previously trained population model, on a test set"""
+
+    # Load model configuration file - not needed here because all the relevant parameters should be in pred_par ...
+    # model_dir = os.path.join(MODEL_DIR, f"horizon_{pred_par['horizon']}")  # directory containing results
+    # config_path = get_most_recent_config(model_dir, pred_par["horizon"], run_idx)
+    # with open(config_path, "r") as f:
+    #     config = json.load(f)
+
+    # Check that the signal history length in the config file corresponds to the signal history length in X_test
+    (nb_samples, shl, n_features) = X_test.shape
+    if pred_par["seq_length"] != shl:
+        raise ValueError(f"Signal history length in config ({pred_par['seq_length']}) does not match X_test ({shl}).")
+    if pred_par["n_features"] != n_features:
+        raise ValueError(f"Nb of features in config ({pred_par['n_features']}) does not match X_test ({n_features}).")
+
+    # Load saved model file
+    model_path = pred_par["config_path"].removesuffix("_config.json") + ".pt"
+
+    # Initialize model
+    model = init_model(pred_par)
+
+    # Get the device,
+    device = get_device(pred_par["selected_device"])
+    print(f"Using device: {device}")
+
+    # Load model weights
+    model.load_state_dict(torch.load(model_path, map_location=device))
+
+    # Sending the model to the appropriate device
+    model.to(device)
+
+    # Load the scaler file - where is my scaler file :( - think about it later - I need to save it in notebook
+    # Rk: actually no, I can just use sequence-wise scaling during inference, that should work
+
+    # Do the forecasting - the test data is set as arbitrary because it is not used for the prediction
+    test_loader = get_data_loader(X_test, np.zeros((X_test.shape[0], 1)), pred_par["batch_size"], shuffle=False)
+
+    start_time = time.monotonic()
+    test_predictions, test_targets, _ = eval_model(model, test_loader, device)
+    end_time = time.monotonic()
+    elapsed_time = end_time - start_time
+    avg_pred_time = elapsed_time / len(test_loader)
+
+    # Rescale back to original scale - do later
+    # R: no, cf comment above.
+
+    return test_predictions, avg_pred_time
+
+
+def get_most_recent_config(folder_path, horizon, run_idx):
+    """
+    Args:
+        folder_path (str): Path to the folder containing config files
+        run_idx (int, optional): Specific run index to filter by (e.g., 1 for model1)
+    Rk: same as get_most_recent_model_config() in Matlab - to refactor later so that I have only one function...
+    """
+    # Pattern to match the files
+    pattern = os.path.join(folder_path, f"transformer_h{horizon}_model{run_idx}_*_*_config.json")
+    files = glob.glob(pattern)
+
+    if not files:
+        raise FileNotFoundError("No config files found in the specified folder")
+
+    most_recent_file = None
+    most_recent_datetime = datetime.min
+
+    # Regex pattern to extract date and time
+    regex_pattern = rf"transformer_h{horizon}+_model{run_idx}_(\d{{8}})_(\d{{6}})_config\.json"
+
+    for file_path in files:
+        filename = os.path.basename(file_path)
+        match = re.search(regex_pattern, filename)
+
+        if match:
+            date_str = match.group(1)  # YYYYMMDD
+            time_str = match.group(2)  # HHMMSS
+
+            # Parse the datetime
+            file_datetime = datetime.strptime(f"{date_str}_{time_str}", "%Y%m%d_%H%M%S")
+
+            if file_datetime > most_recent_datetime:
+                most_recent_datetime = file_datetime
+                most_recent_file = file_path
+
+    if most_recent_file is None:
+        raise ValueError("No valid files found with the expected naming pattern")
+
+    return most_recent_file
 
 
 def get_data_loader(X, y, batch_size, shuffle: bool):
@@ -467,6 +561,7 @@ def train_multiple_models(
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         model_path = os.path.join(horizon_dir, f"transformer_h{horizon}_model{model_idx+1}_{timestamp}.pt")
         config_path = os.path.join(horizon_dir, f"transformer_h{horizon}_model{model_idx+1}_{timestamp}_config.json")
+        # scaler_path = os.path.join(horizon_dir, f"transformer_h{horizon}_model{model_idx+1}_{timestamp}_scaler.npy")
 
         # Save model and config
         torch.save(best_model_state, model_path)
@@ -489,6 +584,10 @@ def train_multiple_models(
         with open(config_path, "w") as f:
             json.dump(model_info, f, indent=2)
 
+        # # Save scaler
+        # scaler_dict = {"mean": scaler.mean_, "var": scaler.var_, "scale": scaler.scale_}
+        # np.save(scaler_path, scaler_dict)
+
         print(f"Model {model_idx+1} saved to {model_path}")
 
         # Store results - scaler not saved with np.save(scaler_path, scaler_dict) because they are common to all models
@@ -507,7 +606,10 @@ def train_multiple_models(
 
 def eval_model(model, test_loader, device, criterion=None, return_predictions=True):
     # Evaluate on test set
+
+    # Set model to evaluation mode
     model.eval()
+
     test_predictions = []
     test_targets = []
     total_loss = 0.0
@@ -544,7 +646,7 @@ def train_model(
     val_loader=None,
     print_every=10,
     early_stop_patience=None,
-    augment_data_config = None
+    augment_data_config=None,
 ):
     train_losses = []
     val_losses = []
@@ -623,10 +725,10 @@ def time_series_augmentation_suite(batch_data, batch_targets, config=None):
         config = {
             "scaling_range": (0.8, 1.2),  # Random amplitude scaling
             "permutation_prob": 0.5,  # Probability of dimension permutation
-            'drift_prob': 0.3,             # Probability of adding baseline drift
-            'max_drift_factor': 0.05,      # Maximum drift (as fraction of signal amplitude)
-            'bias_prob': 0.3,              # Probability of adding baseline bias
-            'max_bias_factor': 0.2         # Maximum bias (as fraction of signal amplitude
+            "drift_prob": 0.3,  # Probability of adding baseline drift
+            "max_drift_factor": 0.05,  # Maximum drift (as fraction of signal amplitude)
+            "bias_prob": 0.3,  # Probability of adding baseline bias
+            "max_bias_factor": 0.2,  # Maximum bias (as fraction of signal amplitude
         }
 
     augmented_data = batch_data.clone()
@@ -659,36 +761,35 @@ def time_series_augmentation_suite(batch_data, batch_targets, config=None):
             amplitudes.append(amplitude.item())
 
         # Add Baseline Bias (constant offset proportional to amplitude)
-        if np.random.rand() < config.get('bias_prob', 0.7):
+        if np.random.rand() < config.get("bias_prob", 0.7):
             for j in range(n_features):
                 # Generate random bias proportional to feature amplitude
-                max_bias = amplitudes[j] * config.get('max_bias_factor', 0.3)
+                max_bias = amplitudes[j] * config.get("max_bias_factor", 0.3)
                 bias = np.random.uniform(-max_bias, max_bias)
-                
+
                 # Apply constant bias to entire feature sequence
                 augmented_data[i, :, j] += bias
-                
+
                 # Apply same bias to the target
                 augmented_targets[i, j] += bias
 
         # Add Random Drift (linear slope)
-        if np.random.rand() < config.get('drift_prob', 0.5):
+        if np.random.rand() < config.get("drift_prob", 0.5):
             for j in range(n_features):
                 # Random slope proportional to feature amplitude
-                max_change = amplitudes[j] * config.get('max_drift_factor', 0.05)
+                max_change = amplitudes[j] * config.get("max_drift_factor", 0.05)
                 slope = np.random.uniform(-max_change, max_change)
-                
+
                 # Create linear trend along time dimension
                 time_steps = np.arange(seq_length) / seq_length
                 drift = torch.FloatTensor(time_steps) * slope
-                
+
                 # Apply drift to this feature
                 augmented_data[i, :, j] += drift
-                
+
                 # Adjust target based on final drift value
                 final_drift = drift[-1].item()
-                augmented_targets[i, j] += final_drift                
-
+                augmented_targets[i, j] += final_drift
 
     return augmented_data, augmented_targets
 

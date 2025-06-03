@@ -22,6 +22,7 @@ function [pred_par] = load_pred_par(path_par, pred_meth, horizon)
 %   - 'DNI' (Decoupled Neural Interfaces)
 %   - 'fixed W' (RNN model with fixed hidden layer parameters)
 %   - 'transformer' (transformer encoder with final 1-layer feedforward network)
+%   - 'population_transformer' (transformer encoder with final 1-layer feedforward network, trained offline on multiple sequences)
 %
 % OUTPUT:
 % - pred_par (struct): A structure containing the loaded and computed prediction parameters
@@ -56,7 +57,7 @@ function [pred_par] = load_pred_par(path_par, pred_meth, horizon)
 
     switch nargin
         case 1 % Manually choosing the prediction method in image_prediction_main.m (if OPTIMIZE_NB_PCA_CP == false) or signal_prediction_main.m
-            pred_par.pred_meth = 'population_transformer';
+            pred_par.pred_meth = "population_transformer"; % 'transformer';
             horizon = pred_par.horizon;
         case 2 % Prediction method specified in image_prediction_main.m (if OPTIMIZE_NB_PCA_CP == true) or sigpred_hyperparameter_optimization_main.m
             pred_par.pred_meth = pred_meth;
@@ -173,8 +174,8 @@ function [pred_par] = load_pred_par(path_par, pred_meth, horizon)
         case 'transformer'
 
             pred_par.NORMALIZE_DATA = true;
-            % pred_par.tmax_training = 160;  % MR data (ETH Zurich - CMIG paper)
-            pred_par.tmax_training = 303;  % MR data (Magdeburg - CMIG paper) 
+            pred_par.tmax_training = 160;  % MR data (ETH Zurich - CMIG paper)
+            % pred_par.tmax_training = 303;  % MR data (Magdeburg - CMIG paper) 
 
             % default parameters specific to the transformer
             pred_par.batch_size = 32;
@@ -205,11 +206,11 @@ function [pred_par] = load_pred_par(path_par, pred_meth, horizon)
         case 'population_transformer' % horizon from excel file - the SHl is loaded from config.json file corresponding to model
 
             % We are going to use the scaler from the population model instead
-            pred_par.NORMALIZE_DATA = false;
+            pred_par.NORMALIZE_DATA = true;
 
             % The model has already been trained, but we do testing in the same way as online methods: tmax_training + 1 is the 1st time index for prediction
-            % pred_par.tmax_training = 160;  % MR data (ETH Zurich - CMIG paper)
-            pred_par.tmax_training = 303;  % MR data (Magdeburg - CMIG paper) 
+            pred_par.tmax_training = 160;  % MR data (evaluation on ETH Zurich - CMIG paper)
+            % pred_par.tmax_training = 303;  % MR data (evaluation on Magdeburg - CMIG paper) 
 
             % Add Python module directory if not already in sys.path
             moduleDir = get_python_transformers_module_dir();
@@ -225,12 +226,8 @@ function [pred_par] = load_pred_par(path_par, pred_meth, horizon)
 
             % Loading the config file - We assume that the config for the first transformer config is similar to the others (could add check in further improvements)
             % config_path = sprintf('%s/horizon_%d/transformer_h2_model1', path_par.temp_var_dir, horizon); % uncomment to specify by hand (if no date provided)
-            config_path = get_most_recent_model_config(path_par.temp_var_dir, horizon);
-            config_str = fileread(config_path);
-            config = jsondecode(config_str);
-
-            % Setting the SHL (and possibly the number of runs)            
-            pred_par.SHL = config.config.seq_length;
+            run_idx = 1; % there will always be a run number 1, regardless of the maximum number of runs, so we load that configuration file first (we need the SHL to load the data correctly in load_pred_data_XY)
+            pred_par = update_pred_par_with_transformer_config(path_par, pred_par, horizon, run_idx);
 
     end
     
@@ -249,65 +246,23 @@ function [pred_par] = load_pred_par(path_par, pred_meth, horizon)
     
 end
 
+function pred_par = update_pred_par_with_transformer_config(path_par, pred_par, horizon, run_idx)
+% Loads the most recent config.json file for the transformer model corresponding to a specific horizon and run index
+% The prediction parameters in pred_par are then updated using that configuration file (this is used to load data proprely with the correct SHL)
 
-function config_path = get_most_recent_model_config(base_dir, horizon)
-% GET_MOST_RECENT_MODEL_CONFIG Find the most recent transformer model config file
-%
-% INPUTS:
-% - base_dir: Base directory containing horizon folders
-% - horizon: Horizon value (e.g., 2 for horizon_2 folder)
-%
-% OUTPUT:
-% - config_path: Full path to the most recent config file
-
-    % Construct the horizon folder path
-    horizon_folder = fullfile(base_dir, sprintf('horizon_%d', horizon));
+    config_path = get_most_recent_transformer_model_config(path_par.temp_var_dir, horizon, run_idx);
+    config_str = fileread(config_path);
+    config = jsondecode(config_str);
     
-    % Check if folder exists
-    if ~exist(horizon_folder, 'dir')
-        error('Horizon folder does not exist: %s', horizon_folder);
+    % Get all field names from config.config
+    field_names = fieldnames(config.config);
+    
+    % Loop through each field and copy to pred_par
+    % we need shl to load input data correctly, the nb of runs, 
+    % and other params for logging, e.g., with sprintfpred_par()
+    for i = 1:length(field_names)
+        field_name = field_names{i};
+        pred_par.(field_name) = config.config.(field_name);
     end
     
-    % Get all config files matching the pattern
-    pattern = sprintf('transformer_h%d_model*_config.json', horizon);
-    files = dir(fullfile(horizon_folder, pattern));
-    
-    if isempty(files)
-        error('No config files found in %s matching pattern %s', horizon_folder, pattern);
-    end
-    
-    % Extract date and time from filenames and find the most recent
-    most_recent_datetime = 0;
-    most_recent_file = '';
-    
-    for i = 1:length(files)
-        filename = files(i).name;
-        
-        % Extract date and time using regular expression
-        % Pattern: transformer_h2_model1_YYYYMMDD_HHMMSS_config.json
-        tokens = regexp(filename, 'transformer_h\d+_model\d+_(\d{8})_(\d{6})_config\.json', 'tokens');
-        
-        if ~isempty(tokens)
-            date_str = tokens{1}{1}; % YYYYMMDD
-            time_str = tokens{1}{2}; % HHMMSS
-            
-            % Convert to datetime for comparison
-            datetime_str = [date_str, time_str]; % YYYYMMDDHHMMSS
-            current_datetime = str2double(datetime_str);
-            
-            if current_datetime > most_recent_datetime
-                most_recent_datetime = current_datetime;
-                most_recent_file = filename;
-            end
-        end
-    end
-    
-    if isempty(most_recent_file)
-        error('No valid config files found with expected naming pattern');
-    end
-    
-    % Return full path to the most recent config file
-    config_path = fullfile(horizon_folder, most_recent_file);
-    
-    fprintf('Found most recent model: %s\n', most_recent_file);
 end

@@ -16,7 +16,7 @@ function pred_param_str = sprintf_pred_param(pred_par)
         case {'multivariate linear regression', 'univariate linear regression'}
             pred_param_str = sprintf('k=%d h=%d tmax_train=%d %s', pred_par.SHL, pred_par.horizon, pred_par.tmax_training, nrm_data_str);
                 % tmax_training is recorded because linear regression is an offline method
-        case 'transformer'
+        case {'transformer', 'population_transformer'} % I am copying/simplifying for the population transformer otherwise the string is very long
             pred_param_str = sprintf('k=%d h=%d tmax_train=%d %s nepochs=%d embd_dim=%d nhead=%d nlayers=%d dim_ff=%d final_dim=%d dropout=%g lr=%g', ...
                 pred_par.SHL, pred_par.horizon, pred_par.tmax_training, nrm_data_str, ...
                 pred_par.num_epochs, pred_par.d_model, pred_par.nhead, pred_par.num_layers, pred_par.dim_feedforward, pred_par.final_layer_dim, pred_par.dropout, pred_par.learn_rate);

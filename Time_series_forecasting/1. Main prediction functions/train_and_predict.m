@@ -16,7 +16,7 @@ function [Ypred, avg_pred_time, pred_loss_function] = train_and_predict(path_par
 
     switch(pred_par.pred_meth)
 
-        case 'transformer'
+        case 'transformer'  % sequence specific transformer
 
             [p, ~] = size(Y);  % p is the output dimension
             nb_predictions = pred_par.tmax_pred - pred_par.tmax_training;
@@ -27,6 +27,22 @@ function [Ypred, avg_pred_time, pred_loss_function] = train_and_predict(path_par
             fprintf('Performing prediction with a transformer (sequence-wise) \n');  
             for run_idx=1:pred_par.nb_runs            
                 [Ypred_single_run, pred_time_single_run, pred_loss_function_single_run] = transformer_pred(pred_par, X, Y);
+                Ypred(:, :, run_idx) =  Ypred_single_run;
+                avg_pred_time(run_idx) = pred_time_single_run;
+                pred_loss_function(:, run_idx) = pred_loss_function_single_run;   
+            end
+
+        case 'population_transformer'  % sequence specific transformer
+
+            [p, ~] = size(Y);  % p is the output dimension
+            nb_predictions = pred_par.tmax_pred - pred_par.tmax_training;
+            Ypred = zeros([p, nb_predictions, pred_par.nb_runs]);
+            avg_pred_time = zeros(pred_par.nb_runs, 1);
+            pred_loss_function = zeros(nb_predictions, pred_par.nb_runs);
+
+            fprintf('Performing prediction with a population transformer model \n');  
+            for run_idx=1:pred_par.nb_runs            
+                [Ypred_single_run, pred_time_single_run, pred_loss_function_single_run] = pop_transformer_pred(path_par, pred_par, X, Y, run_idx);
                 Ypred(:, :, run_idx) =  Ypred_single_run;
                 avg_pred_time(run_idx) = pred_time_single_run;
                 pred_loss_function(:, run_idx) = pred_loss_function_single_run;   
