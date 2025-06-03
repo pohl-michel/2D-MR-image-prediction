@@ -14,9 +14,11 @@ function [Ypred, avg_pred_time, pred_loss_function] = train_and_predict(path_par
     % loading the "past" data matrix X and the "future" data matrix Y.
     [ X, Y, Mu, Sg] = load_pred_data_XY(path_par, pred_par);
 
+    fprintf('Performing prediction with %s \n', pred_par.pred_meth);  
+
     switch(pred_par.pred_meth)
 
-        case 'transformer'  % sequence specific transformer
+        case {'transformer', 'population_transformer'} 
 
             [p, ~] = size(Y);  % p is the output dimension
             nb_predictions = pred_par.tmax_pred - pred_par.tmax_training;
@@ -24,23 +26,6 @@ function [Ypred, avg_pred_time, pred_loss_function] = train_and_predict(path_par
             avg_pred_time = zeros(pred_par.nb_runs, 1);
             pred_loss_function = zeros(nb_predictions, pred_par.nb_runs);
 
-            fprintf('Performing prediction with a transformer (sequence-wise) \n');  
-            for run_idx=1:pred_par.nb_runs            
-                [Ypred_single_run, pred_time_single_run, pred_loss_function_single_run] = transformer_pred(pred_par, X, Y);
-                Ypred(:, :, run_idx) =  Ypred_single_run;
-                avg_pred_time(run_idx) = pred_time_single_run;
-                pred_loss_function(:, run_idx) = pred_loss_function_single_run;   
-            end
-
-        case 'population_transformer'  % sequence specific transformer
-
-            [p, ~] = size(Y);  % p is the output dimension
-            nb_predictions = pred_par.tmax_pred - pred_par.tmax_training;
-            Ypred = zeros([p, nb_predictions, pred_par.nb_runs]);
-            avg_pred_time = zeros(pred_par.nb_runs, 1);
-            pred_loss_function = zeros(nb_predictions, pred_par.nb_runs);
-
-            fprintf('Performing prediction with a population transformer model \n');  
             for run_idx=1:pred_par.nb_runs            
                 [Ypred_single_run, pred_time_single_run, pred_loss_function_single_run] = pop_transformer_pred(path_par, pred_par, X, Y, run_idx);
                 Ypred(:, :, run_idx) =  Ypred_single_run;
@@ -49,16 +34,12 @@ function [Ypred, avg_pred_time, pred_loss_function] = train_and_predict(path_par
             end
 
         case 'SVR' % support vector regression (with component-wise scalar output)
-
-            fprintf('Performing prediction with support vector regression \n');  
             [Ypred, avg_pred_time, pred_loss_function] = svr_pred(pred_par, X, Y);
 
-        case 'multivariate linear regression' %linear regression
-            
-            fprintf('Performing prediction with multivariate linear regression \n');  
+        case 'multivariate linear regression'
             [Ypred, avg_pred_time, pred_loss_function] = multivar_lin_pred(pred_par, X, Y);
             
-        case {'RTRL', 'UORO', 'SnAp-1', 'DNI', 'RTRL v2', 'fixed W'} % prediction with an RNN        
+        case {'RTRL', 'UORO', 'SnAp-1', 'DNI', 'RTRL v2', 'fixed W'} % prediction with an RNN   
 
             [p, M] = size(Y); % p is the RNN output dimension
             Ypred = zeros([size(Y), pred_par.nb_runs]);
@@ -67,9 +48,7 @@ function [Ypred, avg_pred_time, pred_loss_function] = train_and_predict(path_par
             
             [pred_par, myRNN] = initialize_rnn(pred_par, p, M);
             
-            for run_idx=1:pred_par.nb_runs
-                % we run the prediction algorithm with different initial weigths
-                
+            for run_idx=1:pred_par.nb_runs % we run the prediction algorithm with different initial weigths
                 switch(pred_par.pred_meth)
                     case 'RTRL'
                         myRNN = rnn_RTRL(myRNN, pred_par, X, Y); 
@@ -94,17 +73,12 @@ function [Ypred, avg_pred_time, pred_loss_function] = train_and_predict(path_par
             end
             
         case 'no prediction'
-             
             [Ypred, avg_pred_time, pred_loss_function] = no_prediction(pred_par, X, Y);
 
-        case 'LMS' % least mean squares (LMS)
-            
-            fprintf('Performing prediction with clipped multivariate linear mean squares (LMS) \n');
+        case 'LMS' % multivariate least mean squares (LMS) with clipping
             [Ypred, avg_pred_time, pred_loss_function] = LMS_predict(pred_par, X, Y);
             
         case 'univariate linear regression' % univariate linear regression
-
-            fprintf('Performing prediction with univariate linear regression \n');
             [Ypred, avg_pred_time, pred_loss_function] = univar_lin_predict(pred_par, X, Y);            
             
     end
