@@ -103,34 +103,37 @@ def train_and_predict(pred_par, X_train, y_train, X_test, y_test):
         y_train = y_train.reshape(y_train.shape[0], 1)
         y_test = y_test.reshape(y_test.shape[0], 1)
 
+    # Check that the signal history length in the config file corresponds to the signal history length in X_test
+    (nb_samples, shl, n_features) = X_test.shape
+    if pred_par["SHL"] != shl:
+        raise ValueError(f"Signal history length in config ({pred_par['SHL']}) does not match X_test ({shl}).")
+
     train_loader = get_data_loader(X_train, y_train, pred_par["batch_size"], shuffle=True)
     test_loader = get_data_loader(X_test, y_test, pred_par["batch_size"], shuffle=False)
-    n_features = X_train.shape[-1]  # Number of features (dimensions)
 
     device = get_device(pred_par["selected_device"])
     print(f"Using device: {device}")
 
-    model = MultiDimTimeSeriesTransformer(
-        input_dim=n_features,  # Number of input features (dimensions)
-        output_dim=n_features,  # Number of output features (dimensions)
-        seq_length=pred_par["SHL"],  # SHL
-        d_model=pred_par["d_model"],  # embedding dimension - should be divisible by nhead
-        nhead=pred_par["nhead"],  # number of attention heads
-        num_layers=pred_par["num_layers"],  # number of transformer layers
-        dim_feedforward=pred_par["dim_feedforward"],  # feedforward dimension inside encoder
-        final_layer_dim=pred_par["final_layer_dim"],  # feedforward dimension of final layer
-        dropout=pred_par["dropout"],  # dropout rate
-    ).to(device)
+    # Create model
+    transformer_config = {  # Extract relevant parameters for the transformer model from pred_par
+        key: val
+        for key, val in pred_par.items()
+        if key in ["d_model", "nhead", "num_layers", "dim_feedforward", "dropout", "final_layer_dim"]
+    }
+    transformer_config.update({"n_features": n_features, "seq_length": pred_par["SHL"]})
 
-    criterion = nn.MSELoss()
-    optimizer = torch.optim.Adam(model.parameters(), lr=pred_par["learn_rate"])
+    # Initialize model
+    model = init_model(transformer_config)
+
+    # Sending the model to the appropriate device
+    model.to(device)
 
     train_losses, _, _ = train_model(
         model,
         train_loader,
-        criterion,
-        optimizer,
-        device,
+        criterion=nn.MSELoss(),
+        optimizer=torch.optim.Adam(model.parameters(), lr=pred_par["learn_rate"]),
+        device=device,
         num_epochs=pred_par["num_epochs"],
         val_loader=None,
         print_every=pred_par["print_every"],
@@ -155,6 +158,10 @@ def population_model_predict(pred_par, X_test, run_idx):
     # with open(config_path, "r") as f:
     #     config = json.load(f)
 
+    # Check if we need to reshape inputs
+    if len(X_test.shape) == 2:  # If MATLAB dropped the feature / dimension (unidimensional signal)
+        X_test = X_test.reshape(X_test.shape[0], X_test.shape[1], 1)
+
     # Check that the signal history length in the config file corresponds to the signal history length in X_test
     (nb_samples, shl, n_features) = X_test.shape
     if pred_par["seq_length"] != shl:
@@ -162,15 +169,15 @@ def population_model_predict(pred_par, X_test, run_idx):
     if pred_par["n_features"] != n_features:
         raise ValueError(f"Nb of features in config ({pred_par['n_features']}) does not match X_test ({n_features}).")
 
-    # Load saved model file
-    model_path = pred_par["config_path"].removesuffix("_config.json") + ".pt"
-
     # Initialize model
     model = init_model(pred_par)
 
     # Get the device,
     device = get_device(pred_par["selected_device"])
     print(f"Using device: {device}")
+
+    # Load saved model file
+    model_path = pred_par["config_path"].removesuffix("_config.json") + ".pt"
 
     # Load model weights
     model.load_state_dict(torch.load(model_path, map_location=device))
@@ -455,28 +462,17 @@ def init_model(config):
     """Initialize the transformer model with the given configuration.
     That's useful when we need to initialize different models with different seeds"""
 
-    # Extract parameters from config
-    input_dim = config.get("n_features", 1)
-    output_dim = config.get("n_features", 1)
-    seq_length = config.get("seq_length", 24)
-    d_model = config.get("d_model", 16)
-    nhead = config.get("nhead", 2)
-    num_layers = config.get("num_layers", 2)
-    dim_feedforward = config.get("dim_feedforward", 64)
-    dropout = config.get("dropout", 0.1)
-    final_layer_dim = config.get("final_layer_dim", None)
-
     # Create model
     return MultiDimTimeSeriesTransformer(
-        input_dim=input_dim,
-        output_dim=output_dim,
-        seq_length=seq_length,
-        d_model=d_model,
-        nhead=nhead,
-        num_layers=num_layers,
-        dim_feedforward=dim_feedforward,
-        dropout=dropout,
-        final_layer_dim=final_layer_dim,
+        input_dim=config["n_features"],
+        output_dim=config["n_features"],
+        seq_length=config["seq_length"],
+        d_model=config["d_model"],
+        nhead=config["nhead"],
+        num_layers=config["num_layers"],
+        dim_feedforward=config["dim_feedforward"],
+        dropout=config["dropout"],
+        final_layer_dim=config["final_layer_dim"],
     )
 
 
