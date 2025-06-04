@@ -18,7 +18,7 @@ function [Ypred, avg_pred_time, pred_loss_function] = transformer_pred(path_par,
 
     if strcmp(pred_par.pred_meth, "population_transformer")
         % Get the configuration corresponding to the horizon and run index of interest
-        config_path = get_most_recent_transformer_model_config(path_par.temp_var_dir, pred_par.horizon, run_idx);
+        config_path = get_most_recent_transformer_model_config(path_par, pred_par, pred_par.horizon, run_idx);
         
         % set the configuration path in pred_par, so that Python knows which transformer model to load
         pred_par.config_path = config_path;  % Rk: the transformer config. (e.g., nb. of layers) is the same for all runs and horizons

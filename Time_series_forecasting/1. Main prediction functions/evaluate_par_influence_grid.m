@@ -18,7 +18,7 @@ function par_influence = evaluate_par_influence_grid(hppars, pred_par, optim)
                         pred_time_tab = mean(pred_time_tab, hppar_idx); 
                     end
                 otherwise
-                    if (hppar_idx ~= hppars.SHL_hyppar_idx)
+                    if isfield(hppars, "SHL_hyppar_idx") & (hppar_idx ~= hppars.SHL_hyppar_idx)
                         % we want to study the influence of the SHL so we do not compute the mean over it
                         pred_time_tab = mean(pred_time_tab, hppar_idx);
                     end

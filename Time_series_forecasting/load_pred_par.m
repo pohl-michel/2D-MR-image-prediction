@@ -71,8 +71,8 @@ function [pred_par] = load_pred_par(path_par, pred_meth, horizon)
         case 'multivariate linear regression'
             pred_par.nb_runs = 1;  % not a stochastic method
             pred_par.NORMALIZE_DATA = false;
-            % pred_par.tmax_training = 160;  % MR data (ETH Zurich - CMIG paper)
-            pred_par.tmax_training = 303;  % MR data (Magdeburg - CMIG paper)
+            pred_par.tmax_training = 160;  % MR data (ETH Zurich - CMIG paper)
+            % pred_par.tmax_training = 303;  % MR data (Magdeburg - CMIG paper)
 
             % pred_par.tmax_training = 180; % markers 3.33 Hz (CPMB paper)
             % pred_par.tmax_training = 540; % markers 10 Hz (CPMB paper)
@@ -212,6 +212,10 @@ function [pred_par] = load_pred_par(path_par, pred_meth, horizon)
             pred_par.tmax_training = 160;  % MR data (evaluation on ETH Zurich - CMIG paper)
             % pred_par.tmax_training = 303;  % MR data (evaluation on Magdeburg - CMIG paper) 
 
+            % Directory containing the model to load - could technically be in load_path_par but it's convenient here
+            % pred_par.models_dir = "training_with_eth_dataset";  % used when evaluating on the Magdeburg dataset
+            pred_par.models_dir = "training_with_magdeburg_dataset";  % used when evaluating on the Magdeburg dataset
+
             % Add Python module directory if not already in sys.path
             moduleDir = get_python_transformers_module_dir();
             if count(py.sys.path, moduleDir) == 0
@@ -224,10 +228,12 @@ function [pred_par] = load_pred_par(path_par, pred_meth, horizon)
                 setenv("KMP_DUPLICATE_LIB_OK", "TRUE");
             end
 
-            % Loading the config file - We assume that the config for the first transformer config is similar to the others (could add check in further improvements)
+            % updating pred_par_h to load the SHL in the transformer config (so that data is loaded correctly in load_pred_data_XY())
+            % We assume that the config for the first transformer config is similar to the others (could add check in further improvements)
             % config_path = sprintf('%s/horizon_%d/transformer_h2_model1', path_par.temp_var_dir, horizon); % uncomment to specify by hand (if no date provided)
-            run_idx = 1; % there will always be a run number 1, regardless of the maximum number of runs, so we load that configuration file first (we need the SHL to load the data correctly in load_pred_data_XY)
-            pred_par = update_pred_par_with_transformer_config(path_par, pred_par, horizon, run_idx);
+            pred_par = update_pred_par_with_transformer_config(path_par, pred_par, horizon); % (we need the SHL to load the data correctly in load_pred_data_XY)
+
+            pred_par.PARALLEL_COMPUTING = false; % for testing, at the moment (and it's not critical right now)
 
     end
     
@@ -242,27 +248,6 @@ function [pred_par] = load_pred_par(path_par, pred_meth, horizon)
                 pred_par.ADAM_beta2 = 0.999;
                 pred_par.ADAM_eps = 10^-8;
         end    
-    end
-    
-end
-
-function pred_par = update_pred_par_with_transformer_config(path_par, pred_par, horizon, run_idx)
-% Loads the most recent config.json file for the transformer model corresponding to a specific horizon and run index
-% The prediction parameters in pred_par are then updated using that configuration file (this is used to load data proprely with the correct SHL)
-
-    config_path = get_most_recent_transformer_model_config(path_par.temp_var_dir, horizon, run_idx);
-    config_str = fileread(config_path);
-    config = jsondecode(config_str);
-    
-    % Get all field names from config.config
-    field_names = fieldnames(config.config);
-    
-    % Loop through each field and copy to pred_par
-    % we need shl to load input data correctly, the nb of runs, 
-    % and other params for logging, e.g., with sprintfpred_par()
-    for i = 1:length(field_names)
-        field_name = field_names{i};
-        pred_par.(field_name) = config.config.(field_name);
     end
     
 end

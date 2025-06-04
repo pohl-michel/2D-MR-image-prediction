@@ -4,6 +4,8 @@ function [optim, best_par] = train_eval_predictor_mult_param(hppars, pred_par, p
 % Parallel processing is used to accelerate the speed of grid search.
 %
 % Rk: one could reduce the number of lines of code by looping over the keys of the different structures (e.g., best_par)
+% Rk: I'm checking if the method is the population transformer to load the correct config file, but there could be a better code structure,
+% where the prediction parameters are loaded from scratch inside or just before the for loop around perform_cv_once. 
 %
 % Author : Pohl Michel
 % Date : August 27, 2022
@@ -48,6 +50,10 @@ function [optim, best_par] = train_eval_predictor_mult_param(hppars, pred_par, p
             
             pred_par_h = pred_par;
             pred_par_h.horizon = hppars.horizon_tab(hrz_idx);
+            if strcmp(pred_par_h, "population_transformer")
+                % updating pred_par_h to load the SHL in the transformer config (so that data is loaded correctly in load_pred_data_XY())
+                pred_par_h = update_pred_par_with_transformer_config(path_par, pred_par_h, hppars.horizon_tab(hrz_idx));
+            end
             
             v_h = ones(1, hppars.nb_additional_params);
             nb_calc_crt = 1;     
@@ -80,7 +86,11 @@ function [optim, best_par] = train_eval_predictor_mult_param(hppars, pred_par, p
             
             pred_par_h = pred_par;
             pred_par_h.horizon = hppars.horizon_tab(hrz_idx);
-            
+            if strcmp(pred_par_h, "population_transformer")
+                % updating pred_par_h to load the SHL in the transformer config (so that data is loaded correctly in load_pred_data_XY())
+                pred_par_h = update_pred_par_with_transformer_config(path_par, pred_par_h, hppars.horizon_tab(hrz_idx));
+            end
+           
             v_h = ones(1, hppars.nb_additional_params);
             nb_calc_crt = 1;     
             
@@ -166,7 +176,7 @@ function [optim, best_par] = train_eval_predictor_mult_param(hppars, pred_par, p
         end
 
         % evaluation on the test set with the optimal parameters
-        pred_par_cell{hrz_idx} = load_pred_par(path_par, pred_meth); %we find tmax_pred
+        pred_par_cell{hrz_idx} = load_pred_par(path_par, pred_meth, hppars.horizon_tab(hrz_idx)); %we find tmax_pred - hrz_idx only has an effect for population transformer
             % in the case of linear regression, the value of pred_par.tmax_training is already modified inside the function load_pred_par.m
         pred_par_cell{hrz_idx}.t_eval_start = 1 + pred_par_cell{hrz_idx}.tmax_cv; % because evaluation on the test set
         pred_par_cell{hrz_idx}.nb_predictions = pred_par_cell{hrz_idx}.tmax_pred - pred_par_cell{hrz_idx}.t_eval_start + 1;

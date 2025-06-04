@@ -358,6 +358,25 @@ function [ hppars ] = load_hyperpar_cv_info( pred_par )
             hppars.other(4).name = 'd_model';
             hppars.other(4).val = [8, 16];
 
+        case 'population_transformer' % Only in the CMIG paper - future MR frame forecasting
+            
+            % Common parameters (always true)
+            % hppars.nb_runs_cv = 10;               % try 10 in the paper      
+            % hppars.nb_runs_eval_test = 10;        % try 10 in the paper  
+
+            hppars.nb_runs_cv = 10;               % value for testing
+            hppars.nb_runs_eval_test = 10;        % value for testing 
+
+            % Next-frame MR image prediction (CMIG paper)
+            % hppars.horizon_tab = [1, 2, 3, 4, 5, 6, 7];  % ETH Zurich
+            % hppars.horizon_tab = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14];  % Magdeburg dataset
+
+            hppars.horizon_tab = [1, 7];        % that's a test; I have 2 horizons at the moment
+
+            % There is no hyperparameter to optimize on, rather we load trained models and evaluate them
+            hppars.other(1).name = 'dummy';
+            hppars.other(1).val = [1];
+
     end
 
     hppars.nb_additional_params = numel(hppars.other);

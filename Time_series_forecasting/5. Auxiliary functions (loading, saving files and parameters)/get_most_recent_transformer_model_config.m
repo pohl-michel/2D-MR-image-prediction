@@ -1,8 +1,9 @@
-function config_path = get_most_recent_transformer_model_config(base_dir, horizon, run_idx)
+function config_path = get_most_recent_transformer_model_config(path_par, pred_par, horizon, run_idx)
 % GET_MOST_RECENT_MODEL_CONFIG Find the most recent transformer model config file
 %
 % INPUTS:
-% - base_dir: Base directory containing horizon folders
+% - path_par: path parameters
+% - pred_par: prediction parameters
 % - horizon: Horizon value (e.g., 2 for horizon_2 folder)
 % - run_idx: run index of the transformer model whose configuration we are loading
 %
@@ -10,7 +11,8 @@ function config_path = get_most_recent_transformer_model_config(base_dir, horizo
 % - config_path: Full path to the most recent config file
 
     % Construct the horizon folder path
-    horizon_folder = fullfile(base_dir, sprintf('horizon_%d', horizon));
+    horizon_folder = fullfile(path_par.temp_var_dir, pred_par.models_dir, ...
+        sprintf('horizon_%d', horizon));
     
     % Check if folder exists
     if ~exist(horizon_folder, 'dir')
