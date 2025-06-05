@@ -2,7 +2,7 @@ function config_path = get_most_recent_transformer_model_config(path_par, pred_p
 % GET_MOST_RECENT_MODEL_CONFIG Find the most recent transformer model config file
 %
 % INPUTS:
-% - path_par: path parameters
+% - path_par: path parameters (not needed anymore but I keep it just in case it's needed later and because I'm lazy to clean up) 
 % - pred_par: prediction parameters
 % - horizon: Horizon value (e.g., 2 for horizon_2 folder)
 % - run_idx: run index of the transformer model whose configuration we are loading
@@ -11,9 +11,13 @@ function config_path = get_most_recent_transformer_model_config(path_par, pred_p
 % - config_path: Full path to the most recent config file
 
     % Construct the horizon folder path
-    horizon_folder = fullfile(path_par.temp_var_dir, pred_par.models_dir, ...
-        sprintf('horizon_%d', horizon));
+    horizon_folder = fullfile(pred_par.models_dir, sprintf('horizon_%d', horizon));
     
+    % If we are in the in the MRI_prediction folder, add the time series forecasting base folder
+    if any(strcmp({dir(pwd).name}, 'Time_series_forecasting'))
+        horizon_folder = fullfile('Time_series_forecasting', horizon_folder);
+    end
+
     % Check if folder exists
     if ~exist(horizon_folder, 'dir')
         error('Horizon folder does not exist: %s', horizon_folder);

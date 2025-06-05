@@ -38,6 +38,7 @@ create_4Dmri_dataset_spec-file.txt
 /Time_series_forecasting/c. Prediction results (images)
 /Time_series_forecasting/d. RNN variables (temp)
 /Time_series_forecasting/e. Log txt files
+/Time_series_forecasting/models
 
 # Excluding gifs inside the visualisation folder except a few ones
 /Image_prediction/visualization/*.gif

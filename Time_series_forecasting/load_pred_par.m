@@ -209,12 +209,16 @@ function [pred_par] = load_pred_par(path_par, pred_meth, horizon)
             pred_par.NORMALIZE_DATA = true;
 
             % The model has already been trained, but we do testing in the same way as online methods: tmax_training + 1 is the 1st time index for prediction
-            pred_par.tmax_training = 160;  % MR data (evaluation on ETH Zurich - CMIG paper)
-            % pred_par.tmax_training = 303;  % MR data (evaluation on Magdeburg - CMIG paper) 
+            % pred_par.tmax_training = 160;  % MR data (evaluation on ETH Zurich - CMIG paper)
+            pred_par.tmax_training = 303;  % MR data (evaluation on Magdeburg - CMIG paper) 
 
-            % Directory containing the model to load - could technically be in load_path_par but it's convenient here
+            % Directory containing the model to load - could technically be in load_path_par() but it's convenient here
+            pred_par.base_models_dir = "models";
             % pred_par.models_dir = "training_with_eth_dataset";  % used when evaluating on the Magdeburg dataset
             pred_par.models_dir = "training_with_magdeburg_dataset";  % used when evaluating on the Magdeburg dataset
+
+            % constructing the full model directory
+            pred_par.models_dir = fullfile(pred_par.base_models_dir, pred_par.models_dir);
 
             % Add Python module directory if not already in sys.path
             moduleDir = get_python_transformers_module_dir();
@@ -232,6 +236,8 @@ function [pred_par] = load_pred_par(path_par, pred_meth, horizon)
             % We assume that the config for the first transformer config is similar to the others (could add check in further improvements)
             % config_path = sprintf('%s/horizon_%d/transformer_h2_model1', path_par.temp_var_dir, horizon); % uncomment to specify by hand (if no date provided)
             pred_par = update_pred_par_with_transformer_config(path_par, pred_par, horizon); % (we need the SHL to load the data correctly in load_pred_data_XY)
+
+            % pred_par.nb_runs = 2; % for debugging - uncomment if you have many models and want to test with all of them
 
             pred_par.PARALLEL_COMPUTING = false; % for testing, at the moment (and it's not critical right now)
 
