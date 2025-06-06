@@ -45,77 +45,14 @@ function [optim, best_par] = train_eval_predictor_mult_param(hppars, pred_par, p
     end
     
     if pred_par.PARALLEL_COMPUTING
-
         parfor hrz_idx = 1:hppars.nb_hrz_val
-            
-            pred_par_h = pred_par;
-            pred_par_h.horizon = hppars.horizon_tab(hrz_idx);
-            if strcmp(pred_par_h, "population_transformer")
-                % updating pred_par_h to load the SHL in the transformer config (so that data is loaded correctly in load_pred_data_XY())
-                pred_par_h = update_pred_par_with_transformer_config(path_par, pred_par_h, hppars.horizon_tab(hrz_idx));
-            end
-            
-            v_h = ones(1, hppars.nb_additional_params);
-            nb_calc_crt = 1;     
-            
-            ready = false;
-            optim(hrz_idx) = perform_cv_once( v_h, optim(hrz_idx), nb_calc_crt, hppars, pred_par_h, path_par, beh_par, disp_par);
-            while ~ready
-                % Update the index vector:
-                ready = true;
-                for k = hppars.nb_additional_params:-1:1
-                    v_h(k) = v_h(k) + 1;
-                    if v_h(k) <= size_other_hyppr_tab(k)
-    
-                        ready = false;
-                        nb_calc_crt = nb_calc_crt +1;
-                        optim(hrz_idx) = perform_cv_once( v_h, optim(hrz_idx), nb_calc_crt, hppars, pred_par_h, path_par, beh_par, disp_par);                            
-                        
-                        break;  % v(k) increased successfully, leave the "for k" loop
-    
-                    end
-                    v_h(k) = 1;  % v(k) reached the limit, reset it and iterate v(k-1)
-                end
-            end   
-      
+            optim_hrz_idx = optim(hrz_idx);
+            optim(hrz_idx) = perform_grid_train_and_eval(optim_hrz_idx, hrz_idx, size_other_hyppr_tab, pred_par, hppars, path_par, beh_par, disp_par); 
         end
-
     else
-
         for hrz_idx = 1:hppars.nb_hrz_val
-            
-            pred_par_h = pred_par;
-            pred_par_h.horizon = hppars.horizon_tab(hrz_idx);
-            if strcmp(pred_par_h, "population_transformer")
-                % updating pred_par_h to load the SHL in the transformer config (so that data is loaded correctly in load_pred_data_XY())
-                pred_par_h = update_pred_par_with_transformer_config(path_par, pred_par_h, hppars.horizon_tab(hrz_idx));
-            end
-           
-            v_h = ones(1, hppars.nb_additional_params);
-            nb_calc_crt = 1;     
-            
-            ready = false;
-            optim(hrz_idx) = perform_cv_once( v_h, optim(hrz_idx), nb_calc_crt, hppars, pred_par_h, path_par, beh_par, disp_par);
-            while ~ready
-                % Update the index vector:
-                ready = true;
-                for k = hppars.nb_additional_params:-1:1
-                    v_h(k) = v_h(k) + 1;
-                    if v_h(k) <= size_other_hyppr_tab(k)
-    
-                        ready = false;
-                        nb_calc_crt = nb_calc_crt +1;
-                        optim(hrz_idx) = perform_cv_once( v_h, optim(hrz_idx), nb_calc_crt, hppars, pred_par_h, path_par, beh_par, disp_par);                            
-                        
-                        break;  % v(k) increased successfully, leave the "for k" loop
-    
-                    end
-                    v_h(k) = 1;  % v(k) reached the limit, reset it and iterate v(k-1)
-                end
-            end   
-      
+            optim(hrz_idx) = perform_grid_train_and_eval(optim(hrz_idx), hrz_idx, size_other_hyppr_tab, pred_par, hppars, path_par, beh_par, disp_par); 
         end
-
     end
     
     %% SEARCH FOR THE BEST PARAMETERS
@@ -226,3 +163,37 @@ function [optim, best_par] = train_eval_predictor_mult_param(hppars, pred_par, p
 
 end
 
+
+function optim_hrz_idx = perform_grid_train_and_eval(optim_hrz_idx, hrz_idx, size_other_hyppr_tab, pred_par, hppars, path_par, beh_par, disp_par)
+
+    pred_par_h = pred_par;
+    pred_par_h.horizon = hppars.horizon_tab(hrz_idx);
+    if strcmp(pred_par_h, "population_transformer")
+        % updating pred_par_h to load the SHL in the transformer config (so that data is loaded correctly in load_pred_data_XY())
+        pred_par_h = update_pred_par_with_transformer_config(path_par, pred_par_h, hppars.horizon_tab(hrz_idx));
+    end
+   
+    v_h = ones(1, hppars.nb_additional_params);
+    nb_calc_crt = 1;     
+    
+    ready = false;
+    optim_hrz_idx = perform_cv_once( v_h, optim_hrz_idx, nb_calc_crt, hppars, pred_par_h, path_par, beh_par, disp_par);
+    while ~ready
+        % Update the index vector:
+        ready = true;
+        for k = hppars.nb_additional_params:-1:1
+            v_h(k) = v_h(k) + 1;
+            if v_h(k) <= size_other_hyppr_tab(k)
+
+                ready = false;
+                nb_calc_crt = nb_calc_crt +1;
+                optim_hrz_idx = perform_cv_once( v_h, optim_hrz_idx, nb_calc_crt, hppars, pred_par_h, path_par, beh_par, disp_par);                            
+                
+                break;  % v(k) increased successfully, leave the "for k" loop
+
+            end
+            v_h(k) = 1;  % v(k) reached the limit, reset it and iterate v(k-1)
+        end
+    end   
+
+end
