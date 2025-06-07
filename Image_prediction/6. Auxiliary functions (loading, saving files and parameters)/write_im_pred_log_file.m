@@ -40,13 +40,11 @@ function write_im_pred_log_file(path_par, beh_par, im_par, OF_par, hppars, pred_
     fprintf(fid, 'Reconstruction : %s \n', sprintf_warp_param( warp_par ));
     fprintf(fid, 'Filter application method : %s \n', warp_par.kernel_appl_meth);
     fprintf(fid, '\n');
-    if ismember(pred_par.pred_meth, {'RTRL', 'UORO', 'SnAp-1', 'DNI', 'RTRL v2', 'fixed W', 'transformer'}) % stochastic methods
-        fprintf(fid, 'Image cross correlation calculated using %d runs \n', warp_par.nb_runs_for_cc_eval);
-    end
+    fprintf(fid, 'Image cross correlation calculated using %d runs \n', warp_par.nb_runs_for_cc_eval);
     
     if beh_par.OPTIMIZE_NB_PCA_CP
         fprintf(fid, 'The number of principal components has been optimized on the cross validation set \n');
-        fprintf(fid, 'Cross validation with number of principal components from 1 to %d \n', br_model_par.nb_pca_cp_max); % nb_pca_cp_max defined in eval_im_pred_best_par
+        fprintf(fid, 'Cross validation with number of principal components from %d to %d (included)\n', br_model_par.nb_pca_cp_min, br_model_par.nb_pca_cp_max);
         fprintf(fid, '\n');
         
         fprintf(fid, 'Optimization of the prediction: \n');
@@ -55,7 +53,7 @@ function write_im_pred_log_file(path_par, beh_par, im_par, OF_par, hppars, pred_
         fprintf(fid, 'Cross-validation between t = %d and t = %d \n', 1+pred_par.tmax_training, pred_par.tmax_cv);
         fprintf(fid, 'Number of runs on the cross validation set due to random weights initialization nb_runs_cv = %d \n', hppars.nb_runs_cv);
 
-        fprintf(fid, 'Cross-validation metric to select forecasting hyper-parameters given a set number of principal components: %s', pred_par.cross_val_metric);
+        fprintf(fid, 'Cross-validation metric to select forecasting hyper-parameters given a set number of principal components: %s\n', pred_par.cross_val_metric);
 
         fprintf(fid, 'Range of parameters tested \n');   
         for hppar_idx = 1:hppars.nb_additional_params
@@ -96,8 +94,8 @@ function write_im_pred_log_file(path_par, beh_par, im_par, OF_par, hppars, pred_
         end
         fprintf(fid, '(Lines: horizon value / columns: nb of PCA components) \n');
         for hrz_idx = 1:hppars.nb_hrz_val
-            for nb_pca_cp = 1:br_model_par.nb_pca_cp_max
-                fprintf(fid, '%g \t', eval_results.cross_cor_pca_optim_tab(hrz_idx, nb_pca_cp)); 
+            for nb_pca_cp = br_model_par.nb_pca_cp_min:br_model_par.nb_pca_cp_max
+                fprintf(fid, '%g \t', eval_results.cross_cor_pca_optim_tab(hrz_idx, nb_pca_cp - br_model_par.nb_pca_cp_min + 1)); 
             end
             fprintf(fid, '\n');
         end

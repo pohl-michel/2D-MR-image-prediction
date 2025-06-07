@@ -43,8 +43,8 @@ path_par = load_sigpred_path_parameters();
 disp_par = load_sigpred_display_parameters(path_par);  
                
 % Prediction methods to test
-pred_meths = {'multivariate linear regression', 'LMS', 'UORO', 'SnAp-1', 'DNI', 'no prediction', 'fixed W', 'RTRL v2', 'SVR', 'transformer'};
-% pred_meths = {'DNI'}; % DNI only (for instance) - use the line above if you want to use all methods
+% pred_meths = {'multivariate linear regression', 'LMS', 'UORO', 'SnAp-1', 'DNI', 'no prediction', 'fixed W', 'RTRL v2', 'SVR', 'transformer', 'population_transformer};
+pred_meths = {'population_transformer'}; % population transformer only (for instance) - use the line above if you want to use all methods
 
 nb_seq = length(path_par.time_series_dir_tab);
 for seq_idx = 1:nb_seq
@@ -60,7 +60,7 @@ for seq_idx = 1:nb_seq
         % Parameters concerning the prediction of the position of objects
         pred_par = load_pred_par(path_par, pred_meth);
         % Adding the transformer module path to all workers if necessary
-        if pred_par.PARALLEL_COMPUTING & strcmp(pred_par.pred_meth, "transformer")
+        if pred_par.PARALLEL_COMPUTING & strcmp(pred_par.pred_meth, "transformer", "population_transformer")
             set_python_path_all_workers();
         end
         % Hyperparameters to optimize 

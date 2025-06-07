@@ -32,11 +32,11 @@ function [ warp_par ] = load_warp_par(pred_meth)
          
     % Number of runs for evaluating accuracy metrics (e.g., correlation coefficient) when warping
     switch(pred_meth)
-        case {'RTRL', 'RTRL v2'} 
+        case {'RTRL', 'RTRL v2', 'transformer', 'population_transformer'} 
             warp_par.nb_runs_for_cc_eval = 5;
         case {'multivariate linear regression', 'LMS', 'univariate linear regression', 'no prediction', 'SVR'}  % deterministic
             warp_par.nb_runs_for_cc_eval = 1;
-        otherwise % other (online) RNN methods and transformers
+        otherwise % other (online) RNN methods
             warp_par.nb_runs_for_cc_eval = 25;
     end
 end

@@ -42,11 +42,10 @@ function eval_im_pred_best_par(eval_results, best_pred_par_struct, best_pca_cp_t
         eval_results_h = eval_results;
 
         pred_par_h.horizon = hppars.horizon_tab(hrz_idx);
-        br_model_par_h.nb_pca_cp_max = br_model_par.nb_pca_cp; % used in write_im_pred_log_file below
-        br_model_par_h.nb_pca_cp = best_pca_cp_tab(hrz_idx);
+        br_model_par_h.nb_pca_cp = best_pca_cp_tab(hrz_idx) + br_model_par_h.nb_pca_cp_min - 1;
 
         for hppar_idx = 1:hppars.nb_additional_params
-            pred_par_h.(hppars.other(hppar_idx).name) = best_pred_par_struct(br_model_par_h.nb_pca_cp).other_hyppar_tab(hrz_idx, hppar_idx);
+            pred_par_h.(hppars.other(hppar_idx).name) = best_pred_par_struct(br_model_par_h.nb_pca_cp - br_model_par_h.nb_pca_cp_min + 1).other_hyppar_tab(hrz_idx, hppar_idx);
         end                
 
         fprintf("Evaluation of the test set when warping 1st image with optical flow reconstructed from original PCA time-dependent weights \n");

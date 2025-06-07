@@ -56,10 +56,10 @@ function [pred_par] = load_pred_par(path_par, pred_meth, horizon)
     pred_par.cross_val_metric = 'nRMSE';  % possible options: "nRMSE" or "RMSE"
 
     switch nargin
-        case 1 % Manually choosing the prediction method in image_prediction_main.m (if OPTIMIZE_NB_PCA_CP == false) or signal_prediction_main.m
-            pred_par.pred_meth = "population_transformer"; % 'transformer';
+        case 1 % Manually choosing the prediction method in signal_prediction_main.m
+            pred_par.pred_meth = "population_transformer"; % "population_transformer" for instance (you can choose another method)
             horizon = pred_par.horizon;
-        case 2 % Prediction method specified in image_prediction_main.m (if OPTIMIZE_NB_PCA_CP == true) or sigpred_hyperparameter_optimization_main.m
+        case 2 % Prediction method specified in image_prediction_main.m or sigpred_hyperparameter_optimization_main.m
             pred_par.pred_meth = pred_meth;
             horizon = pred_par.horizon;
         case 3    

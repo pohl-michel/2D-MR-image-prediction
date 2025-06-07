@@ -65,7 +65,7 @@ input_im_dir_suffix_tab = [
     ];
 
 % Prediction methods to evaluate if beh_par.OPTIMIZE_NB_PCA_CP == true, otherwise the prediction method is that specified in load_pred_par.m
-pred_meths = {'multivariate linear regression', 'LMS', 'UORO', 'SnAp-1', 'DNI', 'RTRL v2', 'no prediction', 'fixed W', 'transformer'};
+pred_meths = {'multivariate linear regression', 'LMS', 'UORO', 'SnAp-1', 'DNI', 'RTRL v2', 'no prediction', 'fixed W', 'transformer', "population_transformer"};
 
 % Set the number of PCA components to use for each sequence
 br_model_par.nb_pca_cp_tab = [4, 4, 4, 4, 4, 4, 4, 4]; % length = nb of sequences to process
@@ -134,22 +134,38 @@ for im_seq_idx = 1:nb_seq
             warp_par = load_warp_par(pred_meth);         
 
             % Adding the transformer module path to all workers if necessary
-            if strcmp(pred_meth, "transformer")
+            if strcmp(pred_meth, "transformer") | strcmp(pred_meth, "population_transformer")
                 set_python_path_all_workers();
+            end
+
+            if strcmp(pred_meth, "population_transformer")
+                pred_par = load_pred_par(path_par, pred_meth); % Getting the number of features expected by the trained transformer
+                br_model_par.nb_pca_cp_min = pred_par.n_features;
+                br_model_par.nb_pca_cp_max = pred_par.n_features;
+            else
+                br_model_par.nb_pca_cp_min = 1; % we select one PCA component as the minimum by default.
+                br_model_par.nb_pca_cp_max = br_model_par.nb_pca_cp;
             end
 
             [eval_results, best_pred_par_struct, best_pca_cp_tab] = select_nb_pca_cp(beh_par, disp_par, OF_par, im_par, path_par, br_model_par, eval_results, warp_par, pred_meth);   
             eval_im_pred_best_par(eval_results, best_pred_par_struct, best_pca_cp_tab, beh_par, disp_par, OF_par, im_par, path_par, br_model_par, warp_par, pred_meth)
         end
         
-    else
-        % If PCA component optimization is not enabled (OPTIMIZE_NB_PCA_CP = false), the program uses predefined prediction parameters.
+    else % If PCA component optimization is not enabled (OPTIMIZE_NB_PCA_CP = false), the program uses predefined prediction parameters.
 
         % Load prediction parameters specific to the input sequence
-        pred_par = load_pred_par(path_par);
+        pred_meth = pred_meths{1};
+        if length(pred_meths) > 1
+            fprintf("pred_meths array of size more than 1 and OPTIMIZE_NB_PCA_CP = false, setting prediction method as: %s\n", pred_meth)
+        end
+        pred_par = load_pred_par(path_par, pred_meth);
         pred_par.t_eval_start = 1 + pred_par.tmax_cv;  % set evaluation start time (beginning of the test set)
         pred_par.nb_predictions = im_par.nb_im - pred_par.t_eval_start + 1;  % set the nb. of predictions based on remaining images after the eval. start time
-
+        
+        if strcmp(pred_meth, "population_transformer") % we don't retrain the transformer, rather we use an input that has the same dim as the transformer input
+            br_model_par.nb_pca_cp = pred_par.n_features;
+        end
+            
         % Load parameters for image warping
         warp_par = load_warp_par(pred_par.pred_meth);
         nb_runs_for_cc_eval = warp_par.nb_runs_for_cc_eval;  % number of evaluation runs for image warping

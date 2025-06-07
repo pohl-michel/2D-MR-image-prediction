@@ -13,7 +13,8 @@ function [eval_results, best_pred_par_struct, best_pca_cp_tab] = select_nb_pca_c
 % Hints: 
 % - take inspiration from the "evalOF" function: https://github.com/pohl-michel/Lucas-Kanade-pyramidal-optical-flow-for-3D-image-sequences
 % - use a switch statement over a field of beh_par.
-%
+% Also, refactor how I set fields of pred_par because same lines in train_eval_mult_param.m and also similar in eval_im_pred_best_par.m
+% 
 % Author : Pohl Michel
 % Date : Nov. 21st, 2022
 % Version : v1.3
@@ -30,19 +31,18 @@ function [eval_results, best_pred_par_struct, best_pca_cp_tab] = select_nb_pca_c
     pred_par.nb_predictions = pred_par.tmax_cv - pred_par.t_eval_start + 1;
     pred_par.tmax_pred = pred_par.tmax_cv;
     pred_par.nb_runs = hppars.nb_runs_cv; 
-
-    % We redefine nb_pca_cp_max to be the maximum number of PCA components considered, and nb_pca_cp becomes the current value in the loop.
-    nb_pca_cp_max = br_model_par.nb_pca_cp;
-    br_model_par.nb_pca_cp_max = nb_pca_cp_max;
     nb_runs_for_cc_eval = warp_par.nb_runs_for_cc_eval;
 
-    pca_perf_optim_tab = zeros(hppars.nb_hrz_val, nb_pca_cp_max);
+    pca_cpts_range_length = br_model_par.nb_pca_cp_min - br_model_par.nb_pca_cp_min + 1;
+    pca_perf_optim_tab = zeros(hppars.nb_hrz_val, pca_cpts_range_length);
 
     beh_par.EVALUATE_IN_ROI = false; % here we will select the number of PCA components based on the whole image
 
-    for nb_pca_cp=1:nb_pca_cp_max
+    for nb_pca_cp=br_model_par.nb_pca_cp_min:br_model_par.nb_pca_cp_min
 
+        % nb_pca_cp_max was redefined as the max nb of PCA components considered, and nb_pca_cp becomes the current value in the loop.
         br_model_par.nb_pca_cp = nb_pca_cp;
+        pca_cpt_idx = nb_pca_cp - br_model_par.nb_pca_cp_min + 1;
 
         % Computation of PCA 
         % [I returned W & F for debugging purposes - the data is saved in the last lines of compute_PCA_of_DVF and loaded later when needed]
@@ -52,8 +52,7 @@ function [eval_results, best_pred_par_struct, best_pca_cp_tab] = select_nb_pca_c
         % [I return optim for debugging purposes]
         path_par.time_series_data_filename = write_PCAweights_mat_filename(OF_par, path_par, br_model_par);
         [optim, best_par] = train_eval_predictor_mult_param(hppars, pred_par, path_par, disp_par, beh_par);
-
-        best_pred_par_struct(nb_pca_cp) = best_par;
+        best_pred_par_struct(pca_cpt_idx) = best_par;
 
         beh_par.SAVE_PREDICTION_PLOT = false; % We do not need to plot and save figures here, as we want to do cross validation time fast.
         beh_par.SAVE_PRED_RESULTS = true; % so that eval_of_warp_cor can correctly load the predicted DVF
@@ -79,15 +78,15 @@ function [eval_results, best_pred_par_struct, best_pca_cp_tab] = select_nb_pca_c
             % Rk: I can consider changing this line if I want to use the error from the comparison between the predicted and original optical flow directly
             eval_results_pca_optim = struct();
 
-            if beh_par.REGISTRATION_ERROR_CV
+            if beh_par.REGISTRATION_ERROR_CV % the registration error is the metric to optimize to select nb of PCA cpts
                 eval_results_pca_optim = compute_registration_error_cv_set(dvf_type, im_par, OF_par, path_par, warp_par_h, pred_par_h, br_model_par, ...
                                                                                         beh_par, eval_results_pca_optim, time_signal_pred_results);
-                pca_perf_optim_tab(hrz_idx, nb_pca_cp) = eval_results_pca_optim.mean_of_nrmse;
+                pca_perf_optim_tab(hrz_idx, pca_cpt_idx) = eval_results_pca_optim.mean_of_nrmse;
             else
                 eval_results_pca_optim.whole_im = struct();
                 eval_results_pca_optim = eval_of_warp_corr(dvf_type, im_par, OF_par, path_par, warp_par_h, pred_par_h, br_model_par, disp_par, ...
                                                                                         beh_par, eval_results_pca_optim, time_signal_pred_results);
-                pca_perf_optim_tab(hrz_idx, nb_pca_cp) = eval_results_pca_optim.whole_im.mean_corr_im_pred;
+                pca_perf_optim_tab(hrz_idx, pca_cpt_idx) = eval_results_pca_optim.whole_im.mean_corr_im_pred;
             end
 
         end
