@@ -9,6 +9,8 @@ import re
 
 # third-party
 import numpy as np
+import optuna
+from optuna.trial import Trial
 import scipy
 from sklearn.preprocessing import StandardScaler
 import torch
@@ -463,39 +465,141 @@ def init_model(config):
     That's useful when we need to initialize different models with different seeds"""
 
     # Create model
-    return MultiDimTimeSeriesTransformer(
-        input_dim=config["n_features"],
-        output_dim=config["n_features"],
-        seq_length=config["seq_length"],
-        d_model=config["d_model"],
-        nhead=config["nhead"],
-        num_layers=config["num_layers"],
-        dim_feedforward=config["dim_feedforward"],
-        dropout=config["dropout"],
-        final_layer_dim=config["final_layer_dim"],
-    )
+    end_params = {
+        key: config[key]
+        for key in ["seq_length", "d_model", "nhead", "num_layers", "dim_feedforward", "dropout", "final_layer_dim"]
+    }
+    return MultiDimTimeSeriesTransformer(input_dim=config["n_features"], output_dim=config["n_features"], **end_params)
+
+
+def hyperparameter_tuning(
+    config: dict,
+    param_grid: dict,
+    resampled_data,
+    device,
+    n_trials=None,
+    pruner=None,
+    sampler=None,
+    n_jobs=1,
+    study_name="transformer_optimization",
+    save_dir="tmp",
+):
+    """
+    Perform hyperparameter tuning using Optuna
+
+    Args:
+        n_trials: Number of optimization trials
+        study_name: Name for the Optuna study
+        save_dir: Directory to save results
+
+    Returns:
+        Best parameters found
+    """
+    # Create directories if they don't exist
+    os.makedirs(save_dir, exist_ok=True)
+
+    if n_trials is None:
+        # Calculate the exact number of combinations in the grid
+        total_combinations = 1
+        for values in param_grid.values():
+            total_combinations *= len(values)
+
+        # If n_trials is not specified, set it to the grid size
+        n_trials = total_combinations
+        print(f"Setting n_trials={n_trials} to match grid size")
+
+    # Define the objective function
+    def objective(trial: Trial):
+
+        # Define hyperparameters to tune
+        params = {param: trial.suggest_categorical(param, values) for param, values in param_grid.items()}
+
+        # Add to config (note: this will overwrite existing values)
+        temp_config = config.copy()
+        temp_config.update(params)
+
+        print(f"Generating sequences with length {temp_config['seq_length']}...")
+
+        standardized_data, scaler = preprocess_data(
+            resampled_data, temp_config["horizon"], temp_config["seq_length"], temp_config["training_fraction"]
+        )
+        data_loaders = get_population_data_loaders(standardized_data, batch_size=temp_config["batch_size"])
+
+        # early_stop_patience set to None because we don't use early stopping in the tuning
+        all_results = train_multiple_models(
+            temp_config,
+            device,
+            data_loaders,
+            early_stop_patience=None,
+            save_dir=None,
+            print_every=temp_config["print_every"],
+            trial=None,
+        )
+
+        # Extract the final validation losses from the results and compute their mean
+        final_val_losses = [result["training_history"]["val_losses"][-1] for result in all_results]
+        mean_val_loss = np.mean(final_val_losses)
+
+        return mean_val_loss
+
+    # Create the study
+    sampler = optuna.samplers.GridSampler(param_grid)
+    study = optuna.create_study(study_name=study_name, direction="minimize", pruner=pruner, sampler=sampler)
+
+    # Run optimization
+    study.optimize(objective, n_trials=n_trials, n_jobs=n_jobs)
+
+    # Get the best parameters
+    print(f"Best trial: {study.best_trial.number}")
+    print(f"Best value: {study.best_trial.value}")
+    print("Best hyperparameters:")
+
+    for param_name, param_value in study.best_trial.params.items():
+        print(f"    {param_name}: {param_value}")
+
+    # Save study results
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    results_path = os.path.join(save_dir, f"optuna_results_{timestamp}.json")
+
+    # Convert study results to a serializable format
+    results = {
+        "best_params": study.best_trial.params,
+        "best_value": study.best_trial.value,
+        "best_trial": study.best_trial.number,
+        "datetime": timestamp,
+        "n_trials": n_trials,
+        "all_trials": [
+            {
+                "number": t.number,
+                "value": t.value if t.value is not None else None,
+                "params": t.params,
+                "state": t.state.name,
+            }
+            for t in study.trials
+        ],
+    }
+
+    with open(results_path, "w") as f:
+        json.dump(results, f, indent=2)
+
+    print(f"Study results saved to {results_path}")
+
+    return study.best_trial.params
 
 
 def train_multiple_models(
     config,
     device,
     data_loaders,
-    horizon,
-    n_models,
-    num_epochs,
-    learning_rate,
     early_stop_patience,
-    save_dir,
+    save_dir=None,
     print_every=10,
+    trial: Trial = None,
 ):
     """
     Train multiple horizon-specific models to account for stochasticity
 
     Args:
-        horizon: Prediction horizon (steps ahead)
-        n_models: Number of models to train
-        num_epochs: Maximum number of training epochs
-        learning_rate: Learning rate for optimization
         early_stopping_patience: Patience for early stopping
         print_every: Print training progress every N epochs
         save_dir: Directory to save models
@@ -503,33 +607,39 @@ def train_multiple_models(
     Returns:
         List of training results for each model
     """
-
-    # Update config with horizon
-    config["horizon"] = horizon
-
-    # Prepare directory
-    horizon_dir = os.path.join(save_dir, f"horizon_{horizon}")
-    os.makedirs(horizon_dir, exist_ok=True)
+    work_config = config.copy()  # Copy the config to avoid modifying the original
 
     # Train multiple models
     all_results = []
 
-    for model_idx in range(n_models):
+    if trial is not None:
+        if data_loaders["val"] is None:
+            raise ValueError("Validation data loader is required for Optuna trials")
+
+        if early_stop_patience is not None and trial is not None:  # using early stopping could bias the trials
+            print("Warning: Early stopping potentially interacting with Optuna trials.")
+
+        data_loaders["test"] = None  # No test data during hyperparameter optimization
+
+    # List containing the validation losses of each model at the end of training
+    val_losses_all_models = []
+
+    for model_idx in range(work_config["nb_runs"]):
         print(f"\n{'='*50}")
-        print(f"Training model {model_idx+1}/{n_models} for horizon={horizon}")
+        print(f"Training model {model_idx+1}/{work_config['nb_runs']} for horizon={work_config['horizon']}")
         print(f"{'='*50}")
 
         # Set different random seed for each model
-        seed = config.get("seed", 42) + model_idx
+        seed = work_config.get("seed", 42) + model_idx
         torch.manual_seed(seed)
         np.random.seed(seed)
 
         # Initialize new model
-        model = init_model(config).to(device)
+        model = init_model(work_config).to(device)
 
         # Set up training
         criterion = nn.MSELoss()
-        optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
+        optimizer = torch.optim.Adam(model.parameters(), lr=work_config["learning_rate"])
 
         train_losses, val_losses, best_model_state = train_model(
             model,
@@ -537,54 +647,44 @@ def train_multiple_models(
             criterion,
             optimizer,
             device,
-            num_epochs,
+            work_config["num_epochs"],
             val_loader=data_loaders["val"],
             print_every=print_every,
             early_stop_patience=early_stop_patience,
-            augment_data_config=config.get("augment_data_config", None),
+            augment_data_config=work_config.get("augment_data_config", None),
         )
+
+        # Updating list of validation losses for all models at the end of training
+        val_losses_all_models.append(val_losses[-1])
+
+        if trial is not None:  # this is in case we are doing hyperparameter optimization
+
+            # Report intermediate values
+            trial.report(np.mean(val_losses_all_models), model_idx)
+
+            # Handle pruning based on the intermediate value
+            if trial.should_prune():
+                raise optuna.exceptions.TrialPruned()
+
+        elif data_loaders["test"] is not None:
+            # Evaluate on test set if available, except during hyperparameter optimization
+            _, _, test_loss = eval_model(model, data_loaders["test"], device, criterion, return_predictions=False)
+            print(f"Test Loss for Model {model_idx+1}: {test_loss:.4f}")
 
         # Restore best model
         if best_model_state is not None:
             model.load_state_dict(best_model_state)
-
-        # Evaluate on test set if available
-        if data_loaders["test"] is not None:
-            _, _, test_loss = eval_model(model, data_loaders["test"], device, criterion, return_predictions=False)
-            print(f"Test Loss for Model {model_idx+1}: {test_loss:.4f}")
-
-        # Save this model
-        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        model_path = os.path.join(horizon_dir, f"transformer_h{horizon}_model{model_idx+1}_{timestamp}.pt")
-        config_path = os.path.join(horizon_dir, f"transformer_h{horizon}_model{model_idx+1}_{timestamp}_config.json")
-        # scaler_path = os.path.join(horizon_dir, f"transformer_h{horizon}_model{model_idx+1}_{timestamp}_scaler.npy")
-
-        # Save model and config
-        torch.save(best_model_state, model_path)
 
         training_history = {
             "train_losses": train_losses,
             "val_losses": val_losses if data_loaders["val"] is not None else None,
         }
 
-        # Add training history to config
-        model_info = {
-            "config": config,
-            "model_idx": model_idx + 1,
-            "horizon": horizon,
-            "seed": seed,
-            "timestamp": timestamp,
-            "training_history": training_history,
-        }
-
-        with open(config_path, "w") as f:
-            json.dump(model_info, f, indent=2)
-
-        # # Save scaler
-        # scaler_dict = {"mean": scaler.mean_, "var": scaler.var_, "scale": scaler.scale_}
-        # np.save(scaler_path, scaler_dict)
-
-        print(f"Model {model_idx+1} saved to {model_path}")
+        model_path, config_path = None, None
+        if save_dir is not None:
+            model_path, config_path = save_model(
+                best_model_state, work_config, model_idx, seed, training_history, save_dir
+            )
 
         # Store results - scaler not saved with np.save(scaler_path, scaler_dict) because they are common to all models
         all_results.append(
@@ -598,6 +698,55 @@ def train_multiple_models(
         )
 
     return all_results
+
+
+def save_model(best_model_state, config, model_idx, seed, training_history, save_dir):
+    """Save the model and its configuration.
+
+    Args:
+        best_model_state (dict): The state of the best model.
+        config (dict): The configuration used for training.
+        model_idx (int): The index of the model.
+        seed (int): The random seed used for training.
+        timestamp (str): The timestamp when the model was trained.
+        training_history (dict): The training history of the model.
+        save_dir (str): The directory where the model should be saved.
+    """
+
+    # Create directory for this horizon if it doesn't exist
+    horizon = config["horizon"]
+    horizon_dir = os.path.join(save_dir, f"horizon_{horizon}")
+    os.makedirs(horizon_dir, exist_ok=True)
+
+    # Save this model
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    model_path = os.path.join(horizon_dir, f"transformer_h{horizon}_model{model_idx+1}_{timestamp}.pt")
+    config_path = os.path.join(horizon_dir, f"transformer_h{horizon}_model{model_idx+1}_{timestamp}_config.json")
+    # scaler_path = os.path.join(horizon_dir, f"transformer_h{horizon}_model{model_idx+1}_{timestamp}_scaler.npy")
+
+    # Save model and config
+    torch.save(best_model_state, model_path)
+
+    # Add training history to config
+    model_info = {
+        "config": config,
+        "model_idx": model_idx + 1,
+        "horizon": horizon,
+        "seed": seed,
+        "timestamp": timestamp,
+        "training_history": training_history,
+    }
+
+    with open(config_path, "w") as f:
+        json.dump(model_info, f, indent=2)
+
+    # # Save scaler
+    # scaler_dict = {"mean": scaler.mean_, "var": scaler.var_, "scale": scaler.scale_}
+    # np.save(scaler_path, scaler_dict)
+
+    print(f"Model {model_idx+1} saved to {model_path}")
+
+    return model_path, config_path
 
 
 def eval_model(model, test_loader, device, criterion=None, return_predictions=True):
@@ -698,7 +847,7 @@ def train_model(
         else:
             val_losses = None
 
-        if (epoch + 1) % print_every == 0:
+        if (print_every is not None) and ((epoch + 1) % print_every == 0):
             print(message)
 
     return train_losses, val_losses, best_model_state
