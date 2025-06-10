@@ -1,0 +1,56 @@
+{
+    "paths": {
+        "input_sq_dir": "a. Input time series sequences",
+        "output_dir": "models",
+        "training_sequences": [
+            "2. sq sl010 sag Xcs=125 3 cpts 2024 normalised",
+            "3. sq sl010 sag Xcs=80 3 cpts 2024 normalised",
+            "4. sq sl014 sag Xcs=165 3 cpts 2024 normalised",
+            "5. sq sl014 sag Xcs=95 3 cpts 2024 normalised"
+        ],
+        "test_sequences": [
+            "2020-11-10_KS81_Nav_Pur_1_3_cpts",
+            "2020-11-12_QN76_Nav_Pur_1_3_cpts",
+            "2020-11-17_CS31_Nav_Pur_2_3_cpts",
+            "2020-11-17_JY02_Nav_Pur_2_3_cpts",
+            "2020-11-23_ON65_Nav_Pur_2_3_cpts",
+            "2020-11-23_PS11_Nav_Pur_1_3_cpts",
+            "2020-11-25_II29_Nav_Pur_1_3_cpts",
+            "2020-11-26_NE38_Nav_Pur_1_3_cpts"
+        ]
+    },
+    "training_sq_sampling_rate_hz": 3.18,
+    "test_sq_sampling_rate_hz": 6.0,
+    "hyperparameter_tuning": true,
+    "horizons": [1, 7],
+    "seq_length": 24,
+    "d_model": 16,
+    "nhead": 2,
+    "num_layers": 2,
+    "dim_feedforward": 16,
+    "final_layer_dim": null,
+    "dropout": 0.5,
+    "batch_size": 32,
+    "learning_rate": 0.0001,
+    "early_stop_patience": 30,
+    "training_fraction": 0.8,
+    "num_epochs": 300,
+    "nb_runs": 2,
+    "seed": 42,
+    "device": "cuda",
+    "print_every": 10,
+    "param_grid": {
+        "seq_length": [11, 57]
+    },
+    "njobs": 1,
+    "optim_save_dir": "tmp",
+    "data_augmentation": {
+        "scaling_prob": 0.8,
+        "scaling_range": [0.8, 1.2],
+        "permutation_prob": 0.5,
+        "drift_prob": 0.3,
+        "max_drift_factor": 0.05,
+        "bias_prob": 0.3,
+        "max_bias_factor": 0.2
+    }
+}

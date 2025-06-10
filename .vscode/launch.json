@@ -1,0 +1,17 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Population Transformer Test",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "other_prediction_functions.train_population_transformer",
+            "cwd": "${workspaceFolder}/Time_series_forecasting",
+            "args": [],
+            "console": "integratedTerminal"
+        }
+    ]
+}
