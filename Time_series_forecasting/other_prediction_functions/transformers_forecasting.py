@@ -651,7 +651,7 @@ def train_multiple_models(
             val_loader=data_loaders["val"],
             print_every=print_every,
             early_stop_patience=early_stop_patience,
-            augment_data_config=work_config.get("augment_data_config", None),
+            data_augmentation_config=work_config.get("data_augmentation", None),
         )
 
         # Updating list of validation losses for all models at the end of training
@@ -791,7 +791,7 @@ def train_model(
     val_loader=None,
     print_every=10,
     early_stop_patience=None,
-    augment_data_config=None,
+    data_augmentation_config=None,
 ):
     train_losses = []
     val_losses = []
@@ -809,8 +809,8 @@ def train_model(
             # print(f"input shape: {inputs.shape}, target shape: {targets.shape}")
             # Move data to the appropriate device
 
-            if augment_data_config is not None:
-                inputs, targets = time_series_augmentation_suite(inputs, targets, augment_data_config)
+            if data_augmentation_config is not None:
+                inputs, targets = time_series_augmentation_suite(inputs, targets, data_augmentation_config)
 
             inputs, targets = inputs.to(device), targets.to(device)
             optimizer.zero_grad()
@@ -853,10 +853,11 @@ def train_model(
     return train_losses, val_losses, best_model_state
 
 
-def time_series_augmentation_suite(batch_data, batch_targets, config=None):
+def time_series_augmentation_suite(batch_data, batch_targets, config: dict):
     """
     Comprehensive augmentation suite for time series data. Note: we are not adding noise because the PCA breathing
-    signals are already noisy.
+    signals are already noisy. Both the probabilities of applying each transformation and the transformation parameters
+    need to be provided, otherwise the augmentation will not be applied.
 
     Args:
         batch_data: Tensor of shape [batch_size, seq_length, n_features]
@@ -867,14 +868,7 @@ def time_series_augmentation_suite(batch_data, batch_targets, config=None):
         Augmented batch data and targets
     """
     if config is None:
-        config = {
-            "scaling_range": (0.8, 1.2),  # Random amplitude scaling
-            "permutation_prob": 0.5,  # Probability of dimension permutation
-            "drift_prob": 0.3,  # Probability of adding baseline drift
-            "max_drift_factor": 0.05,  # Maximum drift (as fraction of signal amplitude)
-            "bias_prob": 0.3,  # Probability of adding baseline bias
-            "max_bias_factor": 0.2,  # Maximum bias (as fraction of signal amplitude
-        }
+        raise ValueError("No data augmentation configuration provided. Please provide a valid config dictionary.")
 
     augmented_data = batch_data.clone()
     augmented_targets = batch_targets.clone()
@@ -883,15 +877,19 @@ def time_series_augmentation_suite(batch_data, batch_targets, config=None):
 
     for i in range(batch_size):
 
-        # 2. Scaling (amplitude variation)
-        if np.random.rand() < 0.8:
+        # Scaling (amplitude variation)
+        if (
+            (config.get("scaling_range", None) is not None)
+            and (config.get("scaling_prob", None) is not None)
+            and (np.random.rand() < config["scaling_prob"])
+        ):
             for j in range(n_features):
                 scale = np.random.uniform(*config["scaling_range"])
                 augmented_data[i, :, j] *= scale
                 augmented_targets[i, j] *= scale
 
-        # 3. Feature Permutation
-        if np.random.rand() < config["permutation_prob"]:
+        # Feature Permutation
+        if (config.get("permutation_prob", None) is not None) and (np.random.rand() < config["permutation_prob"]):
             perm = torch.randperm(n_features)
             augmented_data[i, :, :] = augmented_data[i, :, perm]
             augmented_targets[i, :] = augmented_targets[i, perm]
@@ -906,10 +904,14 @@ def time_series_augmentation_suite(batch_data, batch_targets, config=None):
             amplitudes.append(amplitude.item())
 
         # Add Baseline Bias (constant offset proportional to amplitude)
-        if np.random.rand() < config.get("bias_prob", 0.7):
+        if (
+            (config.get("bias_prob", None) is not None)
+            and (config.get("max_bias_factor", None) is not None)
+            and (np.random.rand() < config["bias_prob"])
+        ):
             for j in range(n_features):
                 # Generate random bias proportional to feature amplitude
-                max_bias = amplitudes[j] * config.get("max_bias_factor", 0.3)
+                max_bias = amplitudes[j] * config["max_bias_factor"]
                 bias = np.random.uniform(-max_bias, max_bias)
 
                 # Apply constant bias to entire feature sequence
@@ -919,10 +921,14 @@ def time_series_augmentation_suite(batch_data, batch_targets, config=None):
                 augmented_targets[i, j] += bias
 
         # Add Random Drift (linear slope)
-        if np.random.rand() < config.get("drift_prob", 0.5):
+        if (
+            (config.get("drift_prob", None) is not None)
+            and (config.get("max_drift_factor", None) is not None)
+            and (np.random.rand() < config["drift_prob"])
+        ):
             for j in range(n_features):
                 # Random slope proportional to feature amplitude
-                max_change = amplitudes[j] * config.get("max_drift_factor", 0.05)
+                max_change = amplitudes[j] * config["max_drift_factor"]
                 slope = np.random.uniform(-max_change, max_change)
 
                 # Create linear trend along time dimension
