@@ -24,9 +24,10 @@ def main(argv):
     args = parser.parse_args(argv)
 
     print("✅ Training population transformer model...")
-    print(f"Using config file: {args.config}")
+    config_file = args.config[0] if isinstance(args.config, list) else args.config
+    print(f"Using config file: {config_file}")
 
-    with open(os.path.join(CONFIG_DIR, args.config), "r") as f:
+    with open(os.path.join(CONFIG_DIR, config_file), "r") as f:
         config = json.load(f)
 
     # Loading time series data
