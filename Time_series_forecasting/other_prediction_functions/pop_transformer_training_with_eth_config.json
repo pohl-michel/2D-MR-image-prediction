@@ -1,14 +1,14 @@
 {
     "paths": {
         "input_sq_dir": "a. Input time series sequences",
-        "output_dir": "models",
-        "training_sequences": [
+        "output_dir": "models/training_with_eth_dataset",
+        "dev_folders": [
             "2. sq sl010 sag Xcs=125 3 cpts 2024 normalised",
             "3. sq sl010 sag Xcs=80 3 cpts 2024 normalised",
             "4. sq sl014 sag Xcs=165 3 cpts 2024 normalised",
             "5. sq sl014 sag Xcs=95 3 cpts 2024 normalised"
         ],
-        "test_sequences": [
+        "test_folders": [
             "2020-11-10_KS81_Nav_Pur_1_3_cpts",
             "2020-11-12_QN76_Nav_Pur_1_3_cpts",
             "2020-11-17_CS31_Nav_Pur_2_3_cpts",
@@ -21,8 +21,7 @@
     },
     "training_sq_sampling_rate_hz": 3.18,
     "test_sq_sampling_rate_hz": 6.0,
-    "hyperparameter_tuning": true,
-    "horizons": [1, 2, 3, 4, 5, 6, 7],
+    "horizons": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14],
     "seq_length": 24,
     "d_model": 16,
     "nhead": 2,
@@ -37,7 +36,6 @@
     "num_epochs": 300,
     "nb_runs": 10,
     "seed": 42,
-    "device": "cuda",
     "print_every": 10,
     "param_grid": {
         "seq_length": [11, 23, 34, 45, 57],
@@ -45,8 +43,6 @@
         "num_layers": [1, 2],
         "d_model": [8, 16]
     },
-    "njobs": -1,
-    "optim_save_dir": "tmp",
     "data_augmentation": {
         "scaling_prob": 0.8,
         "scaling_range": [0.8, 1.2],

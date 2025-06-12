@@ -334,30 +334,30 @@ def load_dev_test_data(dev_folders, test_folders):
     return raw_data, n_features
 
 
-def resample_data_poly(dev_data, dev_freq, test_freq):
+def resample_data_poly(input_sequences, source_freq, target_freq):
     """
     Resample development data to match the frequency of test data using polyphase filtering
 
     Args:
-        dev_freq: Sampling frequency of development data (Hz)
-        test_freq: Sampling frequency of test data (Hz)
+        source_freq: Sampling frequency of development data (Hz)
+        target_freq: Sampling frequency of test data (Hz)
     """
 
     # Calculate resampling ratio as fraction
-    gcd = np.gcd(int(dev_freq * 1000), int(test_freq * 1000))
-    up = int((test_freq * 1000) / gcd)  # Upsampling factor
-    down = int((dev_freq * 1000) / gcd)  # Downsampling factor
+    gcd = np.gcd(int(source_freq * 1000), int(target_freq * 1000))
+    up = int((target_freq * 1000) / gcd)  # Upsampling factor
+    down = int((source_freq * 1000) / gcd)  # Downsampling factor
 
-    print(f"Resampling with ratio {dev_freq}/{test_freq} = {down}/{up}")
+    print(f"Resampling with ratio {source_freq}/{target_freq} = {down}/{up}")
 
     # Resample development data
     resampled_dev_data = []
 
-    for i, patient_data in enumerate(dev_data):
+    for i, patient_data in enumerate(input_sequences):
         n_features, n_samples = patient_data.shape
 
         # Calculate approximate new number of samples (for reporting only)
-        approx_new_samples = int(n_samples * (test_freq / dev_freq))
+        approx_new_samples = int(n_samples * (target_freq / source_freq))
 
         # Apply resample_poly to entire patient data at once
         # This works when all features should be resampled the same way
@@ -475,7 +475,7 @@ def init_model(config):
 def hyperparameter_tuning(
     config: dict,
     param_grid: dict,
-    resampled_data,
+    data,
     device,
     n_trials=None,
     pruner=None,
@@ -517,11 +517,11 @@ def hyperparameter_tuning(
         # Add to config (note: this will overwrite existing values)
         temp_config = config.copy()
         temp_config.update(params)
+        temp_config["early_stop_patience"] = None  # No early stopping during tuning
 
-        print(f"Generating sequences with length {temp_config['seq_length']}...")
-
+        print(f"Generating sequences with length {temp_config['seq_length']}...")  # can be improved: we could use cache
         standardized_data, scaler = preprocess_data(
-            resampled_data, temp_config["horizon"], temp_config["seq_length"], temp_config["training_fraction"]
+            data, temp_config["horizon"], temp_config["seq_length"], temp_config["training_fraction"]
         )
         data_loaders = get_population_data_loaders(standardized_data, batch_size=temp_config["batch_size"])
 
@@ -530,10 +530,10 @@ def hyperparameter_tuning(
             temp_config,
             device,
             data_loaders,
-            early_stop_patience=None,
             save_dir=None,
             print_every=temp_config["print_every"],
             trial=None,
+            params_to_print=params,  # Pass the parameters to print
         )
 
         # Extract the final validation losses from the results and compute their mean
@@ -591,10 +591,10 @@ def train_multiple_models(
     config,
     device,
     data_loaders,
-    early_stop_patience,
     save_dir=None,
     print_every=10,
     trial: Trial = None,
+    params_to_print=None,
 ):
     """
     Train multiple horizon-specific models to account for stochasticity
@@ -616,7 +616,7 @@ def train_multiple_models(
         if data_loaders["val"] is None:
             raise ValueError("Validation data loader is required for Optuna trials")
 
-        if early_stop_patience is not None and trial is not None:  # using early stopping could bias the trials
+        if config.get("early_stop_patience") is not None and trial is not None:  # early stopping could bias trials
             print("Warning: Early stopping potentially interacting with Optuna trials.")
 
         data_loaders["test"] = None  # No test data during hyperparameter optimization
@@ -627,6 +627,10 @@ def train_multiple_models(
     for model_idx in range(work_config["nb_runs"]):
         print(f"\n{'='*50}")
         print(f"Training model {model_idx+1}/{work_config['nb_runs']} for horizon={work_config['horizon']}")
+        if params_to_print is not None:
+            print("Hyperparameters for this model:")
+            for param_name, param_value in params_to_print.items():
+                print(f"    {param_name}: {param_value}")
         print(f"{'='*50}")
 
         # Set different random seed for each model
@@ -650,8 +654,8 @@ def train_multiple_models(
             work_config["num_epochs"],
             val_loader=data_loaders["val"],
             print_every=print_every,
-            early_stop_patience=early_stop_patience,
-            data_augmentation_config=work_config.get("data_augmentation", None),
+            early_stop_patience=config.get("early_stop_patience"),
+            data_augmentation_config=work_config.get("data_augmentation"),
         )
 
         # Updating list of validation losses for all models at the end of training
@@ -879,8 +883,8 @@ def time_series_augmentation_suite(batch_data, batch_targets, config: dict):
 
         # Scaling (amplitude variation)
         if (
-            (config.get("scaling_range", None) is not None)
-            and (config.get("scaling_prob", None) is not None)
+            (config.get("scaling_range") is not None)
+            and (config.get("scaling_prob") is not None)
             and (np.random.rand() < config["scaling_prob"])
         ):
             for j in range(n_features):
@@ -889,7 +893,7 @@ def time_series_augmentation_suite(batch_data, batch_targets, config: dict):
                 augmented_targets[i, j] *= scale
 
         # Feature Permutation
-        if (config.get("permutation_prob", None) is not None) and (np.random.rand() < config["permutation_prob"]):
+        if (config.get("permutation_prob") is not None) and (np.random.rand() < config["permutation_prob"]):
             perm = torch.randperm(n_features)
             augmented_data[i, :, :] = augmented_data[i, :, perm]
             augmented_targets[i, :] = augmented_targets[i, perm]
@@ -905,8 +909,8 @@ def time_series_augmentation_suite(batch_data, batch_targets, config: dict):
 
         # Add Baseline Bias (constant offset proportional to amplitude)
         if (
-            (config.get("bias_prob", None) is not None)
-            and (config.get("max_bias_factor", None) is not None)
+            (config.get("bias_prob") is not None)
+            and (config.get("max_bias_factor") is not None)
             and (np.random.rand() < config["bias_prob"])
         ):
             for j in range(n_features):
@@ -922,8 +926,8 @@ def time_series_augmentation_suite(batch_data, batch_targets, config: dict):
 
         # Add Random Drift (linear slope)
         if (
-            (config.get("drift_prob", None) is not None)
-            and (config.get("max_drift_factor", None) is not None)
+            (config.get("drift_prob") is not None)
+            and (config.get("max_drift_factor") is not None)
             and (np.random.rand() < config["drift_prob"])
         ):
             for j in range(n_features):

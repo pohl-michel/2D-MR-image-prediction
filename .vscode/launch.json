@@ -10,7 +10,7 @@
             "request": "launch",
             "module": "other_prediction_functions.train_population_transformer",
             "cwd": "${workspaceFolder}/Time_series_forecasting",
-            "args": [],
+            "args": ["--tuning", "--gpu", "--njobs", "1"],
             "console": "integratedTerminal"
         }
     ]

@@ -90,36 +90,69 @@ function X_reshaped = reshape_data_matrix(X, n_features, shl, samples)
 
 end
 
-function pred_par_py = convert_to_py_dict(pred_par)
-% Converts pred_par into a Python dictionary, which includes
-% casting pred_par values to types that can be understood in Python
+function output_python_dict = convert_to_py_dict(input_matlab_struct)
+% Converts any Matlab structure into a Python dictionary.
+% Some values (in the input structure "pred_par") are casted to types that can be understood in Python
 
-    % List of fields whose values should be converted to int32 or double
+    % Fields whose values should be converted to int32 or double, as "pred_par" is passed as input
     int_fields = ["batch_size", "num_epochs", "SHL", "d_model", ...
                   "nhead", "num_layers", "dim_feedforward", "final_layer_dim", ...
                   "horizon", "seq_length", "n_features"];
     float_fields = ["dropout", "learn_rate"];
-    string_fields = ["selected_device", "config_path"];  % Add string fields
 
     % Perform value type conversion to int32 or double
-    fields = fieldnames(pred_par);
+    fields = fieldnames(input_matlab_struct);
+
     for i = 1:numel(fields)
         f = fields{i};
+        value = input_matlab_struct.(f);
         if ismember(f, int_fields)
             % Handle zero/empty values by converting to Python None
-            if isempty(pred_par.(f)) || pred_par.(f) == 0
-                pred_par.(f) = py.None;  % Convert to Python None
+            if isempty(value) || (isscalar(value) && value == 0)
+                input_matlab_struct.(f) = py.None;  % Convert to Python None
+            elseif length(value) > 1
+                input_matlab_struct.(f) = py.list(int32(value));  % Arrays become lists                
             else
-                pred_par.(f) = int32(pred_par.(f));
+                input_matlab_struct.(f) = int32(value);
             end
         elseif ismember(f, float_fields)
-            pred_par.(f) = double(pred_par.(f));
-        elseif ismember(f, string_fields)
-            pred_par.(f) = string(pred_par.(f));
+            input_matlab_struct.(f) = double(value);
+        elseif ischar(value) || isstring(value)
+            input_matlab_struct.(f) = string(value);    
+        elseif isstruct(value)
+            % Recursively convert nested structures
+            input_matlab_struct.(f) = convert_to_py_dict(value);    
+        elseif iscell(value)
+            % Handle cell arrays - convert each element
+            tmp_cell = cellfun(@(x) convert_value_to_python(x), value, 'UniformOutput', false);
+            if size(tmp_cell, 1) > 1 && size(tmp_cell, 2) == 1
+                tmp_cell = tmp_cell';  % Transpose N×1 to 1×N
+            end
+            input_matlab_struct.(f) = tmp_cell;
+        elseif isnumeric(value) && length(value) > 1
+            % Handle numeric arrays (like horizons: [N×1 double])
+            input_matlab_struct.(f) = py.list(double(value));    
         end
     end
 
     % Converts the Matlab structure to a Python dictionary
-    pred_par_py = py.dict(pred_par);
+    output_python_dict = py.dict(input_matlab_struct);
 
+end
+
+function converted_value = convert_value_to_python(value)
+    % Helper function to convert individual values to Python-compatible types
+    if isstruct(value)
+        converted_value = convert_to_py_dict(value);
+    elseif ischar(value) || isstring(value)
+        converted_value = string(value);
+    elseif isnumeric(value)
+        if isinteger(value) || (isreal(value) && value == round(value))
+            converted_value = int32(value);
+        else
+            converted_value = double(value);
+        end
+    else
+        converted_value = value;
+    end
 end
