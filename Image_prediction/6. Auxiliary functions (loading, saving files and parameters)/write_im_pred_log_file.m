@@ -152,7 +152,7 @@ function print_acc_results(eval_results, fid, beh_par, pred_par)
 
         fprintf(fid, 'Same results but for copy-pasting in Excel : \n');
         switch pred_par.pred_meth
-            case {'RTRL', 'UORO', 'SnAp-1', 'DNI', 'RTRL v2', 'fixed W'} %RNN
+            case {'RTRL', 'UORO', 'SnAp-1', 'DNI', 'RTRL v2', 'fixed W', 'transformer', 'population_transformer'} %stochastic methods
                 fprintf(fid, '%f\n', eval_results.mean_corr_im_pred);
                 fprintf(fid, '%f\n', eval_results.confidence_half_range_corr_im_pred);
                 fprintf(fid, '%f\n', eval_results.mean_nrmse);
