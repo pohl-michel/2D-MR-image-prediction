@@ -43,6 +43,23 @@ def cohens_d(x, y):
     return np.mean(diff) / np.std(diff, ddof=1)
 
 
+def median_diff(x, y):
+    """
+    Calculate the median difference between two groups.
+    This is useful for paired samples to understand the central tendency of differences.
+    """
+    # Remove NaN values from both arrays
+    valid_indices = ~(np.isnan(x) | np.isnan(y))
+    x_clean = x[valid_indices]
+    y_clean = y[valid_indices]
+
+    if len(x_clean) < 2 or len(y_clean) < 2:
+        return np.nan
+
+    # Calculate the median difference
+    return np.median(x_clean - y_clean)
+
+
 def load_excel_data(file_path, sheet_name, top_left_cell, bottom_right_cell):
     """
     Load data from Excel file within specified cell range.
@@ -139,6 +156,7 @@ def perform_statistical_analysis(methods_data):
     # Initialize result matrices
     p_values = np.full((n_methods, n_methods), np.nan)
     cohens_d_values = np.full((n_methods, n_methods), np.nan)
+    median_diff_values = np.full((n_methods, n_methods), np.nan)
 
     # Perform pairwise comparisons
     for i, method1 in enumerate(methods):
@@ -173,20 +191,22 @@ def perform_statistical_analysis(methods_data):
                         # Cohen's d
                         cohens_d_values[i, j] = cohens_d(data1_clean, data2_clean)
 
+                        # Median difference
+                        median_diff_values[i, j] = median_diff(data1_clean, data2_clean)
+
                     except ValueError as e:
                         # Handle cases where Wilcoxon test cannot be performed
                         print(f"Warning: Could not perform test for {method1} vs {method2}: {e}")
-                        p_values[i, j] = np.nan
-                        cohens_d_values[i, j] = np.nan
 
     # Create result DataFrames
     p_values_df = pd.DataFrame(p_values, index=methods, columns=methods)
     cohens_d_df = pd.DataFrame(cohens_d_values, index=methods, columns=methods)
+    median_diff_df = pd.DataFrame(median_diff_values, index=methods, columns=methods)
 
-    return p_values_df, cohens_d_df
+    return p_values_df, cohens_d_df, median_diff_df
 
 
-def create_combined_results_table(p_values_df, cohens_d_df, significance_level=0.05):
+def create_combined_results_table(p_values_df, cohens_d_df, median_diff_df, significance_level=0.05):
     """
     Create a combined table with p-values and Cohen's d in the same cells.
 
@@ -200,7 +220,7 @@ def create_combined_results_table(p_values_df, cohens_d_df, significance_level=0
     """
 
     methods = p_values_df.index.tolist()
-    methods_index = methods[:-1] # discarding the last row because it would be empty anyway
+    methods_index = methods[:-1]  # discarding the last row because it would be empty anyway
     combined_results = []
 
     for i, method1 in enumerate(methods_index):
@@ -208,6 +228,7 @@ def create_combined_results_table(p_values_df, cohens_d_df, significance_level=0
         for j, method2 in enumerate(methods):
             p_val = p_values_df.iloc[i, j]
             cohens_d_val = cohens_d_df.iloc[i, j]
+            median_diff_val = median_diff_df.iloc[i, j]
 
             if i == j:
                 # Diagonal elements
@@ -223,6 +244,10 @@ def create_combined_results_table(p_values_df, cohens_d_df, significance_level=0
                 p_str = f"{p_val:.3f}"
                 if p_val < significance_level:
                     p_str += "*"
+
+                # check if median difference and cohen d have same sign
+                if np.sign(median_diff_val) != np.sign(cohens_d_val):
+                    p_str += "°"
 
                 d_str = f"{cohens_d_val:.2f}"
                 cell_content = f"{p_str} ({d_str})"
@@ -262,10 +287,10 @@ def analyze_forecasting_methods(file_path, sheet_name, top_left_cell, bottom_rig
     print("Methods:", list(methods_data.index))
 
     # Perform statistical analysis
-    p_values_df, cohens_d_df = perform_statistical_analysis(methods_data)
+    p_values_df, cohens_d_df, median_diff_df = perform_statistical_analysis(methods_data)
 
     # Create combined results table
-    combined_table = create_combined_results_table(p_values_df, cohens_d_df)
+    combined_table = create_combined_results_table(p_values_df, cohens_d_df, median_diff_df)
 
     # Summary statistics
     print(f"\nSummary for {target_metric}:")
@@ -279,6 +304,7 @@ def analyze_forecasting_methods(file_path, sheet_name, top_left_cell, bottom_rig
         "metric": target_metric,
         "raw_data": methods_data,
         "p_values": p_values_df,
+        "median_diffs": median_diff_df,
         "cohens_d": cohens_d_df,
         "combined_table": combined_table,
         "summary_stats": {
