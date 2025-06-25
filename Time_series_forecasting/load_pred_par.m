@@ -180,13 +180,13 @@ function [pred_par] = load_pred_par(path_par, pred_meth, horizon)
             % default parameters specific to the transformer
             pred_par.batch_size = 32;
             pred_par.num_epochs = 50;        
-            pred_par.d_model = 16;  % embedding dimension - should be divisible by nhead
+            % pred_par.d_model = 16;  % embedding dimension - should be divisible by nhead - comment to load from Excel
+            % pred_par.num_layers = 2;  % comment that to load from the Excel file instead  
+            % pred_par.learn_rate = 0.0001;  % comment that to load from the Excel file instead            
             pred_par.nhead = 2;
-            pred_par.num_layers = 2;
             pred_par.dim_feedforward = 0;  % Setting that value to zero sets the encoder MLP hidden layer as proportional to d_model 
             pred_par.final_layer_dim = 0;  % Setting that value to zero sets the final layer dim to geometric avg. of input and output
             pred_par.dropout = 0.5;
-            pred_par.learn_rate = 0.0001;  % comment that to load from the Excel file instead
             pred_par.GPU_COMPUTING = true;  % experimentally faster but can be toggled off
             pred_par.print_every = 25;  % print the loss value every "print_every" step
             % pred_par.nb_runs = 2;  % for testing - normally loaded from pred_par.xlsx file
