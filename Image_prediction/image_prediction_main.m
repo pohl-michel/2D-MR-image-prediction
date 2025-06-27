@@ -103,7 +103,7 @@ for im_seq_idx = 1:nb_seq
 
     % Save original image sequences and region of interest (ROI)
     if beh_par.SAVE_ORG_IM_SQ
-        save2Dimseq(im_par, path_par, disp_par);
+        save2Dimseq(im_par, path_par, disp_par, beh_par);
     end       
     if beh_par.SAVE_ROI_DISPLAY
         saveROIposition(im_par, path_par, disp_par);

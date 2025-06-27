@@ -37,7 +37,7 @@ beh_par.NO_PRED_AT_ALL = false;   % Use original images instead of predictions f
 beh_par.IM_PREDICTION = true;     % Perform image prediction
 beh_par.SAVE_PRED_IM = true;      % Save the predicted images and thermal difference images
 
-beh_par.CROP_FOR_DISP_SAVE = false;  % Save the deformation vector field images, predicted images, or error images only in the ROI
+beh_par.CROP_FOR_DISP_SAVE = false;  % Save the initial sequence, deformation vector field images, predicted images, or error images only in the ROI
 beh_par.EVALUATE_IN_ROI = true;     % Evaluate prediction errors within the ROI as well - the number of PCA components is selected using the whole image though
 
 
