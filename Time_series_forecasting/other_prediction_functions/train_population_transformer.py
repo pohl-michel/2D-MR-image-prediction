@@ -56,28 +56,17 @@ def main(argv):
     print(f"Using device: {device}")
 
     # Creating one config per horizon
-    configs_all_hrz, data_loaders_all_hrz = [], []
+    configs_all_hrz = []
+    if not config.get("horizons"):
+        raise ValueError("This population transformer training app requires horizons to be specified in the config.")
+
     for horizon in config["horizons"]:
         # Adding the config for the current horizon
         tmp_config = copy.deepcopy(config)  # because config has sub-dicionaries, just being cautious here
         tmp_config["horizon"] = horizon
-        configs_all_hrz.append(tmp_config)
-
-        # Preprocessing data and splitting the data into pairs of input and target values
-        standardized_data, _ = tf.preprocess_data(
-            resampled_data, horizon, tmp_config["seq_length"], tmp_config["training_fraction"]
-        )
-
-        # Getting pytorch data loaders
-        data_loaders = tf.get_population_data_loaders(standardized_data, batch_size=tmp_config["batch_size"])
-
-        # Adding the data loaders for the current horizon
-        data_loaders_all_hrz.append(data_loaders)
+        configs_all_hrz.append(tmp_config)  # configs_all_hrz is made of deep copies, whereas config is unaffected
 
     if args.tuning and config.get("param_grid") is not None:
-        if not config.get("horizons"):
-            raise ValueError("Hyperparameter tuning requires horizons to be specified in the config.")
-
         for horizon_idx, horizon in enumerate(config["horizons"]):
             print(f"Running hyperparameter tuning for horizon: {horizon}")
             tmp_config = configs_all_hrz[horizon_idx]  # get the config for the current horizon
@@ -95,31 +84,47 @@ def main(argv):
                 save_dir=tmp_config["paths"]["output_dir"],  # same comment as above concerning passing tmp config
             )
             print(f"Best parameters for horizon {horizon}: {best_params}")
-
-            # Rk: I do not run grid search over the batch size or training fraction, but that may be accounted for below
-            if tmp_config["seq_length"] != best_params.get("seq_length", tmp_config["seq_length"]):
-                print(f"Updating sequence length from {tmp_config['seq_length']} to {best_params['seq_length']}")
-                standardized_data, _ = tf.preprocess_data(
-                    resampled_data, horizon, best_params["seq_length"], tmp_config["training_fraction"]
-                )
-                data_loaders = tf.get_population_data_loaders(standardized_data, tmp_config["batch_size"])
-                data_loaders_all_hrz[horizon_idx] = data_loaders
-
             tmp_config.update(best_params)
+
+    else:
+        print("Skipping hyperparameter tuning as it was not requested or no parameter grid is defined in the config.")
+        # Attempting to retrieve optuna results json files
+        for horizon_idx, horizon in enumerate(config["horizons"]):
+            try:
+                crt_hrz_config = configs_all_hrz[horizon_idx]
+                most_recent_optuna_results_file = tf.get_most_recent_file(
+                    folder_path=crt_hrz_config["paths"]["output_dir"],
+                    pattern=f"optuna_results_h{horizon}_*_*.json",
+                    regex_pattern=rf"optuna_results_h{horizon}_(\d{{8}})_(\d{{6}})\.json",
+                )
+                with open(most_recent_optuna_results_file, "r") as f:
+                    optuna_results = json.load(f)
+                    crt_hrz_config.update(optuna_results["best_params"])
+
+            except FileNotFoundError:
+                print(f"Warning: No optuna results found for horizon {horizon}. Using default parameters.")
 
     # Training the population transformer model for each horizon with the best parameters (if tuning was done)
     for horizon_idx, horizon in enumerate(config["horizons"]):
         print(f"Training population transformer model for horizon: {horizon}")
-        config_crt_hrz = configs_all_hrz[horizon_idx]
+        crt_hrz_config = configs_all_hrz[horizon_idx]
 
         # Setting SHL field for inference in Matlab - could be improved later
-        config_crt_hrz["SHL"] = config_crt_hrz["seq_length"]
+        crt_hrz_config["SHL"] = crt_hrz_config["seq_length"]
+
+        # Preprocessing data and splitting the data into pairs of input and target values
+        standardized_data, _ = tf.preprocess_data(
+            resampled_data, horizon, crt_hrz_config["seq_length"], crt_hrz_config["training_fraction"]
+        )
+
+        # Getting pytorch data loaders
+        data_loaders = tf.get_population_data_loaders(standardized_data, crt_hrz_config["batch_size"])
 
         horizon_results = tf.train_multiple_models(
-            config=config_crt_hrz,
+            config=crt_hrz_config,
             device=device,
-            data_loaders=data_loaders_all_hrz[horizon_idx],
-            save_dir=config_crt_hrz["paths"]["output_dir"],
+            data_loaders=data_loaders,  # Rk: the best SHL might be different from that in the default config
+            save_dir=crt_hrz_config["paths"]["output_dir"],
             print_every=config["print_every"],
         )
 

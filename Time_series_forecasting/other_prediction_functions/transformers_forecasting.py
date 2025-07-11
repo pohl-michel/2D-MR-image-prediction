@@ -156,7 +156,9 @@ def population_model_predict(pred_par, X_test, run_idx):
 
     # Load model configuration file - not needed here because all the relevant parameters should be in pred_par ...
     # model_dir = os.path.join(MODEL_DIR, f"horizon_{pred_par['horizon']}")  # directory containing results
-    # config_path = get_most_recent_config(model_dir, pred_par["horizon"], run_idx)
+    # pattern = os.path.join(folder_path, f"transformer_h{horizon}_model{run_idx}_*_*_config.json")
+    # regex_pattern = rf"transformer_h{horizon}+_model{run_idx}_(\d{{8}})_(\d{{6}})_config\.json"
+    # config_path = get_most_recent_file(model_dir, pattern, regex_pattern)
     # with open(config_path, "r") as f:
     #     config = json.load(f)
 
@@ -205,15 +207,15 @@ def population_model_predict(pred_par, X_test, run_idx):
     return test_predictions, avg_pred_time
 
 
-def get_most_recent_config(folder_path, horizon, run_idx):
+def get_most_recent_file(folder_path, pattern, regex_pattern):
     """
     Args:
         folder_path (str): Path to the folder containing config files
-        run_idx (int, optional): Specific run index to filter by (e.g., 1 for model1)
-    Rk: same as get_most_recent_model_config() in Matlab - to refactor later so that I have only one function...
+        pattern (str): Pattern to match the files
+        regex_pattern (str): Regex pattern to extract date and time
     """
     # Pattern to match the files
-    pattern = os.path.join(folder_path, f"transformer_h{horizon}_model{run_idx}_*_*_config.json")
+    pattern = os.path.join(folder_path, pattern)
     files = glob.glob(pattern)
 
     if not files:
@@ -221,9 +223,6 @@ def get_most_recent_config(folder_path, horizon, run_idx):
 
     most_recent_file = None
     most_recent_datetime = datetime.min
-
-    # Regex pattern to extract date and time
-    regex_pattern = rf"transformer_h{horizon}+_model{run_idx}_(\d{{8}})_(\d{{6}})_config\.json"
 
     for file_path in files:
         filename = os.path.basename(file_path)
@@ -241,7 +240,7 @@ def get_most_recent_config(folder_path, horizon, run_idx):
                 most_recent_file = file_path
 
     if most_recent_file is None:
-        raise ValueError("No valid files found with the expected naming pattern")
+        raise FileNotFoundError("No valid files found with the expected naming pattern")
 
     return most_recent_file
 
@@ -559,7 +558,7 @@ def hyperparameter_tuning(
 
     # Save study results
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    results_path = os.path.join(save_dir, f"optuna_results_{timestamp}.json")
+    results_path = os.path.join(save_dir, f"optuna_results_h{config['horizon']}_{timestamp}.json")
 
     # Convert study results to a serializable format
     results = {
