@@ -34,7 +34,7 @@
     "early_stop_patience": 30,
     "training_fraction": 0.8,
     "num_epochs": 300,
-    "nb_runs": 10,
+    "nb_runs": 5,
     "seed": 42,
     "print_every": 10,
     "param_grid": {

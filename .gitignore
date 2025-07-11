@@ -40,6 +40,7 @@ create_4Dmri_dataset_spec-file.txt
 /Time_series_forecasting/e. Log txt files
 /Time_series_forecasting/models/*
 !/Time_series_forecasting/models/training_with_eth_dataset/
+!/Time_series_forecasting/models/training_with_magdeburg_dataset/
 
 # Excluding gifs inside the visualisation folder except a few ones
 /Image_prediction/visualization/*.gif
