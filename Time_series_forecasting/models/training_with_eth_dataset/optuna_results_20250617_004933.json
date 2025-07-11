@@ -1,0 +1,454 @@
+{
+  "best_params": {
+    "seq_length": 11,
+    "learning_rate": 0.0005,
+    "num_layers": 1,
+    "d_model": 16
+  },
+  "best_value": 0.41426348090171816,
+  "best_trial": 15,
+  "datetime": "20250617_004933",
+  "n_trials": 40,
+  "all_trials": [
+    {
+      "number": 0,
+      "value": 0.7524321665366491,
+      "params": {
+        "seq_length": 34,
+        "learning_rate": 0.0001,
+        "num_layers": 1,
+        "d_model": 16
+      },
+      "state": "COMPLETE"
+    },
+    {
+      "number": 1,
+      "value": 0.5103269793093205,
+      "params": {
+        "seq_length": 11,
+        "learning_rate": 0.0001,
+        "num_layers": 1,
+        "d_model": 16
+      },
+      "state": "COMPLETE"
+    },
+    {
+      "number": 2,
+      "value": 0.5099500261247158,
+      "params": {
+        "seq_length": 11,
+        "learning_rate": 0.0001,
+        "num_layers": 2,
+        "d_model": 16
+      },
+      "state": "COMPLETE"
+    },
+    {
+      "number": 3,
+      "value": 0.8221708933512369,
+      "params": {
+        "seq_length": 57,
+        "learning_rate": 0.0001,
+        "num_layers": 1,
+        "d_model": 8
+      },
+      "state": "COMPLETE"
+    },
+    {
+      "number": 4,
+      "value": 0.45217274129390717,
+      "params": {
+        "seq_length": 11,
+        "learning_rate": 0.0005,
+        "num_layers": 1,
+        "d_model": 8
+      },
+      "state": "COMPLETE"
+    },
+    {
+      "number": 5,
+      "value": 0.46160491928458214,
+      "params": {
+        "seq_length": 11,
+        "learning_rate": 0.0005,
+        "num_layers": 2,
+        "d_model": 8
+      },
+      "state": "COMPLETE"
+    },
+    {
+      "number": 6,
+      "value": 0.8170823022723198,
+      "params": {
+        "seq_length": 45,
+        "learning_rate": 0.0001,
+        "num_layers": 2,
+        "d_model": 16
+      },
+      "state": "COMPLETE"
+    },
+    {
+      "number": 7,
+      "value": 0.6350745643888202,
+      "params": {
+        "seq_length": 23,
+        "learning_rate": 0.0005,
+        "num_layers": 1,
+        "d_model": 8
+      },
+      "state": "COMPLETE"
+    },
+    {
+      "number": 8,
+      "value": 0.9050277009606361,
+      "params": {
+        "seq_length": 45,
+        "learning_rate": 0.0005,
+        "num_layers": 2,
+        "d_model": 8
+      },
+      "state": "COMPLETE"
+    },
+    {
+      "number": 9,
+      "value": 0.9104280312856037,
+      "params": {
+        "seq_length": 57,
+        "learning_rate": 0.0001,
+        "num_layers": 2,
+        "d_model": 16
+      },
+      "state": "COMPLETE"
+    },
+    {
+      "number": 10,
+      "value": 0.7649308562278747,
+      "params": {
+        "seq_length": 34,
+        "learning_rate": 0.0001,
+        "num_layers": 2,
+        "d_model": 16
+      },
+      "state": "COMPLETE"
+    },
+    {
+      "number": 11,
+      "value": 0.4297872055321932,
+      "params": {
+        "seq_length": 11,
+        "learning_rate": 0.0005,
+        "num_layers": 2,
+        "d_model": 16
+      },
+      "state": "COMPLETE"
+    },
+    {
+      "number": 12,
+      "value": 0.827615816394488,
+      "params": {
+        "seq_length": 34,
+        "learning_rate": 0.0005,
+        "num_layers": 2,
+        "d_model": 16
+      },
+      "state": "COMPLETE"
+    },
+    {
+      "number": 13,
+      "value": 0.7728349844614664,
+      "params": {
+        "seq_length": 34,
+        "learning_rate": 0.0001,
+        "num_layers": 1,
+        "d_model": 8
+      },
+      "state": "COMPLETE"
+    },
+    {
+      "number": 14,
+      "value": 0.9554845929145813,
+      "params": {
+        "seq_length": 57,
+        "learning_rate": 0.0005,
+        "num_layers": 2,
+        "d_model": 16
+      },
+      "state": "COMPLETE"
+    },
+    {
+      "number": 15,
+      "value": 0.41426348090171816,
+      "params": {
+        "seq_length": 11,
+        "learning_rate": 0.0005,
+        "num_layers": 1,
+        "d_model": 16
+      },
+      "state": "COMPLETE"
+    },
+    {
+      "number": 16,
+      "value": 1.0507289131482442,
+      "params": {
+        "seq_length": 57,
+        "learning_rate": 0.0005,
+        "num_layers": 1,
+        "d_model": 16
+      },
+      "state": "COMPLETE"
+    },
+    {
+      "number": 17,
+      "value": 0.6303115912846156,
+      "params": {
+        "seq_length": 23,
+        "learning_rate": 0.0005,
+        "num_layers": 2,
+        "d_model": 8
+      },
+      "state": "COMPLETE"
+    },
+    {
+      "number": 18,
+      "value": 0.6147095893110548,
+      "params": {
+        "seq_length": 23,
+        "learning_rate": 0.0005,
+        "num_layers": 2,
+        "d_model": 16
+      },
+      "state": "COMPLETE"
+    },
+    {
+      "number": 19,
+      "value": 0.8008858487010002,
+      "params": {
+        "seq_length": 45,
+        "learning_rate": 0.0001,
+        "num_layers": 2,
+        "d_model": 8
+      },
+      "state": "COMPLETE"
+    },
+    {
+      "number": 20,
+      "value": 0.875434435904026,
+      "params": {
+        "seq_length": 45,
+        "learning_rate": 0.0005,
+        "num_layers": 1,
+        "d_model": 8
+      },
+      "state": "COMPLETE"
+    },
+    {
+      "number": 21,
+      "value": 0.5679923921823502,
+      "params": {
+        "seq_length": 11,
+        "learning_rate": 0.0001,
+        "num_layers": 2,
+        "d_model": 8
+      },
+      "state": "COMPLETE"
+    },
+    {
+      "number": 22,
+      "value": 0.7680882304906845,
+      "params": {
+        "seq_length": 34,
+        "learning_rate": 0.0005,
+        "num_layers": 2,
+        "d_model": 8
+      },
+      "state": "COMPLETE"
+    },
+    {
+      "number": 23,
+      "value": 1.0496075550715127,
+      "params": {
+        "seq_length": 57,
+        "learning_rate": 0.0005,
+        "num_layers": 1,
+        "d_model": 8
+      },
+      "state": "COMPLETE"
+    },
+    {
+      "number": 24,
+      "value": 0.8941890597343445,
+      "params": {
+        "seq_length": 45,
+        "learning_rate": 0.0005,
+        "num_layers": 1,
+        "d_model": 16
+      },
+      "state": "COMPLETE"
+    },
+    {
+      "number": 25,
+      "value": 0.7741040041049322,
+      "params": {
+        "seq_length": 34,
+        "learning_rate": 0.0001,
+        "num_layers": 2,
+        "d_model": 8
+      },
+      "state": "COMPLETE"
+    },
+    {
+      "number": 26,
+      "value": 0.8499223490556082,
+      "params": {
+        "seq_length": 34,
+        "learning_rate": 0.0005,
+        "num_layers": 1,
+        "d_model": 16
+      },
+      "state": "COMPLETE"
+    },
+    {
+      "number": 27,
+      "value": 0.6590987495013646,
+      "params": {
+        "seq_length": 23,
+        "learning_rate": 0.0001,
+        "num_layers": 1,
+        "d_model": 8
+      },
+      "state": "COMPLETE"
+    },
+    {
+      "number": 28,
+      "value": 0.6710152728216989,
+      "params": {
+        "seq_length": 23,
+        "learning_rate": 0.0001,
+        "num_layers": 2,
+        "d_model": 16
+      },
+      "state": "COMPLETE"
+    },
+    {
+      "number": 29,
+      "value": 0.7357014457384745,
+      "params": {
+        "seq_length": 34,
+        "learning_rate": 0.0005,
+        "num_layers": 1,
+        "d_model": 8
+      },
+      "state": "COMPLETE"
+    },
+    {
+      "number": 30,
+      "value": 0.6086720986025675,
+      "params": {
+        "seq_length": 23,
+        "learning_rate": 0.0005,
+        "num_layers": 1,
+        "d_model": 16
+      },
+      "state": "COMPLETE"
+    },
+    {
+      "number": 31,
+      "value": 0.8356017827987671,
+      "params": {
+        "seq_length": 57,
+        "learning_rate": 0.0001,
+        "num_layers": 1,
+        "d_model": 16
+      },
+      "state": "COMPLETE"
+    },
+    {
+      "number": 32,
+      "value": 0.6753954827785492,
+      "params": {
+        "seq_length": 23,
+        "learning_rate": 0.0001,
+        "num_layers": 2,
+        "d_model": 8
+      },
+      "state": "COMPLETE"
+    },
+    {
+      "number": 33,
+      "value": 0.7615225195884705,
+      "params": {
+        "seq_length": 45,
+        "learning_rate": 0.0001,
+        "num_layers": 1,
+        "d_model": 16
+      },
+      "state": "COMPLETE"
+    },
+    {
+      "number": 34,
+      "value": 0.6553743651935032,
+      "params": {
+        "seq_length": 23,
+        "learning_rate": 0.0001,
+        "num_layers": 1,
+        "d_model": 16
+      },
+      "state": "COMPLETE"
+    },
+    {
+      "number": 35,
+      "value": 1.0345415274302163,
+      "params": {
+        "seq_length": 57,
+        "learning_rate": 0.0005,
+        "num_layers": 2,
+        "d_model": 8
+      },
+      "state": "COMPLETE"
+    },
+    {
+      "number": 36,
+      "value": 0.9300784786542258,
+      "params": {
+        "seq_length": 57,
+        "learning_rate": 0.0001,
+        "num_layers": 2,
+        "d_model": 8
+      },
+      "state": "COMPLETE"
+    },
+    {
+      "number": 37,
+      "value": 0.9563493698835372,
+      "params": {
+        "seq_length": 45,
+        "learning_rate": 0.0005,
+        "num_layers": 2,
+        "d_model": 16
+      },
+      "state": "COMPLETE"
+    },
+    {
+      "number": 38,
+      "value": 0.7762666940689087,
+      "params": {
+        "seq_length": 45,
+        "learning_rate": 0.0001,
+        "num_layers": 1,
+        "d_model": 8
+      },
+      "state": "COMPLETE"
+    },
+    {
+      "number": 39,
+      "value": 0.55943763256073,
+      "params": {
+        "seq_length": 11,
+        "learning_rate": 0.0001,
+        "num_layers": 1,
+        "d_model": 8
+      },
+      "state": "COMPLETE"
+    }
+  ]
+}
