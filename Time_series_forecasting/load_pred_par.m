@@ -205,17 +205,20 @@ function [pred_par] = load_pred_par(path_par, pred_meth, horizon)
 
         case 'population_transformer' % horizon from excel file - the SHl is loaded from config.json file corresponding to model
 
-            % We are going to use the scaler from the population model instead
+            % We don't use the scaler from the population model but scale data using the sequence we are testing on
             pred_par.NORMALIZE_DATA = true;
 
+            % experimentally faster but can be toggled off
+            pred_par.GPU_COMPUTING = true;
+
             % The model has already been trained, but we do testing in the same way as online methods: tmax_training + 1 is the 1st time index for prediction
-            % pred_par.tmax_training = 160;  % MR data (evaluation on ETH Zurich - CMIG paper)
-            pred_par.tmax_training = 303;  % MR data (evaluation on Magdeburg - CMIG paper) 
+            pred_par.tmax_training = 160;  % MR data (evaluation on ETH Zurich - CMIG paper)
+            % pred_par.tmax_training = 303;  % MR data (evaluation on Magdeburg - CMIG paper) 
 
             % Directory containing the model to load - could technically be in load_path_par() but it's convenient here
             pred_par.base_models_dir = "models";
             % pred_par.models_dir = "training_with_eth_dataset";  % used when evaluating on the Magdeburg dataset
-            pred_par.models_dir = "training_with_magdeburg_dataset";  % used when evaluating on the Magdeburg dataset
+            pred_par.models_dir = "training_with_magdeburg_dataset";  % used when evaluating on the ETH dataset
 
             % constructing the full model directory
             pred_par.models_dir = fullfile(pred_par.base_models_dir, pred_par.models_dir);

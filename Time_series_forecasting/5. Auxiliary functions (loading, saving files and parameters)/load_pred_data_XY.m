@@ -75,7 +75,7 @@ function [ X, Y, Mu, Sg] = load_pred_data_XY( path_par, pred_par)
     Y = double(org_data(:, (k+h):(M+k+h-1)));
     
     % Converting arrays to Matlab 'gpuArray' except for the transformer where gpu interaction is handled directly in Python
-    if pred_par.GPU_COMPUTING & ~strcmp(pred_par.pred_meth, 'transformer') 
+    if pred_par.GPU_COMPUTING & ~strcmp(pred_par.pred_meth, 'transformer') & ~strcmp(pred_par.pred_meth, 'population_transformer') 
         X = gpuArray(X);
         Y = gpuArray(Y);
     end
