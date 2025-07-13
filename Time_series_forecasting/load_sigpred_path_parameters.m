@@ -81,9 +81,9 @@ function [ path_par ] = load_sigpred_path_parameters()
         
     % Normalized PCA weights associated with the time-varying deformation fields in the cine-MR sequence
         string('2. sq sl010 sag Xcs=125 3 cpts 2024 normalised');
-        % string('3. sq sl010 sag Xcs=80 3 cpts 2024 normalised');
-        % string('4. sq sl014 sag Xcs=165 3 cpts 2024 normalised');
-        % string('5. sq sl014 sag Xcs=95 3 cpts 2024 normalised');    
+        string('3. sq sl010 sag Xcs=80 3 cpts 2024 normalised');
+        string('4. sq sl014 sag Xcs=165 3 cpts 2024 normalised');
+        string('5. sq sl014 sag Xcs=95 3 cpts 2024 normalised');    
         % string('2020-11-10_KS81_Nav_Pur_1_3_cpts');
         % string('2020-11-12_QN76_Nav_Pur_1_3_cpts');
         % string('2020-11-17_CS31_Nav_Pur_2_3_cpts');

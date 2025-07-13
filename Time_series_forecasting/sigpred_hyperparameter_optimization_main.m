@@ -60,7 +60,7 @@ for seq_idx = 1:nb_seq
         % Parameters concerning the prediction of the position of objects
         pred_par = load_pred_par(path_par, pred_meth);
         % Adding the transformer module path to all workers if necessary
-        if pred_par.PARALLEL_COMPUTING & strcmp(pred_par.pred_meth, "transformer", "population_transformer")
+        if pred_par.PARALLEL_COMPUTING & (strcmp(pred_par.pred_meth, "transformer") | strcmp(pred_par.pred_meth, "population_transformer"))
             set_python_path_all_workers();
         end
         % Hyperparameters to optimize 
