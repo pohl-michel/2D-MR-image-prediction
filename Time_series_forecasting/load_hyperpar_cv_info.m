@@ -28,7 +28,7 @@ function [ hppars ] = load_hyperpar_cv_info( pred_par )
 
             % Next-frame MR image prediction (CMIG paper)
             % hppars.horizon_tab = [1, 2, 3, 4, 5, 6, 7];  % ETH Zurich
-            hppars.horizon_tab = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14];  % Magdeburg dataset
+            hppars.horizon_tab = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13];  % Magdeburg dataset
             
             hppars.other(1).name = 'SHL';
             % hppars.other(1).val = [6, 12, 18, 24, 30]; % ETH Zurich 
@@ -80,7 +80,7 @@ function [ hppars ] = load_hyperpar_cv_info( pred_par )
             hppars.nb_runs_eval_test = 10;
 
             % hppars.horizon_tab = [1, 2, 3, 4, 5, 6, 7];  % ETH Zurich
-            hppars.horizon_tab = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14];  % Magdeburg dataset      
+            hppars.horizon_tab = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13];  % Magdeburg dataset      
 
             hppars.other(1).name = 'SHL';
             % hppars.other(1).val = [6, 12, 18, 24, 30]; % ETH Zurich 
@@ -109,7 +109,7 @@ function [ hppars ] = load_hyperpar_cv_info( pred_par )
    
             % Next-frame MR image prediction (CMIG paper)
             % hppars.horizon_tab = [1, 2, 3, 4, 5, 6, 7];  % ETH Zurich
-            hppars.horizon_tab = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14];  % Magdeburg dataset
+            hppars.horizon_tab = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13];  % Magdeburg dataset
   
             
         case 'LMS'
@@ -137,7 +137,7 @@ function [ hppars ] = load_hyperpar_cv_info( pred_par )
 
             % Next-frame MR image prediction (CMIG paper)
             % hppars.horizon_tab = [1, 2, 3, 4, 5, 6, 7];  % ETH Zurich
-            hppars.horizon_tab = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14];  % Magdeburg dataset
+            hppars.horizon_tab = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13];  % Magdeburg dataset
             
             hppars.other(1).name = 'SHL';           
             % hppars.other(1).val = [6, 12, 18, 24, 30]; % ETH Zurich 
@@ -174,7 +174,7 @@ function [ hppars ] = load_hyperpar_cv_info( pred_par )
             hppars.nb_runs_eval_test = 250;
             
             % hppars.horizon_tab = [1, 2, 3, 4, 5, 6, 7];  % ETH Zurich
-            hppars.horizon_tab = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14];  % Magdeburg dataset
+            hppars.horizon_tab = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13];  % Magdeburg dataset
 
             hppars.other(1).name = 'SHL'; 
             % hppars.other(1).val = [6, 12, 18, 24, 30]; % ETH Zurich 
@@ -213,7 +213,7 @@ function [ hppars ] = load_hyperpar_cv_info( pred_par )
             hppars.nb_runs_eval_test = 250;            
             
             % hppars.horizon_tab = [1, 2, 3, 4, 5, 6, 7];  % ETH Zurich
-            hppars.horizon_tab = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14];  % Magdeburg dataset
+            hppars.horizon_tab = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13];  % Magdeburg dataset
 
             hppars.other(1).name = 'SHL';
             % hppars.other(1).val = [6, 12, 18, 24, 30]; % ETH Zurich 
@@ -256,7 +256,7 @@ function [ hppars ] = load_hyperpar_cv_info( pred_par )
             hppars.nb_runs_eval_test = 250;  
    
             % hppars.horizon_tab = [1, 2, 3, 4, 5, 6, 7];  % ETH Zurich
-            hppars.horizon_tab = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14];  % Magdeburg dataset 
+            hppars.horizon_tab = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13];  % Magdeburg dataset 
 
             hppars.other(1).name = 'SHL';
             % hppars.other(1).val = [6, 12, 18, 24, 30]; % ETH Zurich 
@@ -298,7 +298,7 @@ function [ hppars ] = load_hyperpar_cv_info( pred_par )
             hppars.nb_runs_eval_test = 250;  
    
             % hppars.horizon_tab = [1, 2, 3, 4, 5, 6, 7];  % ETH Zurich
-            hppars.horizon_tab = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14];  % Magdeburg dataset
+            hppars.horizon_tab = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13];  % Magdeburg dataset
 
             hppars.other(1).name = 'SHL';
             % hppars.other(1).val = [6, 12, 18, 24, 30]; % ETH Zurich 
@@ -343,7 +343,7 @@ function [ hppars ] = load_hyperpar_cv_info( pred_par )
 
             % Next-frame MR image prediction (CMIG paper)
             % hppars.horizon_tab = [1, 2, 3, 4, 5, 6, 7];  % ETH Zurich
-            hppars.horizon_tab = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14];  % Magdeburg dataset
+            hppars.horizon_tab = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13];  % Magdeburg dataset
 
             hppars.other(1).name = 'SHL';
             % hppars.other(1).val = [6, 12, 18, 24, 30]; % ETH Zurich 
@@ -366,7 +366,7 @@ function [ hppars ] = load_hyperpar_cv_info( pred_par )
 
             % Next-frame MR image prediction (CMIG paper)
             hppars.horizon_tab = [1, 2, 3, 4, 5, 6, 7];  % ETH Zurich
-            % hppars.horizon_tab = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14];  % Magdeburg dataset
+            % hppars.horizon_tab = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13];  % Magdeburg dataset
             % hppars.horizon_tab = [2]; % for testing
 
             % There is no hyperparameter to optimize on, rather we load trained models and evaluate them

@@ -242,7 +242,7 @@ function [pred_par] = load_pred_par(path_par, pred_meth, horizon)
 
             % pred_par.nb_runs = 2; % for debugging - uncomment if you have many models and want to test with all of them
 
-            pred_par.PARALLEL_COMPUTING = false; % for testing, at the moment (and it's not critical right now)
+            pred_par.PARALLEL_COMPUTING = false;  % not critical: no grid search over the forecasting algorithm parameters in matlab
 
     end
     
