@@ -167,14 +167,7 @@ end
 function optim_hrz_idx = perform_grid_train_and_eval(optim_hrz_idx, hrz_idx, size_other_hyppr_tab, pred_par, hppars, path_par, beh_par, disp_par)
 % Perform training and evaluation using grid search with the grid defined in hppars for a specific horizon, and storing the results in optim_hrz_idx
 
-    pred_par_h = pred_par;
-    crt_horizon = hppars.horizon_tab(hrz_idx);
-    pred_par_h.horizon = crt_horizon;
-    if strcmp(pred_par_h.pred_meth, "population_transformer")
-        % updating pred_par_h to load the SHL in the transformer config (so that data is loaded correctly in load_pred_data_XY())
-        pred_par_h = update_pred_par_with_transformer_config(path_par, pred_par_h, crt_horizon);
-    end
-   
+    pred_par_h = get_pred_par_h(pred_par, hppars, hrz_idx, path_par);
     v_h = ones(1, hppars.nb_additional_params);
     nb_calc_crt = 1;     
     

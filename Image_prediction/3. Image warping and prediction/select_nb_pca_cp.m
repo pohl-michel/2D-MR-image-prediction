@@ -60,16 +60,8 @@ function [eval_results, best_pred_par_struct, best_pca_cp_tab] = select_nb_pca_c
         %% 2) we calculate the c.c. between the predicted and ground-truth images of the c-v set or the registration error to determine the best nb. of PCA coeffs for each horizon value h            
         parfor hrz_idx = 1:hppars.nb_hrz_val
 
-            pred_par_h = pred_par;
             warp_par_h = warp_par;
-
-            crt_horizon = hppars.horizon_tab(hrz_idx);
-            pred_par_h.horizon = crt_horizon;
-
-            if strcmp(pred_par_h.pred_meth, "population_transformer")
-                % updating pred_par_h to load the SHL in the transformer config (so that data is loaded correctly in load_pred_data_XY())
-                pred_par_h = update_pred_par_with_transformer_config(path_par, pred_par_h, crt_horizon);
-            end
+            pred_par_h = get_pred_par_h(pred_par, hppars, hrz_idx, path_par)
             for hppar_idx = 1:hppars.nb_additional_params % We use the best parameters for performing prediction on the cv set
                 pred_par_h.(hppars.other(hppar_idx).name) = best_par.other_hyppar_tab(hrz_idx, hppar_idx);
             end

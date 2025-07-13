@@ -35,23 +35,14 @@ function eval_im_pred_best_par(eval_results, best_pred_par_struct, best_pca_cp_t
 
     parfor hrz_idx = 1:hppars.nb_hrz_val
 
-        pred_par_h = pred_par;
         br_model_par_h = br_model_par;
+        br_model_par_h.nb_pca_cp = best_pca_cp_tab(hrz_idx) + br_model_par_h.nb_pca_cp_min - 1;
+
         path_par_h = path_par;
         warp_par_h = warp_par;
         eval_results_h = eval_results;
-
-        pred_par_h.horizon = hppars.horizon_tab(hrz_idx);
-        br_model_par_h.nb_pca_cp = best_pca_cp_tab(hrz_idx) + br_model_par_h.nb_pca_cp_min - 1;
-
-        % pred_par_h = pred_par;
-        crt_horizon = hppars.horizon_tab(hrz_idx);
-        % pred_par_h.horizon = crt_horizon;
-        if strcmp(pred_par_h.pred_meth, "population_transformer")
-            % updating pred_par_h to load the SHL in the transformer config (so that data is loaded correctly in load_pred_data_XY())
-            pred_par_h = update_pred_par_with_transformer_config(path_par, pred_par_h, crt_horizon);
-        end
-
+        
+        pred_par_h = get_pred_par_h(pred_par, hppars, hrz_idx, path_par);
         for hppar_idx = 1:hppars.nb_additional_params
             pred_par_h.(hppars.other(hppar_idx).name) = best_pred_par_struct(br_model_par_h.nb_pca_cp - br_model_par_h.nb_pca_cp_min + 1).other_hyppar_tab(hrz_idx, hppar_idx);
         end                
