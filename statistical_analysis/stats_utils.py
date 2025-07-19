@@ -5,20 +5,6 @@ import warnings
 
 warnings.filterwarnings("ignore")
 
-# For shortening sizes in Python
-METHODS = {
-    "RNN with RTRL": "RTRL",
-    "RNN with UORO": "UORO",
-    "RNN with SnAp1": "SnAp1",
-    "RNN with DNI": "DNI",
-    "RNN with fixed W": "Fixed W",
-    "sequence-specific transformer": "Seq-Transformer",
-    "population transformer": "Pop-Transformer",
-    "No prediction (lastest PCA weight)": "Prev. weight",
-    "multivariate LMS": "LMS",
-    "Previous image as prediction": "Prev. image",
-}
-
 
 def cohens_d(x, y):
     """
@@ -94,7 +80,7 @@ def load_excel_data(file_path, sheet_name, top_left_cell, bottom_right_cell):
     return data_subset
 
 
-def process_forecasting_data(file_path, sheet_name, top_left_cell, bottom_right_cell, target_metric):
+def process_forecasting_data(file_path, sheet_name, top_left_cell, bottom_right_cell, target_metric, methods=None):
     """
     Process the forecasting data to extract method comparisons for a specific metric.
 
@@ -117,7 +103,8 @@ def process_forecasting_data(file_path, sheet_name, top_left_cell, bottom_right_
     data["Method"] = data["Method"].fillna(method="ffill")
 
     # Shorten method names
-    data["Method"].replace(METHODS, inplace=True)
+    if methods is not None:
+        data["Method"].replace(methods, inplace=True)
 
     # Filter out confidence rows and focus on the target metric
     target_rows = data[
@@ -262,7 +249,7 @@ def create_combined_results_table(p_values_df, cohens_d_df, median_diff_df, sign
 
 
 # Main analysis function
-def analyze_forecasting_methods(file_path, sheet_name, top_left_cell, bottom_right_cell, target_metric):
+def analyze_forecasting_methods(file_path, sheet_name, top_left_cell, bottom_right_cell, target_metric, methods=None):
     """
     Complete analysis pipeline for forecasting method comparison.
 
@@ -281,13 +268,24 @@ def analyze_forecasting_methods(file_path, sheet_name, top_left_cell, bottom_rig
     print(f"Loading data from {sheet_name}, range {top_left_cell}:{bottom_right_cell}")
 
     # Process data
-    methods_data = process_forecasting_data(file_path, sheet_name, top_left_cell, bottom_right_cell, target_metric)
+    methods_data = process_forecasting_data(
+        file_path, sheet_name, top_left_cell, bottom_right_cell, target_metric, methods
+    )
 
     print(f"Found {len(methods_data)} methods with data for {target_metric}")
     print("Methods:", list(methods_data.index))
 
     # Perform statistical analysis
     p_values_df, cohens_d_df, median_diff_df = perform_statistical_analysis(methods_data)
+
+    # Reordering the dataframes according to the order of methods in METHODS
+    if methods is not None:
+        methods_order = list(methods.values())  # preserves order in Python 3.7+
+        methods_order = [m for m in methods_order if m in methods_data.index]
+        # removing methods with n/a values, e.g., "previous image as prediction" has no corresponding DVF errors
+        p_values_df = p_values_df.loc[methods_order, methods_order]
+        cohens_d_df = cohens_d_df.loc[methods_order, methods_order]
+        median_diff_df = median_diff_df.loc[methods_order, methods_order]
 
     # Create combined results table
     combined_table = create_combined_results_table(p_values_df, cohens_d_df, median_diff_df)
