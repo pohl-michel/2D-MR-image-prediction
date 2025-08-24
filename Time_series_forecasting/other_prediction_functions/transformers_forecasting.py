@@ -869,6 +869,8 @@ def time_series_augmentation_suite(batch_data, batch_targets, config: dict):
 
     Returns:
         Augmented batch data and targets
+
+    Note: drift implementation to improve/correct based on horizon
     """
     if config is None:
         raise ValueError("No data augmentation configuration provided. Please provide a valid config dictionary.")
@@ -942,7 +944,7 @@ def time_series_augmentation_suite(batch_data, batch_targets, config: dict):
                 augmented_data[i, :, j] += drift
 
                 # Adjust target based on final drift value
-                final_drift = drift[-1].item()
+                final_drift = drift[-1].item()  # should be based on the horizon - to correct/improve
                 augmented_targets[i, j] += final_drift
 
     return augmented_data, augmented_targets
