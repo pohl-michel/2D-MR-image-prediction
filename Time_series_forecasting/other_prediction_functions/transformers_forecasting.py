@@ -516,6 +516,9 @@ def hyperparameter_tuning(
         # Add to config (note: this will overwrite existing values)
         temp_config = config.copy()
         temp_config.update(params)
+
+        # Potential improvement: comment "temp_config["early_stop_patience"] = None"
+        # allowing early stopping both for grid search and final model retraining, for consistency
         temp_config["early_stop_patience"] = None  # No early stopping during tuning
 
         print(f"Generating sequences with length {temp_config['seq_length']}...")  # can be improved: we could use cache
