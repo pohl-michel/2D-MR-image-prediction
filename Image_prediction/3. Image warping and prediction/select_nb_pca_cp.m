@@ -38,7 +38,7 @@ function [eval_results, best_pred_par_struct, best_pca_cp_tab] = select_nb_pca_c
 
     beh_par.EVALUATE_IN_ROI = false; % here we will select the number of PCA components based on the whole image
 
-    for nb_pca_cp=br_model_par.nb_pca_cp_min:br_model_par.nb_pca_cp_min
+    for nb_pca_cp=br_model_par.nb_pca_cp_min:br_model_par.nb_pca_cp_max
 
         % nb_pca_cp_max was redefined as the max nb of PCA components considered, and nb_pca_cp becomes the current value in the loop.
         br_model_par.nb_pca_cp = nb_pca_cp;
