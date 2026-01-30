@@ -29,3 +29,7 @@
 *.pdf binary
 *.png binary
 *.xlsx binary
+
+# To help for code review
+*.IMA linguist-generated=true
+*.dcm linguist-generated=true
