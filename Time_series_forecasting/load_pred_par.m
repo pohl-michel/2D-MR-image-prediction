@@ -1,9 +1,10 @@
-function [pred_par] = load_pred_par(path_par, pred_meth)
+function [pred_par] = load_pred_par(path_par, pred_meth, horizon)
 % LOAD_PRED_PAR Loads prediction parameters from a specified file and sets additional parameters for different prediction methods.
 %
 % This function reads the prediction parameters stored in a file and returns them in the `pred_par` structure. 
 % Depending on the prediction method selected (or passed as an argument), additional settings like normalization,
 % gradient clipping, GPU computing, and other algorithm-specific parameters are set.
+% horizon used only for population transformer, as we need to load the shl from the trained model
 %
 % INPUTS:
 % - path_par (struct): Structure containing path parameters, particularly `path_par.pred_par_filename_suffix` and `path_par.input_seq_dir`, 
@@ -20,6 +21,8 @@ function [pred_par] = load_pred_par(path_par, pred_meth)
 %   - 'SnAp-1' (default, Sparse 1-step Approximation)
 %   - 'DNI' (Decoupled Neural Interfaces)
 %   - 'fixed W' (RNN model with fixed hidden layer parameters)
+%   - 'transformer' (transformer encoder with final 1-layer feedforward network)
+%   - 'population_transformer' (transformer encoder with final 1-layer feedforward network, trained offline on multiple sequences)
 %
 % OUTPUT:
 % - pred_par (struct): A structure containing the loaded and computed prediction parameters
@@ -53,9 +56,13 @@ function [pred_par] = load_pred_par(path_par, pred_meth)
     pred_par.cross_val_metric = 'nRMSE';  % possible options: "nRMSE" or "RMSE"
 
     switch nargin
-        case 1 % Manually choosing the prediction method in image_prediction_main.m (if OPTIMIZE_NB_PCA_CP == false) or signal_prediction_main.m
-            pred_par.pred_meth = 'SnAp-1';
-        case 2 % Prediction method specified in image_prediction_main.m (if OPTIMIZE_NB_PCA_CP == true) or sigpred_hyperparameter_optimization_main.m
+        case 1 % Manually choosing the prediction method in signal_prediction_main.m
+            pred_par.pred_meth = "population_transformer"; % "population_transformer" for instance (you can choose another method)
+            horizon = pred_par.horizon;
+        case 2 % Prediction method specified in image_prediction_main.m or sigpred_hyperparameter_optimization_main.m
+            pred_par.pred_meth = pred_meth;
+            horizon = pred_par.horizon;
+        case 3    
             pred_par.pred_meth = pred_meth;
     end
     
@@ -65,6 +72,7 @@ function [pred_par] = load_pred_par(path_par, pred_meth)
             pred_par.nb_runs = 1;  % not a stochastic method
             pred_par.NORMALIZE_DATA = false;
             pred_par.tmax_training = 160;  % MR data (ETH Zurich - CMIG paper)
+            % pred_par.tmax_training = 303;  % MR data (Magdeburg - CMIG paper)
 
             % pred_par.tmax_training = 180; % markers 3.33 Hz (CPMB paper)
             % pred_par.tmax_training = 540; % markers 10 Hz (CPMB paper)
@@ -116,7 +124,8 @@ function [pred_par] = load_pred_par(path_par, pred_meth)
         case 'univariate linear regression'
             pred_par.nb_runs = 1; % not a stochastic method
             pred_par.NORMALIZE_DATA = false;
-            pred_par.tmax_training = 160; % cine-MR sequence prediction (CMIG paper)
+            % pred_par.tmax_training = 160; % cine-MR sequence prediction (CMIG paper)
+            pred_par.tmax_training = 303;  % MR data (Magdeburg - CMIG paper)
 
             % pred_par.tmax_training = 180; % markers 3.33 Hz (CPMB paper)
             % pred_par.tmax_training = 540; % markers 10 Hz (CPMB paper)
@@ -155,11 +164,85 @@ function [pred_par] = load_pred_par(path_par, pred_meth)
 
             pred_par.nb_runs = 1;  % not a stochastic method
             pred_par.NORMALIZE_DATA = true;
-            pred_par.tmax_training = 160;  % MR data (ETH Zurich - although not in the CMIG paper)
+            % pred_par.tmax_training = 160;  % MR data (ETH Zurich - although not in the CMIG paper)
+            pred_par.tmax_training = 303;  % MR data (Magdeburg - CMIG paper)
 
             % pred_par.tmax_training = 180; % markers 3.33 Hz (CPMB paper)
             % pred_par.tmax_training = 540; % markers 10 Hz (CPMB paper)
-            % pred_par.tmax_training = 1620; % markers 30 Hz (CPMB paper)             
+            % pred_par.tmax_training = 1620; % markers 30 Hz (CPMB paper)     
+
+        case 'transformer'
+
+            pred_par.NORMALIZE_DATA = true;
+            pred_par.tmax_training = 160;  % MR data (ETH Zurich - CMIG paper)
+            % pred_par.tmax_training = 303;  % MR data (Magdeburg - CMIG paper) 
+
+            % default parameters specific to the transformer
+            pred_par.batch_size = 32;
+            pred_par.num_epochs = 50;        
+            % pred_par.d_model = 16;  % embedding dimension - should be divisible by nhead - comment to load from Excel
+            % pred_par.num_layers = 2;  % comment that to load from the Excel file instead  
+            % pred_par.learn_rate = 0.0001;  % comment that to load from the Excel file instead            
+            pred_par.nhead = 2;
+            pred_par.dim_feedforward = 0;  % Setting that value to zero sets the encoder MLP hidden layer as proportional to d_model 
+            pred_par.final_layer_dim = 0;  % Setting that value to zero sets the final layer dim to geometric avg. of input and output
+            pred_par.dropout = 0.5;
+            pred_par.GPU_COMPUTING = true;  % experimentally faster but can be toggled off
+            pred_par.print_every = 25;  % print the loss value every "print_every" step
+            % pred_par.nb_runs = 2;  % for testing - normally loaded from pred_par.xlsx file
+
+            % Add Python module directory if not already in sys.path
+            moduleDir = get_python_transformers_module_dir();
+            if count(py.sys.path, moduleDir) == 0
+                insert(py.sys.path, int32(0), moduleDir);
+            end
+        
+            % Check and set KMP_DUPLICATE_LIB_OK only if not already set
+            currentVal = getenv("KMP_DUPLICATE_LIB_OK");
+            if ~strcmp(currentVal, "TRUE")
+                setenv("KMP_DUPLICATE_LIB_OK", "TRUE");
+            end
+
+        case 'population_transformer' % horizon from excel file - the SHl is loaded from config.json file corresponding to model
+
+            % We don't use the scaler from the population model but scale data using the sequence we are testing on
+            pred_par.NORMALIZE_DATA = true;
+
+            % experimentally faster but can be toggled off
+            pred_par.GPU_COMPUTING = true;
+
+            % The model has already been trained, but we do testing in the same way as online methods: tmax_training + 1 is the 1st time index for prediction
+            pred_par.tmax_training = 160;  % MR data (evaluation on ETH Zurich - CMIG paper)
+            % pred_par.tmax_training = 303;  % MR data (evaluation on Magdeburg - CMIG paper) 
+
+            % Directory containing the model to load - could technically be in load_path_par() but it's convenient here
+            pred_par.base_models_dir = "models";
+            % pred_par.models_dir = "training_with_eth_dataset";  % used when evaluating on the Magdeburg dataset
+            pred_par.models_dir = "training_with_magdeburg_dataset";  % used when evaluating on the ETH dataset
+
+            % constructing the full model directory
+            pred_par.models_dir = fullfile(pred_par.base_models_dir, pred_par.models_dir);
+
+            % Add Python module directory if not already in sys.path
+            moduleDir = get_python_transformers_module_dir();
+            if count(py.sys.path, moduleDir) == 0
+                insert(py.sys.path, int32(0), moduleDir);
+            end
+        
+            % Check and set KMP_DUPLICATE_LIB_OK only if not already set
+            currentVal = getenv("KMP_DUPLICATE_LIB_OK");
+            if ~strcmp(currentVal, "TRUE")
+                setenv("KMP_DUPLICATE_LIB_OK", "TRUE");
+            end
+
+            % updating pred_par_h to load the SHL in the transformer config (so that data is loaded correctly in load_pred_data_XY())
+            % We assume that the config for the first transformer config is similar to the others (could add check in further improvements)
+            % config_path = sprintf('%s/horizon_%d/transformer_h2_model1', path_par.temp_var_dir, horizon); % uncomment to specify by hand (if no date provided)
+            pred_par = update_pred_par_with_transformer_config(path_par, pred_par, horizon); % (we need the SHL to load the data correctly in load_pred_data_XY)
+
+            % pred_par.nb_runs = 2; % for debugging - uncomment if you have many models and want to test with all of them
+
+            pred_par.PARALLEL_COMPUTING = false;  % not critical: no grid search over the forecasting algorithm parameters in matlab
 
     end
     

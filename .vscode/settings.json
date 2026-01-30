@@ -1,0 +1,17 @@
+{
+    "[python]":{
+        "editor.formatOnType": false,
+        "editor.defaultFormatter": "ms-python.black-formatter",
+        "editor.formatOnSave": true,
+    },
+    "[notebook]":{
+        "editor.defaultFormatter": "ms-python.black-formatter",
+    },
+    "notebook.formatOnSave.enabled": true,
+    "[json]":{
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
+        "editor.formatOnSave": true,
+        "editor.tabSize": 4
+    },
+    "editor.rulers": [120]
+}

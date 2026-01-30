@@ -1,5 +1,5 @@
 function save_main_DVF_jpg(beh_par, path_par, disp_par, OF_par, im_par, br_model_par, W, Xtrain_mean)
-% Loads the optical flow previously calculated by compute_2Dof and displays it on top of the initial image at t=1.
+% Displays the mean DVF over time and its principal components on top of the initial image at t=1.
 % The DVF images are saved in the folder path_par.im_par_filename.
 %
 % Author : Pohl Michel
@@ -9,7 +9,8 @@ function save_main_DVF_jpg(beh_par, path_par, disp_par, OF_par, im_par, br_model
 
     
     % loading image at time t=1
-    im_t1 = enhance_2Dim(load_crop_filter2D(1, beh_par.CROP_FOR_DISP_SAVE, false, 0, im_par, path_par.input_im_dir), true);    
+    PERFORM_ENHANCEMENT = false;
+    im_t1 = enhance_2Dim(load_crop_filter2D(1, beh_par.CROP_FOR_DISP_SAVE, false, 0, im_par, path_par.input_im_dir), PERFORM_ENHANCEMENT);    
         % the image is cropped if we select a specific region where the optical flow should be displayed (beh_par.CROP_FOR_DISPLAY = 1)
         % The image is not filtered because it is used to display the optical flow here (FILTER = false)
     

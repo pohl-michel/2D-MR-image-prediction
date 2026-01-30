@@ -50,17 +50,25 @@ path_par = load_impred_path_parameters();
 % Input image sequences
 input_im_dir_suffix_tab = [
     % string('add your input sequence directory here');
-    string('2. sq sl010 sag Xcs=125');
-    string('3. sq sl010 sag Xcs=80');   
-    string('4. sq sl014 sag Xcs=165');  
-    string('5. sq sl014 sag Xcs=95');  
+    % string('2. sq sl010 sag Xcs=125');
+    % string('3. sq sl010 sag Xcs=80');   
+    % string('4. sq sl014 sag Xcs=165');  
+    % string('5. sq sl014 sag Xcs=95');
+    string('2020-11-10_KS81_Nav_Pur_1');
+    string('2020-11-12_QN76_Nav_Pur_1');   
+    string('2020-11-17_CS31_Nav_Pur_2');  
+    string('2020-11-17_JY02_Nav_Pur_2');
+    string('2020-11-23_ON65_Nav_Pur_2');
+    string('2020-11-23_PS11_Nav_Pur_1');   
+    string('2020-11-25_II29_Nav_Pur_1');  
+    string('2020-11-26_NE38_Nav_Pur_1');    
     ];
 
 % Prediction methods to evaluate if beh_par.OPTIMIZE_NB_PCA_CP == true, otherwise the prediction method is that specified in load_pred_par.m
-pred_meths = {'multivariate linear regression', 'LMS', 'UORO', 'SnAp-1', 'DNI', 'RTRL v2', 'no prediction', 'fixed W'};
+pred_meths = {'multivariate linear regression', 'LMS', 'UORO', 'SnAp-1', 'DNI', 'RTRL v2', 'no prediction', 'fixed W', 'transformer', "population_transformer"};
 
 % Set the number of PCA components to use for each sequence
-br_model_par.nb_pca_cp_tab = [4, 4, 4, 4]; % length = nb of sequences to process
+br_model_par.nb_pca_cp_tab = [4, 4, 4, 4, 4, 4, 4, 4]; % length = nb of sequences to process
 
 % Number of image sequences to process
 nb_seq = length(input_im_dir_suffix_tab);
@@ -79,10 +87,6 @@ for im_seq_idx = 1:nb_seq
     
     % Load parameters for display options (visualization settings)
     disp_par = load_impred_display_parameters(path_par);
-
-    % Load parameters for image warping
-    warp_par = load_warp_par();
-    nb_runs_for_cc_eval = warp_par.nb_runs_for_cc_eval;  % number of evaluation runs for image warping
     
     % Parameters of the breathing model (here the PCA respiratory model)
     br_model_par.nb_pca_cp = br_model_par.nb_pca_cp_tab(im_seq_idx);  % that's the max nb of PCA components when performing hyper-parameter optimization (i.e., when beh_par.OPTIMIZE_NB_PCA_CP is set to true)
@@ -99,7 +103,7 @@ for im_seq_idx = 1:nb_seq
 
     % Save original image sequences and region of interest (ROI)
     if beh_par.SAVE_ORG_IM_SQ
-        save2Dimseq(im_par, path_par, disp_par);
+        save2Dimseq(im_par, path_par, disp_par, beh_par);
     end       
     if beh_par.SAVE_ROI_DISPLAY
         saveROIposition(im_par, path_par, disp_par);
@@ -107,7 +111,7 @@ for im_seq_idx = 1:nb_seq
     
     % Compute the optical flow if needed
     if beh_par.COMPUTE_OPTICAL_FLOW
-        eval_results = compute_2Dof(OF_par, im_par, path_par);  % bug fix/improvement: rather pass eval_results as a parameter to update 
+        eval_results = compute_2Dof(OF_par, im_par, path_par, eval_results);  % bug fix/improvement: rather pass eval_results as a parameter to update 
     end
 
     % Save the computed optical flow as images (JPG format)
@@ -125,17 +129,46 @@ for im_seq_idx = 1:nb_seq
         % Loop through prediction methods and perform hyper-parameter optimization and evaluation of the test set for each of these methods
         for pred_meth_idx = 1:length(pred_meths)
             pred_meth = pred_meths{pred_meth_idx};
+
+            % Load parameters for image warping
+            warp_par = load_warp_par(pred_meth);         
+
+            % Adding the transformer module path to all workers if necessary
+            if strcmp(pred_meth, "transformer") | strcmp(pred_meth, "population_transformer")
+                set_python_path_all_workers();
+            end
+
+            if strcmp(pred_meth, "population_transformer")
+                pred_par = load_pred_par(path_par, pred_meth); % Getting the number of features expected by the trained transformer
+                br_model_par.nb_pca_cp_min = pred_par.n_features;
+                br_model_par.nb_pca_cp_max = pred_par.n_features;
+            else
+                br_model_par.nb_pca_cp_min = 1; % we select one PCA component as the minimum by default.
+                br_model_par.nb_pca_cp_max = br_model_par.nb_pca_cp;
+            end
+
             [eval_results, best_pred_par_struct, best_pca_cp_tab] = select_nb_pca_cp(beh_par, disp_par, OF_par, im_par, path_par, br_model_par, eval_results, warp_par, pred_meth);   
             eval_im_pred_best_par(eval_results, best_pred_par_struct, best_pca_cp_tab, beh_par, disp_par, OF_par, im_par, path_par, br_model_par, warp_par, pred_meth)
         end
         
-    else
-        % If PCA component optimization is not enabled (OPTIMIZE_NB_PCA_CP = false), the program uses predefined prediction parameters.
+    else % If PCA component optimization is not enabled (OPTIMIZE_NB_PCA_CP = false), the program uses predefined prediction parameters.
 
         % Load prediction parameters specific to the input sequence
-        pred_par = load_pred_par(path_par);
+        pred_meth = pred_meths{1};
+        if length(pred_meths) > 1
+            fprintf("pred_meths array of size more than 1 and OPTIMIZE_NB_PCA_CP = false, setting prediction method as: %s\n", pred_meth)
+        end
+        pred_par = load_pred_par(path_par, pred_meth);
         pred_par.t_eval_start = 1 + pred_par.tmax_cv;  % set evaluation start time (beginning of the test set)
         pred_par.nb_predictions = im_par.nb_im - pred_par.t_eval_start + 1;  % set the nb. of predictions based on remaining images after the eval. start time
+        
+        if strcmp(pred_meth, "population_transformer") % we don't retrain the transformer, rather we use an input that has the same dim as the transformer input
+            br_model_par.nb_pca_cp = pred_par.n_features;
+        end
+            
+        % Load parameters for image warping
+        warp_par = load_warp_par(pred_par.pred_meth);
+        nb_runs_for_cc_eval = warp_par.nb_runs_for_cc_eval;  % number of evaluation runs for image warping
 
         % Save the mean image computed from the image sequence
         if beh_par.SAVE_MEAN_IMAGE

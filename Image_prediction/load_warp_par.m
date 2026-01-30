@@ -1,4 +1,4 @@
-function [ warp_par ] = load_warp_par()
+function [ warp_par ] = load_warp_par(pred_meth)
 % LOAD_WARP_PAR Returns a structure `warp_par` containing parameters for image warping.
 %
 % INPUTS:
@@ -31,6 +31,12 @@ function [ warp_par ] = load_warp_par()
     end
          
     % Number of runs for evaluating accuracy metrics (e.g., correlation coefficient) when warping
-    warp_par.nb_runs_for_cc_eval = 5; % in the CMIG paper: 5 for RTRL, 25 for the other RNN algorithms, and 1 for linear regression and least mean squares 
-    
+    switch(pred_meth)
+        case {'RTRL', 'RTRL v2', 'transformer', 'population_transformer'} 
+            warp_par.nb_runs_for_cc_eval = 5;
+        case {'multivariate linear regression', 'LMS', 'univariate linear regression', 'no prediction', 'SVR'}  % deterministic
+            warp_par.nb_runs_for_cc_eval = 1;
+        otherwise % other (online) RNN methods
+            warp_par.nb_runs_for_cc_eval = 25;
+    end
 end

@@ -28,6 +28,7 @@ function write_OFhyperpar_optim_log_file( beh_par, OFeval_par, path_par, im_par,
     else
         fprintf(fid, 'evaluation in the entire image \n');
     end
+    fprintf(fid, 'optimization using the first %d images\n', im_par.nb_im);
     fprintf(fid, '\n');
 
     fprintf(fid, 'Gradient method : %s \n', OFeval_par.grad_meth_str);

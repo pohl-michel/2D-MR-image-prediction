@@ -1,4 +1,4 @@
-function analyze_OF_param_influence( rms_error_all_seq, OFeval_par, beh_par, path_par)
+function analyze_OF_param_influence( rms_error_all_seq, OFeval_par, beh_par, path_par, nb_optim_imgs)
 % Returns information about the influence of each hyper-parameter set in the grid search on the DVF accuracy in a txt file.
 %
 % Possible steps to improve the code:
@@ -139,8 +139,8 @@ function analyze_OF_param_influence( rms_error_all_seq, OFeval_par, beh_par, pat
         else
             fprintf(fid, 'evaluation in the entire image \n');
         end
-        fprintf(fid, '\n');
-        
+        fprintf(fid, 'optimization using the first %d images\n', nb_optim_imgs);
+        fprintf(fid, '\n');        
     end
     
     fprintf(fid, 'Lines : Parameter variation \n'); 

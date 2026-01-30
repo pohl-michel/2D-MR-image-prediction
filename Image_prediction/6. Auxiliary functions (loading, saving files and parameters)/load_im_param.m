@@ -24,7 +24,12 @@ function [ im_par ] = load_im_param(path_par)
     end
     if ~isfield(im_par, "y_M")
         im_par.y_M = im_par.L;
-    end    
+    end   
+
+    if ~isfield(im_par, "pixel_size_mm")
+        im_par.pixel_size_mm = 1;
+        fprintf("Pixel size not found in %s, assuming 1mm2 isotropic resolution\n", path_par.im_par_filename)
+    end
 
 end
 

@@ -18,7 +18,7 @@ function write_hppar_optim_log_file( hppars, pred_par, path_par, optim, best_par
 
     % calculation parameters        
     fprintf(fid, 'Prediction method : %s \n', pred_par.pred_meth);    
-    fprintf(fid, 'Training between t = 1 and t = %d \n', pred_par.tmax_training);
+    fprintf(fid, 'Training and/or computing data statistics between t = 1 and t = %d \n', pred_par.tmax_training);
     fprintf(fid, 'Cross-validation between t = %d and t = %d \n', 1+pred_par.tmax_training, pred_par.tmax_cv);
     
     if pred_par.NORMALIZE_DATA

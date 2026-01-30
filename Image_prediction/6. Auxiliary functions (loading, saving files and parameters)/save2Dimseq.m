@@ -1,4 +1,4 @@
-function save2Dimseq(im_par, path_par, disp_par)
+function save2Dimseq(im_par, path_par, disp_par, beh_par)
 % Saves jpg images from the image sequence in path_par.input_im_dir
 %
 % Author : Pohl Michel
@@ -16,9 +16,9 @@ function save2Dimseq(im_par, path_par, disp_par)
         sag_slice_t = load_crop_filter2D(t, crop_flag, filter_flag, 0.0, im_par, path_par.input_im_dir);
         
         % saving jpg images of the cross sections
-        crop_flag = false; 
+        crop_flag = beh_par.CROP_FOR_DISP_SAVE;
         im_filename_suffix = sprintf('%s image%d', path_par.input_im_dir_suffix, t);
-        save_crop_enhance_2Dim_jpg(sag_slice_t, im_filename_suffix, crop_flag, enhance_flag, disp_par, path_par, 0, 0, 0, 0, t);
+        save_crop_enhance_2Dim_jpg(sag_slice_t, im_filename_suffix, crop_flag, enhance_flag, disp_par, path_par, im_par.x_m, im_par.x_M, im_par.y_m, im_par.y_M, t);
   
     end
     
