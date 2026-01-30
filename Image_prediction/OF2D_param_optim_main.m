@@ -9,10 +9,8 @@ clear all
 close all
 clc
 
-% Verify working directory and switch if necessary
-pwd_split_cell = strsplit(pwd, '\');
-pwdir = string(pwd_split_cell(end));
-if pwdir == "Future_frame_prediction"
+% Move to the 'Image_prediction' folder if it exists in the current directory
+if any(strcmp({dir(pwd).name},'Image_prediction'))
     cd Image_prediction
 end
 
