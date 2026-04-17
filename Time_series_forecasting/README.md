@@ -18,7 +18,7 @@ The figure below illustrates the prediction of the 3D positions of 3 markers pla
 
 This code in this folder supports the claims in the following research articles:
 1. Michel Pohl, Mitsuru Uesaka, Hiroyuki Takahashi, Kazuyuki Demachi, Ritu Bhusal Chhatkuli, ["Real-time respiratory motion forecasting with online learning of recurrent neural networks for accurate targeting in externally guided radiotherapy"](https://doi.org/10.1016/j.cmpb.2025.108828), *Computer Methods and Programs in Biomedicine* (2025) [[arXiv open-access version]](https://doi.org/10.48550/arXiv.2403.01607)
-2. Michel Pohl, Mitsuru Uesaka, Hiroyuki Takahashi, Kazuyuki Demachi, Ritu Bhusal Chhatkuli, ["Future frame prediction in chest and liver cine MRI using the PCA respiratory motion model: comparing transformers and dynamically trained recurrent neural networks"](https://doi.org/10.48550/arXiv.2410.05882), arXiv preprint arXiv:2410.05882 (2026)
+2. Michel Pohl, Mitsuru Uesaka, Hiroyuki Takahashi, Kazuyuki Demachi, Ritu Bhusal Chhatkuli, ["Frame forecasting in cine MRI using the PCA respiratory motion model: comparing recurrent neural networks trained online and transformers"](https://doi.org/10.1016/j.compmedimag.2026.102755), *Computerized Medical Imaging and Graphics* (2026) [[arXiv open-access version]](https://doi.org/10.48550/arXiv.2410.05882)
 
 Please consider citing these articles if you reuse this code in your research. As an additional resource, the following paper, whose results can be reproduced with this code, provides further details regarding 3D marker position forecasting with UORO:
 
