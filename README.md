@@ -63,20 +63,20 @@ Sequence-specific configuration files are located in the corresponding input ima
 
 | Filename         | Parameter scope                                                       |
 | --------         | -------                                                               |
-| pred_par.xlsx    | Low-dimensional motion-representation forecasting                     |
-| OF_calc_par.xlsx | Optical-flow field estimation                                         |
-| disp_par.xlsx    | Figure display and saving                                             |
-| im_seq_par.xlsx  | Properties of the input image sequence and region of interest for evaluation |
+| `pred_par.xlsx`    | Low-dimensional motion-representation forecasting                     |
+| `OF_calc_par.xlsx` | Optical-flow field estimation                                         |
+| `disp_par.xlsx`    | Figure display and saving                                             |
+| `im_seq_par.xlsx`  | Properties of the input image sequence and region of interest for evaluation |
 
 Additional image-prediction parameters can be configured in the following .m files:
 
 | Folder | Filename                         | Parameters          |
 | -------- | ------                                 | -------                  |
-| Image_prediction | load_impred_behavior_parameters.m  | `beh_par`: flags defining the workflow to run  |
-|  | load_warp_par.m          | `warp_par`: Image synthesis via warping/sampling   |
-|  | image_prediction_main.m  | • `pred_meths`: prediction methods used<br>• `br_model_par.nb_pca_cp_tab`: value of $n_{\text{cp}}$ (or maximum value of $n_{\text{cp}}$, $n_{\text{cp}}^{\text{max}}$, defining the validation range $\{1, \ldots, n_{\text{cp}}^{\text{max}}\}$ in hyperparameter-optimization mode)|
-| Time_series_forecasting | load_pred_par.m   | `pred_par`: Time-series forecasting parameters, overriding those defined in  `pred_par.xlsx` for the specific input sequence  |
-| | load_hyperpar_cv_info.m | `hppars`: Hyperparameter grid for grid search on the validation set |
+| `Image_prediction` | `load_impred_behavior_parameters.m`  | `beh_par`: flags defining the workflow to run  |
+|  | `load_warp_par.m`          | `warp_par`: Image synthesis via warping/sampling   |
+|  | `image_prediction_main.m`  | • `pred_meths`: prediction methods used<br>• `br_model_par.nb_pca_cp_tab`: value of $n_{\text{cp}}$ (or maximum value of $n_{\text{cp}}$, $n_{\text{cp}}^{\text{max}}$, defining the validation range $\{1, \ldots, n_{\text{cp}}^{\text{max}}\}$ in hyperparameter-optimization mode)|
+| `Time_series_forecasting` | `load_pred_par.m`   | `pred_par`: Time-series forecasting parameters, overriding those defined in  `pred_par.xlsx` for the specific input sequence  |
+| | `load_hyperpar_cv_info.m` | `hppars`: Hyperparameter grid for grid search on the validation set |
 
 
 ## Requirements
