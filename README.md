@@ -3,7 +3,7 @@
 
 ## Overview
 
-This repository contains code for multivariate [time-series forecasting](https://github.com/pohl-michel/2D-MR-image-prediction/tree/main/Time_series_forecasting) using RNNs trained online and transformers, and thoraco-abdominal cine-MR image prediction, combining dense motion-field estimation, PCA-based motion modeling, temporal dynamics prediction, and image warping.
+This repository contains code for multivariate time-series forecasting using RNNs trained online and transformers, and for thoraco-abdominal cine-MR image prediction. The frame-prediction pipeline combines dense motion-field estimation, PCA-based motion modeling, temporal dynamics prediction, and image warping.
 
 The following methods are implemented for time-series forecasting:
  -  online learning algorithms for RNNs (sequence-specific models):
@@ -12,49 +12,50 @@ The following methods are implemented for time-series forecasting:
      - [sparse one-step approximation (SnAp-1)](https://arxiv.org/abs/2006.07232)
      - [decoupled neural interfaces (DNI)](http://proceedings.mlr.press/v70/jaderberg17a.html)
  - encoder-only transformers (population-based and sequence-specific models)
- - linear autoregressive baselines, including ordinary least-squares (OLS) regression and least-mean-squares (LMS)
+ - linear autoregressive baselines
 
-For cine-MRI prediction, the deformation vector field between the initial and current frames is estimated using the Lucas–Kanade optical-flow algorithm. This vector field is projected onto a low-dimensional subspace computed via PCA, and the projection coordinates are forecast using one of the time-series forecasting algorithms listed above. Lastly, the initial frame is warped using the predicted deformations to generate frame forecasts.
+For cine-MRI prediction, time-dependent deformation vector fields between the initial frame and subsequent frames are estimated with the Lucas–Kanade optical-flow algorithm. These vector fields are projected onto a low-dimensional subspace computed via PCA, and the projection coordinates are forecast using one of the forecasting algorithms listed above. Lastly, the initial frame is warped using the predicted deformations to generate frame forecasts.
 
-The main application is respiratory motion forecasting, encompassing prediction of thoraco-abdominal external-marker positions and 2D cine-MRI sequences. However, the algorithms implemented are more general and can be applied to the prediction of other multivariate time series and quasi-periodic, simple videos. 
+The main application is respiratory motion forecasting, encompassing prediction of thoraco-abdominal external-marker positions and 2D cine-MRI sequences. However, the algorithms implemented here can be applied to the prediction of other multivariate time series and simple videos with quasi-periodic motion. 
 
 This repository contains two main folders:
- - `Time_series_forecasting`: self-contained code for general-purpose time-series forecasting, including RNNs trained with online learning algorithms, transformer models, and linear baselines.
- - `Image_prediction`: code for cine-MR image forecasting, including optical-flow estimation, PCA-based motion modeling, temporal dynamics forecasting, and image synthesis via initial frame resampling. This folder calls functions from `Time_series_forecasting` to forecast the low-dimensional PCA representation of motion.
+ 1. `Time_series_forecasting`: self-contained code for time-series forecasting, including RNNs trained with online learning algorithms, transformer models, and linear baselines.
+ 2. `Image_prediction`: code for cine-MR image forecasting, including optical-flow estimation, PCA-based motion modeling, temporal dynamics forecasting, and image synthesis via initial frame resampling. The code in this folder calls functions from `Time_series_forecasting` to forecast the low-dimensional PCA representation of motion.
 
 Readers interested primarily in time-series forecasting should refer to the [`Time_series_forecasting` README](https://github.com/pohl-michel/2D-MR-image-prediction/blob/main/Time_series_forecasting/README.md). The present README focuses on cine-MR image forecasting.
 
 <p align="center">
-  <img src="Image_prediction/visualization/2._sq_sl010_sag_Xcs=125_SnAp-1_k=12_q=110_eta=0.02_sg=0.02_h=6_3_cpts_t=181_to_200_cropped.gif" width="45%" alt="Chest cine-MRI frame forecast example 1">
-  <img src="Image_prediction/visualization/3._sq_sl010_sag_Xcs=80_SnAp-1_k=30_q=70_eta=0.02_sg=0.02_h=6_4_cpts_t=181_to_200_cropped.gif" width="45%" alt="Chest cine-MRI frame forecast example 2">
+  <img src="Image_prediction/visualization/2._sq_sl010_sag_Xcs=125_SnAp-1_k=12_q=110_eta=0.02_sg=0.02_h=6_3_cpts_t=181_to_200_cropped.gif" width="45%" alt="">
+  <img src="Image_prediction/visualization/3._sq_sl010_sag_Xcs=80_SnAp-1_k=30_q=70_eta=0.02_sg=0.02_h=6_4_cpts_t=181_to_200_cropped.gif" width="45%" alt="">
   <br>
-  <img src="Image_prediction/visualization/4. sq sl014 sag Xcs=165 SnAp-1 k=6 q=110 eta=0.01 sg=0.02 h=6 3 cpts_t=181_to_200_cropped.gif" width="45%" alt="Liver cine-MRI frame forecast example 1">
-  <img src="Image_prediction/visualization/5. sq sl014 sag Xcs=95 SnAp-1 k=6 q=110 eta=0.01 sg=0.02 h=6 2 cpts_t=181_to_200_cropped.gif" width="45%" alt="Liver cine-MRI frame forecast example 2">
+  <img src="Image_prediction/visualization/4. sq sl014 sag Xcs=165 SnAp-1 k=6 q=110 eta=0.01 sg=0.02 h=6 3 cpts_t=181_to_200_cropped.gif" width="45%" alt="">
+  <img src="Image_prediction/visualization/5. sq sl014 sag Xcs=95 SnAp-1 k=6 q=110 eta=0.01 sg=0.02 h=6 2 cpts_t=181_to_200_cropped.gif" width="45%" alt="">
 </p>
-<p align="center"> <em>Representative cine-MR image forecasts using the ETH Zürich dataset. Each panel compares ground-truth frames on the left with SnAp-1 predictions on the right at a fixed horizon of h=6 time steps.</em> </p>
+<p align="center"> <em>Figure 1: Representative cine-MR image forecasts using the four ETH Zürich MRI sequences. Each panel compares ground-truth frames on the left with SnAp-1 predictions on the right at a fixed horizon of 6 time steps.</em> </p>
 
 
 ## How to run the image-prediction pipeline
 
-Image sequence prediction can be performed from MATLAB by executing `Image_prediction/image_prediction_main.m`. 
+Image-sequence prediction can be performed from MATLAB by executing `Image_prediction/image_prediction_main.m` from the repository root or from the `Image_prediction` folder. 
 
 Its behavior is controlled by the `beh_par` structure array in `load_impred_behavior_parameters.m`. The main execution modes are:
- 1. `beh_par.OPTIMIZE_NB_PCA_CP = true`: optimization of the forecasting hyperparameters, including the PCA subspace dimension, $n_{\text{cp}}$. This mode can be computationally expensive, especially when evaluating several prediction methods, horizons, PCA-subspace dimensions, and random initializations.
- 2. `beh_par.OPTIMIZE_NB_PCA_CP = false`: inference using the inference using the specified prediction parameters; see [Configuration parameters](#configuration-parameters) below.
+ 1. `OPTIMIZE_NB_PCA_CP = false`: inference using the specified prediction parameters (see [Configuration parameters](#configuration-parameters) section below). Recommended for a faster first run.
+ 2. `OPTIMIZE_NB_PCA_CP = true`: optimization of the forecasting hyperparameters, including the PCA subspace dimension, $n_{\text{cp}}$. This mode can be computationally expensive, especially when evaluating several prediction methods, horizons, values of $n_{\text{cp}}$, and random initializations.
 
-When `beh_par.IM_PREDICTION` and `beh_par.SAVE_PRED_IM` are both set to `true`, predicted images and performance results are respectively saved in the (automatically created) `tmp_imgs` and `tmp_txt_files` subdirectories of the `Image_prediction` folder, except in hyperparameter tuning mode, where only performance is recorded.
 
-Setting `beh_par.COMPUTE_OPTICAL_FLOW = true` enables optical-flow field estimation at the beginning of the image-prediction pipeline, using the parameter values in `OF_calc_par.xlsx`.
+When the `IM_PREDICTION` and `SAVE_PRED_IM` fields of `beh_par` are both set to `true`, predicted images and performance results are saved in the `tmp_imgs` and `tmp_txt_files` subdirectories of the `Image_prediction` folder, respectively. These subdirectories are automatically created if they do not exist. In hyperparameter-tuning mode, only performance results are recorded.
+
+Setting `beh_par.COMPUTE_OPTICAL_FLOW` to `true` enables optical-flow field estimation at the beginning of the image-prediction pipeline, using the parameter values in `OF_calc_par.xlsx`.
 
 *Note:* The script `Image_prediction/OF2D_param_optim_main.m` runs grid search to optimize optical-flow parameters, using the parameter grid specified in `Image_prediction/load_OFeval_parameters.m`.
 
 ## Image data
 
 The cine-MRI sequences included in this repository were obtained by preprocessing data from the following public datasets:
- - chest MRI: [4D MRI lung data](https://vision.ee.ethz.ch/datsets.html) from ETH Zürich.
- - liver MRI: [2D navigator frames](http://open-science.ub.ovgu.de/xmlui/handle/684882692/88) from Otto-von-Guericke University Magdeburg.
+ - [4D MRI lung data](https://vision.ee.ethz.ch/datsets.html) from ETH Zürich.
+ - [Liver 2D MR navigator frames](http://open-science.ub.ovgu.de/xmlui/handle/684882692/88) from Otto-von-Guericke University Magdeburg.
 
-The input images loaded by `image_prediction_main.m` are located in `Image_prediction/input_imgs/2D images`. The input sequences are specified in the cell array `input_im_dir_suffix_tab` in `image_prediction_main.m`.
+The input images loaded when running `image_prediction_main.m` are located in `Image_prediction/input_imgs/2D images`. The input sequences to use are specified in the cell array `input_im_dir_suffix_tab` in `image_prediction_main.m`.
 
 
 ## Configuration parameters
@@ -110,11 +111,11 @@ Additional image-prediction parameters can be configured in the `.m` files liste
 
 ## Requirements
 
-The main image-prediction workflow is written in MATLAB. Transformer-based forecasting requires a Python environment (with PyTorch and Optuna) accessible from MATLAB, as transformer models were implemented using Python code interfaced with the common backbone evaluation code in MATLAB. If using [conda or miniconda](https://docs.conda.io/en/latest/#) and using an NVIDIA GPU, PyTorch can be installed with:
+The main image-prediction workflow is written in MATLAB. Transformer-based forecasting requires a Python environment with PyTorch and Optuna installed and accessible from MATLAB, as transformer models were implemented using Python code interfaced with the common backbone evaluation code in MATLAB. If using [conda or miniconda](https://docs.conda.io/en/latest/#) and an NVIDIA GPU, PyTorch can be installed, for example, with:
 
 `conda install pytorch pytorch-cuda -c pytorch -c nvidia`
 
-The command above should be run in a conda environment used by the same operating system as MATLAB. On Windows, this is typically done from the Anaconda Prompt.
+The command above should be run in a conda environment used by the same operating system as MATLAB (not in WSL if MATLAB is installed on Windows). On Windows, this is typically done from the Anaconda Prompt.
 
 The [Python interpreter used by MATLAB](https://uk.mathworks.com/help/matlab/ref/pyenv.html) can then be set on MATLAB command line with:
 
@@ -131,3 +132,7 @@ This repository supports the claims in the following research articles. Please c
 
 A detailed description of the Lucas–Kanade registration algorithm used as a basis for this repository can be found in:
  - Michel Pohl, Mitsuru Uesaka, Kazuyuki Demachi, and Ritu Bhusal Chhatkuli, ["Prediction of the motion of chest internal points using a recurrent neural network trained with real-time recurrent learning for latency compensation in lung cancer radiotherapy"](https://doi.org/10.1016/j.compmedimag.2021.101941), Computerized Medical Imaging and Graphics (2021) [[arXiv]](https://doi.org/10.48550/arXiv.2207.05951). 
+
+## License
+
+This repository is released under the BSD-3-Clause license. 
