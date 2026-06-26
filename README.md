@@ -1,9 +1,9 @@
-# Respiratory motion signal and 2D cine-MRI forecasting using transformers and online-trained RNNs
+# Respiratory motion signal and 2D cine-MRI forecasting using RNNs trained online and transformers
 
 
 ## Overview
 
-This repository contains code for multivariate [time-series forecasting](https://github.com/pohl-michel/2D-MR-image-prediction/tree/main/Time_series_forecasting) using transformers and online-trained RNNs, and thoraco-abdominal cine-MR image prediction, combining dense motion-field estimation, PCA-based motion modeling, temporal dynamics prediction, and image warping.
+This repository contains code for multivariate [time-series forecasting](https://github.com/pohl-michel/2D-MR-image-prediction/tree/main/Time_series_forecasting) using RNNs trained online and transformers, and thoraco-abdominal cine-MR image prediction, combining dense motion-field estimation, PCA-based motion modeling, temporal dynamics prediction, and image warping.
 
 The following methods are implemented for time-series forecasting:
  -  online learning algorithms for RNNs (sequence-specific models):
@@ -11,10 +11,10 @@ The following methods are implemented for time-series forecasting:
      - [unbiased online recurrent optimization (UORO)](https://arxiv.org/abs/1702.05043)
      - [sparse one-step approximation (SnAp-1)](https://arxiv.org/abs/2006.07232)
      - [decoupled neural interfaces (DNI)](http://proceedings.mlr.press/v70/jaderberg17a.html)
- - encoder-only transformers (population-based and sequence-specific models).
+ - encoder-only transformers (population-based and sequence-specific models)
  - linear autoregressive baselines, including ordinary least-squares (OLS) regression and least-mean-squares (LMS)
 
-For cine-MRI prediction, the deformation vector field between the initial and current frames estimated using the Lucas–Kanade optical-flow algorithm. This vector field is projected onto a low-dimensional subspace computed via PCA, and the projection coordinates are forecast using one of the time-series forecasting algorithms listed above. Lastly, the initial frame is warped using the predicted deformations to generate frame forecasts.
+For cine-MRI prediction, the deformation vector field between the initial and current frames is estimated using the Lucas–Kanade optical-flow algorithm. This vector field is projected onto a low-dimensional subspace computed via PCA, and the projection coordinates are forecast using one of the time-series forecasting algorithms listed above. Lastly, the initial frame is warped using the predicted deformations to generate frame forecasts.
 
 The main application is respiratory motion forecasting, encompassing prediction of thoraco-abdominal external-marker positions and 2D cine-MRI sequences. However, the algorithms implemented are more general and can be applied to the prediction of other multivariate time series and quasi-periodic, simple videos. 
 
@@ -59,24 +59,53 @@ The input images loaded by `image_prediction_main.m` are located in `Image_predi
 
 ## Configuration parameters
 
-Sequence-specific configuration files are located in the corresponding input image subdirectory:
+Sequence-specific configuration files are located in the corresponding input image subdirectory (Table 1).
 
-| Filename         | Parameter scope                                                       |
-| --------         | -------                                                               |
-| `pred_par.xlsx`    | Low-dimensional motion-representation forecasting                     |
-| `OF_calc_par.xlsx` | Optical-flow field estimation                                         |
-| `disp_par.xlsx`    | Figure display and saving                                             |
-| `im_seq_par.xlsx`  | Properties of the input image sequence and region of interest for evaluation |
+<table align="center">
+  <thead>
+    <tr>
+      <th>Filename</th>
+      <th>Parameter scope</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>pred_par.xlsx</code></td>
+      <td>Low-dimensional motion-representation forecasting</td>
+    </tr>
+    <tr>
+      <td><code>OF_calc_par.xlsx</code></td>
+      <td>Optical-flow field estimation</td>
+    </tr>
+    <tr>
+      <td><code>disp_par.xlsx</code></td>
+      <td>Figure display and saving</td>
+    </tr>
+    <tr>
+      <td><code>im_seq_par.xlsx</code></td>
+      <td>Properties of the input image sequence and region of interest used for evaluation</td>
+    </tr>
+  </tbody>
+</table>
 
-Additional image-prediction parameters can be configured in the following .m files:
+<p align="center">
+  <em>Table 1: Files specifying sequence-specific parameters.</em>
+</p>
 
+Additional image-prediction parameters can be configured in the `.m` files listed in Table 2.
+
+<!-- Keeping markdown table because I don't know how to render LaTeX inside html tables inside Markdown -->
 | Folder | Filename                         | Parameters          |
 | -------- | ------                                 | -------                  |
-| `Image_prediction` | `load_impred_behavior_parameters.m`  | `beh_par`: flags defining the workflow to run  |
-|  | `load_warp_par.m`          | `warp_par`: Image synthesis via warping/sampling   |
-|  | `image_prediction_main.m`  | • `pred_meths`: prediction methods used<br>• `br_model_par.nb_pca_cp_tab`: value of $n_{\text{cp}}$ (or maximum value of $n_{\text{cp}}$, $n_{\text{cp}}^{\text{max}}$, defining the validation range $\{1, \ldots, n_{\text{cp}}^{\text{max}}\}$ in hyperparameter-optimization mode)|
-| `Time_series_forecasting` | `load_pred_par.m`   | `pred_par`: Time-series forecasting parameters, overriding those defined in  `pred_par.xlsx` for the specific input sequence  |
-| | `load_hyperpar_cv_info.m` | `hppars`: Hyperparameter grid for grid search on the validation set |
+| `Image_prediction` | `load_impred_behavior_parameters.m`  | `beh_par`: flags defining pipeline behavior  |
+|  — | `load_warp_par.m`          | `warp_par`: parameters for image synthesis via warping/sampling   |
+|  — | `image_prediction_main.m`  | • `pred_meths`: prediction methods used<br>• `br_model_par.nb_pca_cp_tab`: value of $n_{\text{cp}}$ (or maximum value of $n_{\text{cp}}$, $n_{\text{cp}}^{\text{max}}$, defining the validation range $\{1, \ldots, n_{\text{cp}}^{\text{max}}\}$ in hyperparameter-optimization mode)|
+| `Time_series_forecasting` | `load_pred_par.m`   | `pred_par`: time-series forecasting parameters, overriding the sequence-specific ones defined in  `pred_par.xlsx` |
+| — | `load_hyperpar_cv_info.m` | `hppars`: hyperparameter grid for grid search on the validation set |
+
+<p align="center">
+  <em>Table 2: Additional image-prediction parameters.</em>
+</p>
 
 
 ## Requirements
@@ -101,4 +130,4 @@ This repository supports the claims in the following research articles. Please c
  - Michel Pohl, Mitsuru Uesaka, Hiroyuki Takahashi, Kazuyuki Demachi, Ritu Bhusal Chhatkuli, ["Frame forecasting in cine MRI using the PCA respiratory motion model: comparing recurrent neural networks trained online and transformers"](https://doi.org/10.1016/j.compmedimag.2026.102755), Computerized Medical Imaging and Graphics (2026) [[arXiv]](https://doi.org/10.48550/arXiv.2410.05882)
 
 A detailed description of the Lucas–Kanade registration algorithm used as a basis for this repository can be found in:
- - Michel Pohl, Mitsuru Uesaka, Kazuyuki Demachi, and Ritu Bhusal Chhatkuli, ["Prediction of the motion of chest internal points using a recurrent neural network trained with real-time recurrent learning for latency compensation in lung cancer radiotherapy"](https://doi.org/10.1016/j.compmedimag.2021.101941), Computerized Medical Imaging and Graphics, 2021 [[arXiv]](https://doi.org/10.48550/arXiv.2207.05951). 
+ - Michel Pohl, Mitsuru Uesaka, Kazuyuki Demachi, and Ritu Bhusal Chhatkuli, ["Prediction of the motion of chest internal points using a recurrent neural network trained with real-time recurrent learning for latency compensation in lung cancer radiotherapy"](https://doi.org/10.1016/j.compmedimag.2021.101941), Computerized Medical Imaging and Graphics (2021) [[arXiv]](https://doi.org/10.48550/arXiv.2207.05951). 
