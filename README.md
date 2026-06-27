@@ -25,13 +25,23 @@ This repository contains two main folders:
 Readers interested primarily in time-series forecasting should refer to the [`Time_series_forecasting` README](https://github.com/pohl-michel/2D-MR-image-prediction/blob/main/Time_series_forecasting/README.md). The present README focuses on cine-MR image forecasting.
 
 <p align="center">
+  <img src="Time_series_forecasting/visualization/markers_seq_1_3.33_Hz_DNI_k=12_q=180_eta=0.01_sg=0.02_grd_tshld=100_h=7.gif" width="80%" alt="External-marker position forecast example">
+</p>
+
+<p align="center">
+  <em>
+    Figure 1: Prediction of the 3D positions of 3 markers on the chest and abdomen of an individual lying face upwards using DNI at a horizon of 2.1s. The sampling rate is 3.33Hz and the z-axis corresponds to the spine direction.
+  </em>
+</p>
+
+<p align="center">
   <img src="Image_prediction/visualization/2._sq_sl010_sag_Xcs=125_SnAp-1_k=12_q=110_eta=0.02_sg=0.02_h=6_3_cpts_t=181_to_200_cropped.gif" width="45%" alt="">
   <img src="Image_prediction/visualization/3._sq_sl010_sag_Xcs=80_SnAp-1_k=30_q=70_eta=0.02_sg=0.02_h=6_4_cpts_t=181_to_200_cropped.gif" width="45%" alt="">
   <br>
   <img src="Image_prediction/visualization/4. sq sl014 sag Xcs=165 SnAp-1 k=6 q=110 eta=0.01 sg=0.02 h=6 3 cpts_t=181_to_200_cropped.gif" width="45%" alt="">
   <img src="Image_prediction/visualization/5. sq sl014 sag Xcs=95 SnAp-1 k=6 q=110 eta=0.01 sg=0.02 h=6 2 cpts_t=181_to_200_cropped.gif" width="45%" alt="">
 </p>
-<p align="center"> <em>Figure 1: Representative cine-MR image forecasts using the four ETH Zürich MRI sequences. Each panel compares ground-truth frames on the left with SnAp-1 predictions on the right at a fixed horizon of 6 time steps.</em> </p>
+<p align="center"> <em>Figure 2: Representative cine-MR image forecasts using the four ETH Zürich MRI sequences. Each panel compares ground-truth frames on the left with SnAp-1 predictions on the right at a fixed horizon of 6 time steps.</em> </p>
 
 
 ## How to run the image-prediction pipeline
