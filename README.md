@@ -12,7 +12,7 @@ The following methods are implemented for time-series forecasting:
      - [sparse one-step approximation (SnAp-1)](https://arxiv.org/abs/2006.07232)
      - [decoupled neural interfaces (DNI)](http://proceedings.mlr.press/v70/jaderberg17a.html)
  - encoder-only transformers (population-based and sequence-specific models)
- - linear autoregressive baselines
+ - autoregressive baselines: support vector regression (SVR) with an RBF kernel and linear models
 
 For cine-MRI prediction, time-dependent deformation vector fields between the initial frame and subsequent frames are estimated with the Lucas–Kanade optical-flow algorithm. These vector fields are projected onto a low-dimensional subspace computed via PCA, and the projection coordinates are forecast using one of the forecasting algorithms listed above. Lastly, the initial frame is warped using the predicted deformations to generate frame forecasts.
 
@@ -121,18 +121,27 @@ Additional image-prediction parameters can be configured in the `.m` files liste
 
 ## Requirements
 
-The main image-prediction workflow is written in MATLAB. Transformer-based forecasting requires a Python environment with PyTorch and Optuna installed and accessible from MATLAB, as transformer models were implemented using Python code interfaced with the common backbone evaluation code in MATLAB. If using [conda or miniconda](https://docs.conda.io/en/latest/#) and an NVIDIA GPU, PyTorch can be installed, for example, with:
+### Python requirements for transformers
+
+The main time-series- and image-prediction workflows are written in MATLAB. Transformer-based forecasting requires a Python environment with PyTorch and Optuna installed and accessible from MATLAB, as transformer models were implemented using Python code interfaced with the common backbone evaluation code in MATLAB. If using [conda or miniconda](https://docs.conda.io/en/latest/#) and an NVIDIA GPU, PyTorch can be installed, for example, with:
 
 `conda install pytorch pytorch-cuda -c pytorch -c nvidia`
 
 The command above should be run in a conda environment used by the same operating system as MATLAB (not in WSL if MATLAB is installed on Windows). On Windows, this is typically done from the Anaconda Prompt.
 
-The [Python interpreter used by MATLAB](https://uk.mathworks.com/help/matlab/ref/pyenv.html) can then be set on MATLAB command line with:
+The [Python interpreter used by MATLAB](https://uk.mathworks.com/help/matlab/ref/pyenv.html) can then be set on MATLAB command line with, for instance:
 
 `pyenv("Version", "C:\Users\username\miniconda3\envs\my_environment\python.exe");`
 
-Hyperparameter optimization uses parallel processing through `parfor` loops in MATLAB. The code can be run without the MATLAB Parallel Computing Toolbox by replacing `parfor` loops with `for` loops, at the cost of longer runtime.
+### MATLAB requirements
 
+SVR-based forecasting requires MATLAB's Statistics and Machine Learning Toolbox, as the SVR baseline uses `fitrsvm()`.
+
+Grid-search-based hyperparameter optimization in MATLAB uses `parfor` loops and therefore requires MATLAB's Parallel Computing Toolbox unless `parfor` loops are replaced with `for` loops manually. Another option to avoid parallel processing when specifically running `sigpred_hyperparameter_optimization_main.m` (script for time-series forecasting hyperparameter optimization) is to set `beh_par.PARALLEL_COMPUTING` to `false`.
+
+Online learning algorithms for RNNs can use the GPU by setting `pred_par.GPU_COMPUTING` to `true` for supported methods. This requires MATLAB's Parallel Computing Toolbox.
+
+Image-sequence forecasting requires MATLAB's Image Processing Toolbox, as the code uses `imgaussfilt()` and `dicomread()`.
 
 ## References
 
