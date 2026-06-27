@@ -30,7 +30,7 @@ Readers interested primarily in time-series forecasting should refer to the [`Ti
 
 <p align="center">
   <em>
-    Figure 1: Prediction of the 3D positions of 3 markers on the chest and abdomen of an individual lying face upwards using DNI at a horizon of 2.1s. The sampling rate is 3.33Hz and the z-axis corresponds to the spine direction.
+    Figure 1: Prediction of the 3D positions of 3 markers on the chest and abdomen of an individual lying face up using DNI at a horizon of 2.1s. The sampling rate is 3.33Hz and the z-axis corresponds to the spine direction.
   </em>
 </p>
 
@@ -49,7 +49,7 @@ Readers interested primarily in time-series forecasting should refer to the [`Ti
 Image-sequence prediction can be performed from MATLAB by executing `Image_prediction/image_prediction_main.m` from the repository root or from the `Image_prediction` folder. 
 
 Its behavior is controlled by the `beh_par` structure array in `load_impred_behavior_parameters.m`. The main execution modes are:
- 1. `OPTIMIZE_NB_PCA_CP = false`: inference using the specified prediction parameters (see [Configuration parameters](#configuration-parameters) section below). Recommended for a faster first run.
+ 1. `OPTIMIZE_NB_PCA_CP = false`: inference using the specified prediction parameters (see ["Configuration parameters"](#configuration-parameters) section below). Recommended for a faster first run.
  2. `OPTIMIZE_NB_PCA_CP = true`: optimization of the forecasting hyperparameters, including the PCA subspace dimension, $n_{\text{cp}}$. This mode can be computationally expensive, especially when evaluating several prediction methods, horizons, values of $n_{\text{cp}}$, and random initializations.
 
 
@@ -61,7 +61,7 @@ Setting `beh_par.COMPUTE_OPTICAL_FLOW` to `true` enables optical-flow field esti
 
 ## Image data
 
-The cine-MRI sequences included in this repository were obtained by preprocessing data from the following public datasets:
+The cine-MRI sequences included in this repository, lasting from 63s to 83s, were obtained by preprocessing data from the following public datasets:
  - [4D MRI lung data](https://vision.ee.ethz.ch/datsets.html) from ETH Zürich.
  - [Liver 2D MR navigator frames](http://open-science.ub.ovgu.de/xmlui/handle/684882692/88) from Otto-von-Guericke University Magdeburg.
 
@@ -137,20 +137,25 @@ The [Python interpreter used by MATLAB](https://uk.mathworks.com/help/matlab/ref
 
 SVR-based forecasting requires MATLAB's Statistics and Machine Learning Toolbox, as the SVR baseline uses `fitrsvm()`.
 
-Grid-search-based hyperparameter optimization in MATLAB uses `parfor` loops and therefore requires MATLAB's Parallel Computing Toolbox unless `parfor` loops are replaced with `for` loops manually. Another option to avoid parallel processing when specifically running `sigpred_hyperparameter_optimization_main.m` (script for time-series forecasting hyperparameter optimization) is to set `beh_par.PARALLEL_COMPUTING` to `false`.
+Grid-search-based hyperparameter optimization in MATLAB uses `parfor` loops and therefore requires MATLAB's Parallel Computing Toolbox unless `parfor` loops are replaced with `for` loops manually (which would yield higher processing time). Another option to avoid parallel processing when specifically running `sigpred_hyperparameter_optimization_main.m` (script for time-series forecasting hyperparameter optimization) is to set `beh_par.PARALLEL_COMPUTING` to `false`.
 
-Online learning algorithms for RNNs can use the GPU by setting `pred_par.GPU_COMPUTING` to `true` for supported methods. This requires MATLAB's Parallel Computing Toolbox.
+Online learning algorithms for RNNs and transformers can use the GPU by setting `pred_par.GPU_COMPUTING` to `true` for supported training methods. This also requires MATLAB's Parallel Computing Toolbox. We found that calculations were faster with the GPU when using RTRL with a relatively high number of hidden units.
 
 Image-sequence forecasting requires MATLAB's Image Processing Toolbox, as the code uses `imgaussfilt()` and `dicomread()`.
 
 ## References
 
-This repository supports the claims in the following research articles. Please cite them if you use this code in your research.
+This repository supports the claims in the following research articles.
  - Michel Pohl, Mitsuru Uesaka, Hiroyuki Takahashi, Kazuyuki Demachi, Ritu Bhusal Chhatkuli, ["Real-time respiratory motion forecasting with online learning of recurrent neural networks for accurate targeting in externally guided radiotherapy"](https://doi.org/10.1016/j.cmpb.2025.108828), Computer Methods and Programs in Biomedicine (2025) [[arXiv]](https://doi.org/10.48550/arXiv.2403.01607)
  - Michel Pohl, Mitsuru Uesaka, Hiroyuki Takahashi, Kazuyuki Demachi, Ritu Bhusal Chhatkuli, ["Frame forecasting in cine MRI using the PCA respiratory motion model: comparing recurrent neural networks trained online and transformers"](https://doi.org/10.1016/j.compmedimag.2026.102755), Computerized Medical Imaging and Graphics (2026) [[arXiv]](https://doi.org/10.48550/arXiv.2410.05882)
 
-A detailed description of the Lucas–Kanade registration algorithm used as a basis for this repository can be found in:
+In addition, the following article provides details on 3D marker-position forecasting with UORO and on the implementation of UORO used in this code:
+ - Michel Pohl, Mitsuru Uesaka, Hiroyuki Takahashi, Kazuyuki Demachi, Ritu Bhusal Chhatkuli, ["Prediction of the Position of External Markers Using a Recurrent Neural Network Trained With Unbiased Online Recurrent Optimization for Safe Lung Cancer Radiotherapy"](https://doi.org/10.1016/j.cmpb.2022.106908), Computer Methods and Programs in Biomedicine (2022) [[arXiv]](https://doi.org/10.48550/arXiv.2106.01100) [[blog article]](https://pohl-michel.github.io/blog/articles/predicting-respiratory-motion-online-learning-rnn/article.html).
+
+Lastly, a detailed description of the Lucas–Kanade registration algorithm used as a basis for this repository can be found in:
  - Michel Pohl, Mitsuru Uesaka, Kazuyuki Demachi, and Ritu Bhusal Chhatkuli, ["Prediction of the motion of chest internal points using a recurrent neural network trained with real-time recurrent learning for latency compensation in lung cancer radiotherapy"](https://doi.org/10.1016/j.compmedimag.2021.101941), Computerized Medical Imaging and Graphics (2021) [[arXiv]](https://doi.org/10.48550/arXiv.2207.05951). 
+
+Please cite the relevant article(s) if you use this code in your research.
 
 ## License
 
