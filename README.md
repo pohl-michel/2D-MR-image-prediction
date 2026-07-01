@@ -145,15 +145,15 @@ Image-sequence forecasting requires MATLAB's Image Processing Toolbox, as the co
 
 ## References
 
-This repository supports the claims in the following research articles.
- - Michel Pohl, Mitsuru Uesaka, Hiroyuki Takahashi, Kazuyuki Demachi, Ritu Bhusal Chhatkuli, ["Real-time respiratory motion forecasting with online learning of recurrent neural networks for accurate targeting in externally guided radiotherapy"](https://doi.org/10.1016/j.cmpb.2025.108828), Computer Methods and Programs in Biomedicine (2025) [[arXiv]](https://doi.org/10.48550/arXiv.2403.01607)
- - Michel Pohl, Mitsuru Uesaka, Hiroyuki Takahashi, Kazuyuki Demachi, Ritu Bhusal Chhatkuli, ["Frame forecasting in cine MRI using the PCA respiratory motion model: comparing recurrent neural networks trained online and transformers"](https://doi.org/10.1016/j.compmedimag.2026.102755), Computerized Medical Imaging and Graphics (2026) [[arXiv]](https://doi.org/10.48550/arXiv.2410.05882)
+This repository supports the claims in the following research articles:
+ - Michel Pohl, Mitsuru Uesaka, Hiroyuki Takahashi, Kazuyuki Demachi, Ritu Bhusal Chhatkuli, "Frame forecasting in cine MRI using the PCA respiratory motion model: comparing recurrent neural networks trained online and transformers", Computerized Medical Imaging and Graphics (2026) [[published version]](https://doi.org/10.1016/j.compmedimag.2026.102755) [[arXiv]](https://doi.org/10.48550/arXiv.2410.05882)
+ - Michel Pohl, Mitsuru Uesaka, Hiroyuki Takahashi, Kazuyuki Demachi, Ritu Bhusal Chhatkuli, "Real-time respiratory motion forecasting with online learning of recurrent neural networks for accurate targeting in externally guided radiotherapy", Computer Methods and Programs in Biomedicine (2025) [[published version]](https://doi.org/10.1016/j.cmpb.2025.108828) [[arXiv]](https://doi.org/10.48550/arXiv.2403.01607)
 
 In addition, the following article provides details on 3D marker-position forecasting with UORO and on the implementation of UORO used in this code:
- - Michel Pohl, Mitsuru Uesaka, Hiroyuki Takahashi, Kazuyuki Demachi, Ritu Bhusal Chhatkuli, ["Prediction of the Position of External Markers Using a Recurrent Neural Network Trained With Unbiased Online Recurrent Optimization for Safe Lung Cancer Radiotherapy"](https://doi.org/10.1016/j.cmpb.2022.106908), Computer Methods and Programs in Biomedicine (2022) [[arXiv]](https://doi.org/10.48550/arXiv.2106.01100) [[blog article]](https://pohl-michel.github.io/blog/articles/predicting-respiratory-motion-online-learning-rnn/article.html).
+ - Michel Pohl, Mitsuru Uesaka, Hiroyuki Takahashi, Kazuyuki Demachi, Ritu Bhusal Chhatkuli, "Prediction of the Position of External Markers Using a Recurrent Neural Network Trained With Unbiased Online Recurrent Optimization for Safe Lung Cancer Radiotherapy", Computer Methods and Programs in Biomedicine (2022) [[published version]](https://doi.org/10.1016/j.cmpb.2022.106908) [[arXiv]](https://doi.org/10.48550/arXiv.2106.01100) [[blog article]](https://pohl-michel.github.io/blog/articles/predicting-respiratory-motion-online-learning-rnn/article.html).
 
 Lastly, a detailed description of the Lucas–Kanade registration algorithm used as a basis for this repository can be found in:
- - Michel Pohl, Mitsuru Uesaka, Kazuyuki Demachi, and Ritu Bhusal Chhatkuli, ["Prediction of the motion of chest internal points using a recurrent neural network trained with real-time recurrent learning for latency compensation in lung cancer radiotherapy"](https://doi.org/10.1016/j.compmedimag.2021.101941), Computerized Medical Imaging and Graphics (2021) [[arXiv]](https://doi.org/10.48550/arXiv.2207.05951). 
+ - Michel Pohl, Mitsuru Uesaka, Kazuyuki Demachi, and Ritu Bhusal Chhatkuli, "Prediction of the motion of chest internal points using a recurrent neural network trained with real-time recurrent learning for latency compensation in lung cancer radiotherapy", Computerized Medical Imaging and Graphics (2021) [[published version]](https://doi.org/10.1016/j.compmedimag.2021.101941) [[arXiv]](https://doi.org/10.48550/arXiv.2207.05951). 
 
 Please cite the relevant article(s) if you use this code in your research.
 
